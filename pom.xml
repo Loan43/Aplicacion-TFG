@@ -12,6 +12,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 
 	<dependencies>
@@ -40,7 +42,7 @@
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.4.0</version>
 				<configuration>
-					<mainClass>tfg.pruebas.App</mainClass>
+					<mainClass>tfg.app.app</mainClass>
 					<cleanupDaemonThreads>false</cleanupDaemonThreads>
 				</configuration>
 			</plugin>
