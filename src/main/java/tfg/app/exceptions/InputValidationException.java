@@ -1,4 +1,4 @@
-package tfg.exceptions;
+package tfg.app.exceptions;
 
 @SuppressWarnings("serial")
 public class InputValidationException extends Exception {
