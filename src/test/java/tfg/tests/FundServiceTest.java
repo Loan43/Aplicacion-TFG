@@ -5,11 +5,12 @@ import static org.junit.Assert.*;
 import java.text.ParseException;
 import java.time.LocalDate;
 import org.junit.BeforeClass;
-import exceptions.InputValidationException;
+
 import tfg.app.model.FundDesc;
 import tfg.app.model.FundService;
 import tfg.app.model.FundServiceImpl;
 import tfg.app.model.FundVl;
+import tfg.exceptions.InputValidationException;
 
 import org.junit.Test;
 

@@ -8,7 +8,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
-import exceptions.InputValidationException;
+import tfg.exceptions.InputValidationException;
 
 public class FundServiceImpl implements FundService {
 
