@@ -26,7 +26,7 @@ public class FundVl implements Serializable {
 
 	@Id
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "fid", nullable = false)
+	@JoinColumn(name = "id", nullable = false)
 	private FundDesc fundDesc;
 
 	public FundVl(LocalDate c1, Double vl) {
@@ -95,7 +95,7 @@ public class FundVl implements Serializable {
 		if (fundDesc == null) {
 			if (other.fundDesc != null)
 				return false;
-		} else if (fundDesc.getfId() != other.fundDesc.getfId())
+		} else if (fundDesc.getId() != other.fundDesc.getId())
 			return false;
 		if (vl == null) {
 			if (other.vl != null)

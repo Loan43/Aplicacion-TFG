@@ -7,7 +7,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
-
+import org.hibernate.query.Query;
 import tfg.app.util.exceptions.InputValidationException;
 
 public class FundServiceImpl implements FundService {
@@ -89,13 +89,19 @@ public class FundServiceImpl implements FundService {
 
 	}
 
-	public FundDesc findFund(Integer fundId) {
+	public FundDesc findFund(String fundId) {
 
 		Session session = sessionFactory.openSession();
 		try {
+			// System.out.println("ASDASDAS");
 			tx = session.beginTransaction();
-			FundDesc fundDesc = (FundDesc) session.get(FundDesc.class, fundId);
+			String hql = "from FundDesc where fId like ?1";
+			Query<?> query = session.createQuery(hql);
+			query.setParameter(1, new String(fundId));
+			query.setMaxResults(1);
+			FundDesc fundDesc = (FundDesc) query.uniqueResult();
 			tx.commit();
+			// return this.findFundByFundId(fundDesc.getfId());
 			return fundDesc;
 
 		} catch (HibernateException e) {
@@ -109,11 +115,9 @@ public class FundServiceImpl implements FundService {
 		}
 		return null;
 	}
-	
-	
 
 	@Override
-	public Double findFundVl(Integer fundId, LocalDate day) {
+	public Double findFundVl(String fundId, LocalDate day) {
 
 		FundDesc fundDesc = this.findFund(fundId);
 		Session session = sessionFactory.openSession();

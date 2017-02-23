@@ -17,9 +17,9 @@ public interface FundService {
 	public void removeFund(FundDesc fundDesc);
 
 	// Devuelve el FundDesc y su lista de FundVls a partir de su ID
-	public FundDesc findFund(Integer fundId);
+	public FundDesc findFund(String fundId);
 
 	// Obtiene el vl de un fondo en un dia concreto
-	public Double findFundVl(Integer fundId, LocalDate day);
+	public Double findFundVl(String fundId, LocalDate day);
 
 }

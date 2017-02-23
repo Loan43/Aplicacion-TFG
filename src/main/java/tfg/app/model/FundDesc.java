@@ -7,17 +7,23 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "funddesc")
+@Table(name = "fundesc")
 public class FundDesc {
 
 	@Id
-	@Column(name = "fid")
-	private Integer fId;
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
+	@Column(name = "fId", unique = true)
+	private String fId;
 
 	@Column(name = "fgest")
 	private String fGest;
@@ -30,14 +36,14 @@ public class FundDesc {
 
 	@Column(name = "fcurrency")
 	private String fCurrency;
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "fundDesc", cascade = CascadeType.REMOVE)
 	private List<FundVl> fundVls;
 
 	public FundDesc() {
-
 	};
 
-	public FundDesc(Integer fId, String fGest, String fType, String fCategory, String fCurrency) {
+	public FundDesc(String fId, String fGest, String fType, String fCategory, String fCurrency) {
 		super();
 		this.fId = fId;
 		this.fGest = fGest;
@@ -47,7 +53,7 @@ public class FundDesc {
 		this.fundVls = new ArrayList<FundVl>();
 	}
 
-	public FundDesc(Integer fId, String fGest, String fType, String fCategory, String fCurrency, List<FundVl> fundVls) {
+	public FundDesc(String fId, String fGest, String fType, String fCategory, String fCurrency, List<FundVl> fundVls) {
 		super();
 		this.fId = fId;
 		this.fGest = fGest;
@@ -57,11 +63,19 @@ public class FundDesc {
 		this.fundVls = fundVls;
 	}
 
-	public Integer getfId() {
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getfId() {
 		return fId;
 	}
 
-	public void setfId(Integer fId) {
+	public void setfId(String fId) {
 		this.fId = fId;
 	}
 

@@ -30,9 +30,9 @@ public class FundServiceTest {
 		return new FundVl(c, 25.00, fundDesc);
 	}
 
-	private FundDesc getValidFundDesc(Integer id) throws ParseException {
+	private FundDesc getValidFundDesc() throws ParseException {
 
-		FundDesc fund = new FundDesc(id, "Pinball Wizards", "Alto riesgo", "Monetario", "Euro");
+		FundDesc fund = new FundDesc("76581939ES", "Pinball Wizards", "Alto riesgo", "Monetario", "Euro");
 		fund.getFundVls().add(getValidFundVl("2020-04-20", fund));
 		fund.getFundVls().add(getValidFundVl("2020-04-21", fund));
 
@@ -42,7 +42,7 @@ public class FundServiceTest {
 	@Test
 	public void testAddFundFindFund() throws ParseException, InputValidationException {
 
-		FundDesc addedFound = this.getValidFundDesc(1);
+		FundDesc addedFound = this.getValidFundDesc();
 
 		fundService.addFund(addedFound);
 		FundDesc findFound = fundService.findFund(addedFound.getfId());
@@ -56,7 +56,7 @@ public class FundServiceTest {
 	@Test
 	public void testUpdateFund() throws InputValidationException, ParseException {
 
-		FundDesc baseFound = this.getValidFundDesc(1);
+		FundDesc baseFound = this.getValidFundDesc();
 
 		fundService.addFund(baseFound);
 
@@ -77,7 +77,7 @@ public class FundServiceTest {
 	@Test
 	public void testSaveAndUpdateNewFundVl() throws InputValidationException, ParseException {
 
-		FundDesc baseFound = this.getValidFundDesc(1);
+		FundDesc baseFound = this.getValidFundDesc();
 
 		fundService.addFund(baseFound);
 
@@ -99,7 +99,7 @@ public class FundServiceTest {
 	@Test
 	public void testFindFundVl() throws ParseException, InputValidationException {
 
-		FundDesc addedFound = this.getValidFundDesc(1);
+		FundDesc addedFound = this.getValidFundDesc();
 
 		fundService.addFund(addedFound);
 
