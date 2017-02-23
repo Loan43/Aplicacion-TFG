@@ -2,7 +2,7 @@ package tfg.app.model;
 
 import java.time.LocalDate;
 
-import tfg.app.exceptions.InputValidationException;
+import tfg.app.util.exceptions.InputValidationException;
 
 public interface FundService {
 

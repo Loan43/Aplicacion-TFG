@@ -6,11 +6,11 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import org.junit.BeforeClass;
 
-import tfg.app.exceptions.InputValidationException;
 import tfg.app.model.FundDesc;
 import tfg.app.model.FundService;
 import tfg.app.model.FundServiceImpl;
 import tfg.app.model.FundVl;
+import tfg.app.util.exceptions.InputValidationException;
 
 import org.junit.Test;
 

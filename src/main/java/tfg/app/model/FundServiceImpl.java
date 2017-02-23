@@ -8,7 +8,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
-import tfg.app.exceptions.InputValidationException;
+import tfg.app.util.exceptions.InputValidationException;
 
 public class FundServiceImpl implements FundService {
 
@@ -109,6 +109,8 @@ public class FundServiceImpl implements FundService {
 		}
 		return null;
 	}
+	
+	
 
 	@Override
 	public Double findFundVl(Integer fundId, LocalDate day) {
