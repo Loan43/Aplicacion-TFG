@@ -4,6 +4,9 @@ import static org.junit.Assert.*;
 
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.BeforeClass;
 
 import tfg.app.model.FundDesc;
@@ -11,12 +14,14 @@ import tfg.app.model.FundService;
 import tfg.app.model.FundServiceImpl;
 import tfg.app.model.FundVl;
 import tfg.app.util.exceptions.InputValidationException;
+import tfg.app.util.exceptions.InstanceNotFoundException;
 
 import org.junit.Test;
 
 public class FundServiceTest {
 
 	private static FundService fundService = null;
+	private final String NON_EXISTENT_FOUND_ID = "123123123DE";
 
 	@BeforeClass
 	public static void init() {
@@ -40,7 +45,7 @@ public class FundServiceTest {
 	}
 
 	@Test
-	public void testAddFundFindFund() throws ParseException, InputValidationException {
+	public void testAddFundFindFund() throws ParseException, InputValidationException, InstanceNotFoundException {
 
 		FundDesc addedFound = this.getValidFundDesc();
 
@@ -52,9 +57,16 @@ public class FundServiceTest {
 		assertTrue(addedFound.equals(findFound));
 
 	}
+	
+	@Test(expected = InstanceNotFoundException.class)
+	public void testFindNotFoundFund() throws ParseException, InputValidationException, InstanceNotFoundException {
+
+		fundService.findFund(NON_EXISTENT_FOUND_ID);
+
+	}
 
 	@Test
-	public void testUpdateFund() throws InputValidationException, ParseException {
+	public void testUpdateFund() throws InputValidationException, ParseException, InstanceNotFoundException {
 
 		FundDesc baseFound = this.getValidFundDesc();
 
@@ -75,7 +87,7 @@ public class FundServiceTest {
 	}
 
 	@Test
-	public void testSaveAndUpdateNewFundVl() throws InputValidationException, ParseException {
+	public void testSaveAndUpdateNewFundVl() throws InputValidationException, ParseException, InstanceNotFoundException {
 
 		FundDesc baseFound = this.getValidFundDesc();
 
@@ -97,7 +109,7 @@ public class FundServiceTest {
 	}
 
 	@Test
-	public void testFindFundVl() throws ParseException, InputValidationException {
+	public void testFindFundVl() throws ParseException, InputValidationException, InstanceNotFoundException {
 
 		FundDesc addedFound = this.getValidFundDesc();
 
@@ -111,4 +123,35 @@ public class FundServiceTest {
 
 	}
 
+	@Test
+	public void testFindAllFunds() throws ParseException, InputValidationException {
+
+		FundDesc addedFound = this.getValidFundDesc();
+		FundDesc addedFound1 = this.getValidFundDesc();
+
+		addedFound1.setfId("34249780ES");
+
+		List<FundDesc> fundDescs1 = new ArrayList<FundDesc>();
+
+		fundDescs1.add(addedFound);
+		fundDescs1.add(addedFound1);
+
+		fundService.addFund(addedFound);
+		fundService.addFund(addedFound1);
+
+		List<FundDesc> fundDescs = fundService.findAllFunds();
+
+		fundService.removeFund(addedFound);
+		fundService.removeFund(addedFound1);
+
+		if (fundDescs.size() != fundDescs1.size())
+			assertTrue(false);
+
+		for (int x = 0; x < fundDescs.size(); x++) {
+			if (!fundDescs.get(x).equals(fundDescs1.get(x))) {
+				assertTrue(false);
+			}
+		}
+		assertTrue(true);
+	}
 }

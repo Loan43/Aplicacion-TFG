@@ -37,7 +37,7 @@ public class FundDesc {
 	@Column(name = "fcurrency")
 	private String fCurrency;
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "fundDesc", cascade = CascadeType.REMOVE)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "fundDesc", cascade = CascadeType.REMOVE)
 	private List<FundVl> fundVls;
 
 	public FundDesc() {

@@ -25,7 +25,7 @@ public class FundVl implements Serializable {
 	private Double vl;
 
 	@Id
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id", nullable = false)
 	private FundDesc fundDesc;
 

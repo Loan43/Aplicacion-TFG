@@ -1,6 +1,7 @@
 package tfg.app.model;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -9,6 +10,7 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
 import tfg.app.util.exceptions.InputValidationException;
+import tfg.app.util.exceptions.InstanceNotFoundException;
 
 public class FundServiceImpl implements FundService {
 
@@ -89,7 +91,7 @@ public class FundServiceImpl implements FundService {
 
 	}
 
-	public FundDesc findFund(String fundId) {
+	public FundDesc findFund(String fundId) throws InstanceNotFoundException {
 
 		Session session = sessionFactory.openSession();
 		try {
@@ -102,6 +104,7 @@ public class FundServiceImpl implements FundService {
 			FundDesc fundDesc = (FundDesc) query.uniqueResult();
 			tx.commit();
 			// return this.findFundByFundId(fundDesc.getfId());
+			if (fundDesc == null) throw new InstanceNotFoundException(fundId,"FundDesc");
 			return fundDesc;
 
 		} catch (HibernateException e) {
@@ -117,7 +120,7 @@ public class FundServiceImpl implements FundService {
 	}
 
 	@Override
-	public Double findFundVl(String fundId, LocalDate day) {
+	public Double findFundVl(String fundId, LocalDate day) throws InstanceNotFoundException {
 
 		FundDesc fundDesc = this.findFund(fundId);
 		Session session = sessionFactory.openSession();
@@ -126,6 +129,31 @@ public class FundServiceImpl implements FundService {
 			FundVl fundVl = (FundVl) session.get(FundVl.class, new FundVlPK(fundDesc, day));
 			tx.commit();
 			return fundVl.getVl();
+
+		} catch (HibernateException e) {
+
+			tx.rollback();
+			e.printStackTrace();
+
+		} finally {
+
+			session.close();
+		}
+		return null;
+	}
+
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<FundDesc> findAllFunds() {
+		Session session = sessionFactory.openSession();
+		try {
+			tx = session.beginTransaction();
+			String hql = "from FundDesc";
+			Query<?> query = session.createQuery(hql);
+			List<?> fundDescList = query.list();
+			tx.commit();
+			return (List<FundDesc>) fundDescList;
 
 		} catch (HibernateException e) {
 

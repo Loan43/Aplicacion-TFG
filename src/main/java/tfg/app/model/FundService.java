@@ -1,8 +1,10 @@
 package tfg.app.model;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import tfg.app.util.exceptions.InputValidationException;
+import tfg.app.util.exceptions.InstanceNotFoundException;
 
 public interface FundService {
 
@@ -17,9 +19,12 @@ public interface FundService {
 	public void removeFund(FundDesc fundDesc);
 
 	// Devuelve el FundDesc y su lista de FundVls a partir de su ID
-	public FundDesc findFund(String fundId);
+	public FundDesc findFund(String fundId) throws InstanceNotFoundException;
+	
+	// Obtiene todos los FundDesc de la base de datos.
+	public List<FundDesc> findAllFunds();
 
 	// Obtiene el vl de un fondo en un dia concreto
-	public Double findFundVl(String fundId, LocalDate day);
+	public Double findFundVl(String fundId, LocalDate day) throws InstanceNotFoundException;
 
 }
