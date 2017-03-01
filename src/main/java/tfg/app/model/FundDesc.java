@@ -22,7 +22,7 @@ public class FundDesc {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "fId", unique = true)
+	@Column(name = "fId", unique = true , nullable = false)
 	private String fId;
 
 	@Column(name = "fgest")

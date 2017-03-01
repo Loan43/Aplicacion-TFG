@@ -13,14 +13,14 @@ public interface FundService {
 
 	// Actualiza los campos de un FundDesc y actualiza o inserta los valores de
 	// su lista de FundVls
-	public void updateFund(FundDesc fundDesc) throws InputValidationException;
+	public void updateFund(FundDesc fundDesc) throws InputValidationException, InstanceNotFoundException;
 
 	// Elimina un FundDesc y toda su lista de FundVls de la base de datos
-	public void removeFund(FundDesc fundDesc);
+	public void removeFund(String fundId) throws InstanceNotFoundException;
 
 	// Devuelve el FundDesc y su lista de FundVls a partir de su ID
 	public FundDesc findFund(String fundId) throws InstanceNotFoundException;
-	
+
 	// Obtiene todos los FundDesc de la base de datos.
 	public List<FundDesc> findAllFunds();
 

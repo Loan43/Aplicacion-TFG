@@ -1,92 +1,61 @@
 package tfg.app.util.validator;
 
-
 import tfg.app.util.exceptions.InputValidationException;
-import java.math.BigInteger;
-import java.util.Calendar;
 
 public final class PropertyValidator {
 
-    private PropertyValidator() {}
+	private PropertyValidator() {
+	}
 
-    public static void validateLong(String propertyName,
-            long value, int lowerValidLimit, int upperValidLimit)
-            throws InputValidationException {
+	public static void validateNotNegativeDouble(double doubleValue) throws InputValidationException {
 
-        if ( (value < lowerValidLimit) || (value > upperValidLimit) ) {
-            throw new InputValidationException("Invalid " + propertyName +
-                    " value (it must be greater than " + lowerValidLimit +
-                    " and lower than " + upperValidLimit + "): " + value);
-        }
+		if (doubleValue < 0) {
+			throw new InputValidationException("Vl inválido (Debe ser mayor que 0): " + doubleValue);
+		}
 
-    }
+	}
 
-    public static void validateNotNegativeLong(String propertyName,
-            long longValue) throws InputValidationException {
+	public static void validateMandatoryString(String propertyName, String stringValue)
+			throws InputValidationException {
 
-        if (longValue < 0) {
-            throw new InputValidationException("Invalid " + propertyName +
-                    " value (it must be greater than 0): " +	longValue);
-        }
+		if ((stringValue == null) || (stringValue.length() == 0)) {
+			throw new InputValidationException(
+					propertyName + " inválido (no puede ser null ni una cadena vacía): " + stringValue);
+		}
 
-    }
+	}
 
-    public static void validateDouble(String propertyName,
-            double doubleValue, double lowerValidLimit, double upperValidLimit)
-            throws InputValidationException {
+	public static void validateIsin(String isin) throws InputValidationException {
 
-        if ((doubleValue < lowerValidLimit) ||
-                (doubleValue > upperValidLimit)) {
-            throw new InputValidationException("Invalid " + propertyName +
-                    " value (it must be gtrater than " + lowerValidLimit +
-                    " and lower than " + upperValidLimit + "): " +
-                    doubleValue);
-        }
+		isin = isin.trim().toUpperCase();
 
-    }
+		if (!isin.matches("^[A-Z]{2}[A-Z0-9]{9}\\d$"))
+			throw new InputValidationException(" El formato del ISIN proporcionado: " + isin + " no es válido.");
 
-    public static void validateMandatoryString(String propertyName,
-            String stringValue) throws InputValidationException {
+		StringBuilder sb = new StringBuilder();
+		for (char c : isin.substring(0, 12).toCharArray())
+			sb.append(Character.digit(c, 36));
 
-        if ( (stringValue == null) || (stringValue.length() == 0) ) {
-            throw new InputValidationException("Invalid " + propertyName +
-                    " value (it cannot be null neither empty): " +
-                    stringValue);
-        }
+		if (!isinTest(sb.toString())) {
+			throw new InputValidationException(" El valor del ISIN proporcionado: " + isin + " no es válido.");
+		}
+	}
 
-    }
-
-    public static void validatePastDate(String propertyName,
-            Calendar propertyValue) throws InputValidationException {
-
-        Calendar now = Calendar.getInstance();
-        if ( (propertyValue == null) || (propertyValue.after(now)) ) {
-            throw new InputValidationException("Invalid " + propertyName +
-                    " value (it must be a past date): " +
-                    propertyValue);
-        }
-
-    }
-
-    public static void validateCreditCard(String propertyValue)
-            throws InputValidationException {
-
-        boolean validCreditCard = true;
-        if ( (propertyValue != null) && (propertyValue.length() == 16) ) {
-            try {
-                new BigInteger(propertyValue);
-            } catch (NumberFormatException e) {
-                validCreditCard = false;
-            }
-        } else {
-            validCreditCard = false;
-        }
-        if (!validCreditCard) {
-            throw new InputValidationException("Invalid credit card number" +
-                    " (it should be a sequence of 16 numeric digits): " +
-                    propertyValue);
-        }
-
-    }
-
+	private static boolean isinTest(String number) {
+		int s1 = 0, s2 = 0;
+		String reverse = new StringBuffer(number).reverse().toString();
+		for (int i = 0; i < reverse.length(); i++) {
+			int digit = Character.digit(reverse.charAt(i), 10);
+			if (i % 2 == 0) {// this is for odd digits, they are 1-indexed in
+								// the algorithm
+				s1 += digit;
+			} else {// add 2 * digit for 0-4, add 2 * digit - 9 for 5-9
+				s2 += 2 * digit;
+				if (digit >= 5) {
+					s2 -= 9;
+				}
+			}
+		}
+		return (s1 + s2) % 10 == 0;
+	}
 }

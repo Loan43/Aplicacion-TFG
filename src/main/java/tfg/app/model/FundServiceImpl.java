@@ -3,6 +3,8 @@ package tfg.app.model;
 import java.time.LocalDate;
 import java.util.List;
 
+import tfg.app.util.validator.PropertyValidator;
+
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -22,8 +24,15 @@ public class FundServiceImpl implements FundService {
 
 	}
 
-	public void addFund(FundDesc fundDesc) throws InputValidationException {
+	private void validateFund(FundDesc fundDesc) throws InputValidationException {
 
+		PropertyValidator.validateIsin(fundDesc.getfId());
+
+	}
+
+	public void addFund(FundDesc fundDesc) throws InputValidationException {
+		
+		validateFund(fundDesc);
 		Session session = sessionFactory.openSession();
 		try {
 
@@ -46,7 +55,8 @@ public class FundServiceImpl implements FundService {
 	}
 
 	public void updateFund(FundDesc fundDesc) throws InputValidationException {
-
+		
+		validateFund(fundDesc);
 		Session session = sessionFactory.openSession();
 		try {
 
@@ -69,8 +79,9 @@ public class FundServiceImpl implements FundService {
 		}
 	}
 
-	public void removeFund(FundDesc fundDesc) {
+	public void removeFund(String fundId) throws InstanceNotFoundException {
 
+		FundDesc fundDesc = findFund(fundId);
 		Session session = sessionFactory.openSession();
 		try {
 
@@ -104,7 +115,8 @@ public class FundServiceImpl implements FundService {
 			FundDesc fundDesc = (FundDesc) query.uniqueResult();
 			tx.commit();
 			// return this.findFundByFundId(fundDesc.getfId());
-			if (fundDesc == null) throw new InstanceNotFoundException(fundId,"FundDesc");
+			if (fundDesc == null)
+				throw new InstanceNotFoundException(fundId, "FundDesc");
 			return fundDesc;
 
 		} catch (HibernateException e) {
@@ -122,12 +134,14 @@ public class FundServiceImpl implements FundService {
 	@Override
 	public Double findFundVl(String fundId, LocalDate day) throws InstanceNotFoundException {
 
-		FundDesc fundDesc = this.findFund(fundId);
+		FundDesc fundDesc = findFund(fundId);
 		Session session = sessionFactory.openSession();
 		try {
 			tx = session.beginTransaction();
 			FundVl fundVl = (FundVl) session.get(FundVl.class, new FundVlPK(fundDesc, day));
 			tx.commit();
+			if (fundVl == null)
+				throw new InstanceNotFoundException(day, "FundVl");
 			return fundVl.getVl();
 
 		} catch (HibernateException e) {
@@ -142,7 +156,6 @@ public class FundServiceImpl implements FundService {
 		return null;
 	}
 
-	
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<FundDesc> findAllFunds() {
