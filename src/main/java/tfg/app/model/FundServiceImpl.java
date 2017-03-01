@@ -10,6 +10,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.query.Query;
 import tfg.app.util.exceptions.InputValidationException;
 import tfg.app.util.exceptions.InstanceNotFoundException;
@@ -31,153 +32,164 @@ public class FundServiceImpl implements FundService {
 	}
 
 	public void addFund(FundDesc fundDesc) throws InputValidationException {
-		
+
 		validateFund(fundDesc);
-		Session session = sessionFactory.openSession();
+
 		try {
-
-			tx = session.beginTransaction();
-			session.save(fundDesc);
-			fundDesc.getFundVls().forEach((temp) -> {
-				session.save(temp);
-			});
-			tx.commit();
+			Session session = sessionFactory.openSession();
+			try {
+				tx = session.beginTransaction();
+				session.save(fundDesc);
+				fundDesc.getFundVls().forEach((temp) -> {
+					session.save(temp);
+				});
+				tx.commit();
+			} catch (ConstraintViolationException e) {
+				tx.rollback();
+				throw new RuntimeException(e);
+			} catch (HibernateException | Error e) {
+				tx.rollback();
+				throw e;
+			} finally {
+				session.close();
+			}
 		} catch (HibernateException e) {
-
-			tx.rollback();
-			e.printStackTrace();
-
-		} finally {
-
-			session.close();
-
+			throw new RuntimeException(e);
 		}
 	}
 
 	public void updateFund(FundDesc fundDesc) throws InputValidationException {
-		
+
 		validateFund(fundDesc);
-		Session session = sessionFactory.openSession();
+
 		try {
+			Session session = sessionFactory.openSession();
+			try {
+				tx = session.beginTransaction();
+				session.saveOrUpdate(fundDesc);
+				fundDesc.getFundVls().forEach((temp) -> {
+					session.saveOrUpdate(temp);
+				});
+				tx.commit();
 
-			tx = session.beginTransaction();
-			session.saveOrUpdate(fundDesc);
-			fundDesc.getFundVls().forEach((temp) -> {
-				session.saveOrUpdate(temp);
-			});
-			tx.commit();
-
+			} catch (ConstraintViolationException e) {
+				tx.rollback();
+				throw new RuntimeException(e);
+			} catch (HibernateException | Error e) {
+				tx.rollback();
+				throw e;
+			} finally {
+				session.close();
+			}
 		} catch (HibernateException e) {
-
-			tx.rollback();
-			e.printStackTrace();
-
-		} finally {
-
-			session.close();
-
+			throw new RuntimeException(e);
 		}
 	}
 
 	public void removeFund(String fundId) throws InstanceNotFoundException {
 
 		FundDesc fundDesc = findFund(fundId);
-		Session session = sessionFactory.openSession();
 		try {
-
-			tx = session.beginTransaction();
-			session.delete(fundDesc);
-			tx.commit();
-
+			Session session = sessionFactory.openSession();
+			try {
+				tx = session.beginTransaction();
+				session.delete(fundDesc);
+				tx.commit();
+			} catch (ConstraintViolationException e) {
+				tx.rollback();
+				throw new RuntimeException(e);
+			} catch (HibernateException | Error e) {
+				tx.rollback();
+				throw e;
+			} finally {
+				session.close();
+			}
 		} catch (HibernateException e) {
-
-			tx.rollback();
-			e.printStackTrace();
-
-		} finally {
-
-			session.close();
-
+			throw new RuntimeException(e);
 		}
 
 	}
 
 	public FundDesc findFund(String fundId) throws InstanceNotFoundException {
 
-		Session session = sessionFactory.openSession();
 		try {
-			// System.out.println("ASDASDAS");
-			tx = session.beginTransaction();
-			String hql = "from FundDesc where fId like ?1";
-			Query<?> query = session.createQuery(hql);
-			query.setParameter(1, new String(fundId));
-			query.setMaxResults(1);
-			FundDesc fundDesc = (FundDesc) query.uniqueResult();
-			tx.commit();
-			// return this.findFundByFundId(fundDesc.getfId());
-			if (fundDesc == null)
-				throw new InstanceNotFoundException(fundId, "FundDesc");
-			return fundDesc;
-
+			Session session = sessionFactory.openSession();
+			try {
+				tx = session.beginTransaction();
+				String hql = "from FundDesc where fId like ?1";
+				Query<?> query = session.createQuery(hql);
+				query.setParameter(1, new String(fundId));
+				query.setMaxResults(1);
+				FundDesc fundDesc = (FundDesc) query.uniqueResult();
+				tx.commit();
+				if (fundDesc == null)
+					throw new InstanceNotFoundException(fundId, "FundDesc");
+				return fundDesc;
+			} catch (ConstraintViolationException e) {
+				tx.rollback();
+				throw new RuntimeException(e);
+			} catch (HibernateException | Error e) {
+				tx.rollback();
+				throw e;
+			} finally {
+				session.close();
+			}
 		} catch (HibernateException e) {
-
-			tx.rollback();
-			e.printStackTrace();
-
-		} finally {
-
-			session.close();
+			throw new RuntimeException(e);
 		}
-		return null;
 	}
 
 	@Override
 	public Double findFundVl(String fundId, LocalDate day) throws InstanceNotFoundException {
 
 		FundDesc fundDesc = findFund(fundId);
-		Session session = sessionFactory.openSession();
 		try {
-			tx = session.beginTransaction();
-			FundVl fundVl = (FundVl) session.get(FundVl.class, new FundVlPK(fundDesc, day));
-			tx.commit();
-			if (fundVl == null)
-				throw new InstanceNotFoundException(day, "FundVl");
-			return fundVl.getVl();
-
+			Session session = sessionFactory.openSession();
+			try {
+				tx = session.beginTransaction();
+				FundVl fundVl = (FundVl) session.get(FundVl.class, new FundVlPK(fundDesc, day));
+				tx.commit();
+				if (fundVl == null)
+					throw new InstanceNotFoundException(day, "FundVl");
+				return fundVl.getVl();
+			} catch (ConstraintViolationException e) {
+				tx.rollback();
+				throw new RuntimeException(e);
+			} catch (HibernateException | Error e) {
+				tx.rollback();
+				throw e;
+			} finally {
+				session.close();
+			}
 		} catch (HibernateException e) {
-
-			tx.rollback();
-			e.printStackTrace();
-
-		} finally {
-
-			session.close();
+			throw new RuntimeException(e);
 		}
-		return null;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<FundDesc> findAllFunds() {
-		Session session = sessionFactory.openSession();
+
 		try {
-			tx = session.beginTransaction();
-			String hql = "from FundDesc";
-			Query<?> query = session.createQuery(hql);
-			List<?> fundDescList = query.list();
-			tx.commit();
-			return (List<FundDesc>) fundDescList;
-
+			Session session = sessionFactory.openSession();
+			try {
+				tx = session.beginTransaction();
+				String hql = "from FundDesc";
+				Query<?> query = session.createQuery(hql);
+				List<?> fundDescList = query.list();
+				tx.commit();
+				return (List<FundDesc>) fundDescList;
+			} catch (ConstraintViolationException e) {
+				tx.rollback();
+				throw new RuntimeException(e);
+			} catch (HibernateException | Error e) {
+				tx.rollback();
+				throw e;
+			} finally {
+				session.close();
+			}
 		} catch (HibernateException e) {
-
-			tx.rollback();
-			e.printStackTrace();
-
-		} finally {
-
-			session.close();
+			throw new RuntimeException(e);
 		}
-		return null;
 	}
-
 }

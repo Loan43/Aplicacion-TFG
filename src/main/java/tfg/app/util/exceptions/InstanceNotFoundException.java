@@ -8,7 +8,7 @@ public class InstanceNotFoundException extends Exception {
 
     public InstanceNotFoundException(Object instanceId, String instanceType) {
 
-        super("Instance not found (identifier = '" + instanceId + "' - type = '"
+        super("Instancia no encontrada (identificador = '" + instanceId + "' - tipo = '"
                 + instanceType + "')");
         this.instanceId = instanceId;
         this.instanceType = instanceType;
