@@ -28,7 +28,9 @@ public class FundServiceImpl implements FundService {
 	private void validateFund(FundDesc fundDesc) throws InputValidationException {
 
 		PropertyValidator.validateIsin(fundDesc.getfId());
-
+		for (int x = 0; x < fundDesc.getFundVls().size(); x++) {
+			PropertyValidator.validateNotNegativeDouble(fundDesc.getFundVls().get(x).getVl());
+		}
 	}
 
 	public void addFund(FundDesc fundDesc) throws InputValidationException {
@@ -46,7 +48,7 @@ public class FundServiceImpl implements FundService {
 				tx.commit();
 			} catch (ConstraintViolationException e) {
 				tx.rollback();
-				throw new RuntimeException(e);
+				throw new InputValidationException("Error, el Isin del fondo: "+fundDesc.getfId()+" ya existe en la base de datos.");
 			} catch (HibernateException | Error e) {
 				tx.rollback();
 				throw e;
@@ -71,11 +73,10 @@ public class FundServiceImpl implements FundService {
 					session.saveOrUpdate(temp);
 				});
 				tx.commit();
-
-			} catch (ConstraintViolationException e) {
+			} catch (javax.persistence.PersistenceException  e) {
 				tx.rollback();
-				throw new RuntimeException(e);
-			} catch (HibernateException | Error e) {
+				throw new InputValidationException("Error, se está intentando modificar un id a otro que ya existe.");
+			} catch (Error e) {
 				tx.rollback();
 				throw e;
 			} finally {
@@ -86,18 +87,17 @@ public class FundServiceImpl implements FundService {
 		}
 	}
 
-	public void removeFund(String fundId) throws InstanceNotFoundException {
+	public void removeFund(FundDesc fundDesc) throws InstanceNotFoundException {
 
-		FundDesc fundDesc = findFund(fundId);
 		try {
 			Session session = sessionFactory.openSession();
 			try {
 				tx = session.beginTransaction();
 				session.delete(fundDesc);
 				tx.commit();
-			} catch (ConstraintViolationException e) {
+			} catch (java.lang.NullPointerException e) {
 				tx.rollback();
-				throw new RuntimeException(e);
+				throw new InstanceNotFoundException(fundDesc.getfId(),"fundDesc");
 			} catch (HibernateException | Error e) {
 				tx.rollback();
 				throw e;
@@ -191,5 +191,23 @@ public class FundServiceImpl implements FundService {
 		} catch (HibernateException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	public List<FundDesc> findFundsByKeywords(String keywords) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Double findFundVlbyRange(String fundId, LocalDate day) throws InstanceNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Double removeFundVl(String fundId, LocalDate day) throws InstanceNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
