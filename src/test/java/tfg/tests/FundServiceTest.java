@@ -24,6 +24,7 @@ public class FundServiceTest {
 	private final String NON_EXISTENT_FOUND_ID = "123123123DE";
 	private final String VALID_FOUND_ID_1 = "DE0008490962";
 	private final String VALID_FOUND_ID_2 = "ES0173394034";
+	private final String INVALID_FOUND_ID = "ES0173394033";
 
 	@BeforeClass
 	public static void init() {
@@ -73,6 +74,24 @@ public class FundServiceTest {
 	public void testRemoveNoExistentFund() throws InputValidationException, InstanceNotFoundException, ParseException {
 
 		fundService.removeFund(getValidFundDesc());
+
+	}
+	
+	@Test(expected = InputValidationException.class)
+	public void testAddInvalidIsinFund() throws InputValidationException, InstanceNotFoundException, ParseException {
+		
+		FundDesc baseFound = this.getValidFundDesc();
+		baseFound.setfId(INVALID_FOUND_ID);
+		fundService.addFund(baseFound);
+
+	}
+	
+	@Test(expected = InputValidationException.class)
+	public void testAddNegativeVlFund() throws InputValidationException, InstanceNotFoundException, ParseException {
+		
+		FundDesc baseFound = this.getValidFundDesc();
+		baseFound.getFundVls().get(0).setVl(-25.0);
+		fundService.addFund(baseFound);
 
 	}
 
