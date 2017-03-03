@@ -1,4 +1,4 @@
-# Aplicacion para el Análisis de Carteras de Fondos de Inversión (AACFI-TFG)
+# Aplicacion para el Análisis de Carteras de Fondos de Inversión (AACFI-TFG) 
 
 Como TFG se realiza una aplicación de escritorio en Java con la finalidad de hacer estudios cualitativos y cuantitativos del rendimiento de activos financieros. En particular, presentará gráficas e indicadores que asistan en la la toma de decisiones a los inversores de fondos de inversión.
 
