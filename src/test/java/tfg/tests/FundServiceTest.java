@@ -76,19 +76,19 @@ public class FundServiceTest {
 		fundService.removeFund(getValidFundDesc());
 
 	}
-	
+
 	@Test(expected = InputValidationException.class)
 	public void testAddInvalidIsinFund() throws InputValidationException, InstanceNotFoundException, ParseException {
-		
+
 		FundDesc baseFound = this.getValidFundDesc();
 		baseFound.setfId(INVALID_FOUND_ID);
 		fundService.addFund(baseFound);
 
 	}
-	
+
 	@Test(expected = InputValidationException.class)
 	public void testAddNegativeVlFund() throws InputValidationException, InstanceNotFoundException, ParseException {
-		
+
 		FundDesc baseFound = this.getValidFundDesc();
 		baseFound.getFundVls().get(0).setVl(-25.0);
 		fundService.addFund(baseFound);
@@ -157,9 +157,9 @@ public class FundServiceTest {
 		FundDesc baseFound = this.getValidFundDesc();
 
 		fundService.addFund(baseFound);
-		
+
 		FundDesc findFound = fundService.findFund(baseFound.getfId());
-		
+
 		findFound.setfGest("November Rain");
 		findFound.setfCurrency("Libras");
 		findFound.setfId(VALID_FOUND_ID_2);
@@ -177,17 +177,16 @@ public class FundServiceTest {
 		assertTrue(findFound.equals(updatedFound));
 
 	}
-	
+
 	@Test
-	public void testSaveNewFundVl()
-			throws InputValidationException, ParseException, InstanceNotFoundException {
+	public void testSaveNewFundVl() throws InputValidationException, ParseException, InstanceNotFoundException {
 
 		FundDesc baseFound = this.getValidFundDesc();
 
 		fundService.addFund(baseFound);
-		
+
 		FundDesc findFound = fundService.findFund(baseFound.getfId());
-		
+
 		findFound.getFundVls().add(getValidFundVl("2020-04-23", baseFound));
 		findFound.getFundVls().add(getValidFundVl("2020-04-24", baseFound));
 
@@ -282,5 +281,48 @@ public class FundServiceTest {
 		} else {
 			assertTrue(false);
 		}
+	}
+
+	@Test
+	public void testFindFundByKeywords() throws ParseException, InputValidationException, InstanceNotFoundException {
+
+		FundDesc addedFound1 = this.getValidFundDesc();
+		FundDesc addedFound2 = this.getValidFundDesc();
+		Boolean bool = true;
+
+		addedFound2.setfId(VALID_FOUND_ID_2);
+
+		fundService.addFund(addedFound1);
+		fundService.addFund(addedFound2);
+
+		if (fundService.findFundsByKeywords("DE").size() != 1) {
+			bool = false;
+		}
+		if (fundService.findFundsByKeywords("EU").size() != 2) {
+			bool = false;
+		}
+		if (fundService.findFundsByKeywords("DE0008490").size() != 1) {
+			bool = false;
+		}
+		if (fundService.findFundsByKeywords("ES0173394").size() != 1) {
+			bool = false;
+		}
+		if (fundService.findFundsByKeywords("alto").size() != 2) {
+			bool = false;
+		}
+		if (fundService.findFundsByKeywords("mone").size() != 2) {
+			bool = false;
+		}
+		if (fundService.findFundsByKeywords("pepe").size() != 0) {
+			bool = false;
+		}
+		if (fundService.findFundsByKeywords("").size() != 2) {
+			bool = false;
+		}
+		
+		fundService.removeFund(addedFound1);
+		fundService.removeFund(addedFound2);
+		
+		assertTrue(bool);
 	}
 }

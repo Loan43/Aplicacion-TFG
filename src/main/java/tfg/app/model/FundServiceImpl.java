@@ -48,7 +48,8 @@ public class FundServiceImpl implements FundService {
 				tx.commit();
 			} catch (ConstraintViolationException e) {
 				tx.rollback();
-				throw new InputValidationException("Error, el Isin del fondo: "+fundDesc.getfId()+" ya existe en la base de datos.");
+				throw new InputValidationException(
+						"Error, el Isin del fondo: " + fundDesc.getfId() + " ya existe en la base de datos.");
 			} catch (HibernateException | Error e) {
 				tx.rollback();
 				throw e;
@@ -73,7 +74,7 @@ public class FundServiceImpl implements FundService {
 					session.saveOrUpdate(temp);
 				});
 				tx.commit();
-			} catch (javax.persistence.PersistenceException  e) {
+			} catch (javax.persistence.PersistenceException e) {
 				tx.rollback();
 				throw new InputValidationException("Error, se está intentando modificar un id a otro que ya existe.");
 			} catch (Error e) {
@@ -97,7 +98,7 @@ public class FundServiceImpl implements FundService {
 				tx.commit();
 			} catch (java.lang.NullPointerException e) {
 				tx.rollback();
-				throw new InstanceNotFoundException(fundDesc.getfId(),"fundDesc");
+				throw new InstanceNotFoundException(fundDesc.getfId(), "fundDesc");
 			} catch (HibernateException | Error e) {
 				tx.rollback();
 				throw e;
@@ -193,10 +194,34 @@ public class FundServiceImpl implements FundService {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<FundDesc> findFundsByKeywords(String keywords) {
-		// TODO Auto-generated method stub
-		return null;
+
+		try {
+			Session session = sessionFactory.openSession();
+			try {
+				// (fGest like ?1) or (fType like ?1) or
+				tx = session.beginTransaction();
+				String hql = "from FundDesc where fId like ?1 or fGest like ?1 or fType like ?1"
+						+ " or fCategory like ?1 or fCurrency like ?1";
+				Query<?> query = session.createQuery(hql);
+				query.setParameter(1, new String("%" + keywords + "%"));
+				List<?> fundDescList = query.list();
+				tx.commit();
+				return (List<FundDesc>) fundDescList;
+			} catch (ConstraintViolationException e) {
+				tx.rollback();
+				throw new RuntimeException(e);
+			} catch (HibernateException | Error e) {
+				tx.rollback();
+				throw e;
+			} finally {
+				session.close();
+			}
+		} catch (HibernateException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
