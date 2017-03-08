@@ -15,6 +15,9 @@ public interface FundService {
 	// su lista de FundVls
 	public void updateFund(FundDesc fundDesc) throws InputValidationException;
 
+	// Actualiza un unico FundVl de un fondo en un día concreto
+	public void updateFundVl(FundVl fundVl) throws InputValidationException, InstanceNotFoundException;
+
 	// Elimina un FundDesc y toda su lista de FundVls de la base de datos
 	public void removeFund(FundDesc fundDesc) throws InstanceNotFoundException;
 

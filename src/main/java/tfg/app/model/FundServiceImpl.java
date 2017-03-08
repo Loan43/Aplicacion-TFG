@@ -31,6 +31,12 @@ public class FundServiceImpl implements FundService {
 		}
 	}
 
+	private void validateFundVl(FundVl fundVl) throws InputValidationException {
+
+		PropertyValidator.validateNotNegativeDouble(fundVl.getVl());
+
+	}
+
 	public void addFund(FundDesc fundDesc) throws InputValidationException {
 
 		validateFund(fundDesc);
@@ -237,7 +243,7 @@ public class FundServiceImpl implements FundService {
 				List<FundVl> fundVlList = (List<FundVl>) query.list();
 				tx.commit();
 				return (List<FundVl>) fundVlList;
-				
+
 			} catch (ConstraintViolationException e) {
 				tx.rollback();
 				throw new RuntimeException(e);
@@ -254,7 +260,7 @@ public class FundServiceImpl implements FundService {
 
 	@Override
 	public void removeFundVl(FundDesc fundDesc, LocalDate day) throws InstanceNotFoundException {
-		
+
 		try {
 			Session session = sessionFactory.openSession();
 			try {
@@ -265,6 +271,30 @@ public class FundServiceImpl implements FundService {
 				tx.rollback();
 				throw new InstanceNotFoundException(fundDesc.getfId(), "fundVl");
 			} catch (HibernateException | Error e) {
+				tx.rollback();
+				throw e;
+			} finally {
+				session.close();
+			}
+		} catch (HibernateException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public void updateFundVl( FundVl fundVl) throws InputValidationException, InstanceNotFoundException {
+		validateFundVl(fundVl);
+
+		try {
+			Session session = sessionFactory.openSession();
+			try {
+				tx = session.beginTransaction();
+				session.update(fundVl);
+				tx.commit();
+			} catch (javax.persistence.PersistenceException e) {
+				tx.rollback();
+				throw new InstanceNotFoundException(fundVl.getDay().toString(), "fundVl");
+			} catch (Error e) {
 				tx.rollback();
 				throw e;
 			} finally {

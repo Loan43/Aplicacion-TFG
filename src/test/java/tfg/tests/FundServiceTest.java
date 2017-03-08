@@ -240,6 +240,8 @@ public class FundServiceTest {
 		FundDesc addedFound = this.getValidFundDesc();
 		FundDesc addedFound1 = this.getValidFundDesc();
 
+		Boolean bool = true;
+
 		addedFound1.setfId(VALID_FOUND_ID_2);
 
 		List<FundDesc> fundDescs1 = new ArrayList<FundDesc>();
@@ -256,14 +258,14 @@ public class FundServiceTest {
 		fundService.removeFund(addedFound1);
 
 		if (fundDescs.size() != fundDescs1.size())
-			assertTrue(false);
+			bool = false;
 
 		for (int x = 0; x < fundDescs.size(); x++) {
 			if (!fundDescs.get(x).equals(fundDescs1.get(x))) {
-				assertTrue(false);
+				bool = false;
 			}
 		}
-		assertTrue(true);
+		assertTrue(bool);
 	}
 
 	@Test
@@ -328,14 +330,16 @@ public class FundServiceTest {
 		List<FundVl> vlList = fundService.findFundVlbyRange(addedFound, LocalDate.parse("2020-04-20"),
 				LocalDate.parse("2020-05-01"));
 
+		Boolean bool = true;
+
 		for (int x = 0; x < vlList.size(); x++) {
 			if (!addedFound.getFundVls().get(x).equals(vlList.get(x))) {
-				assertTrue(false);
+				bool = false;
 			}
 		}
 		fundService.removeFund(addedFound);
 
-		assertTrue(true);
+		assertTrue(bool);
 	}
 
 	@Test(expected = InstanceNotFoundException.class)
@@ -364,7 +368,8 @@ public class FundServiceTest {
 	}
 
 	@Test(expected = InstanceNotFoundException.class)
-	public void testRemoveNonExistentFundVl() throws ParseException, InputValidationException, InstanceNotFoundException {
+	public void testRemoveNonExistentFundVl()
+			throws ParseException, InputValidationException, InstanceNotFoundException {
 
 		FundDesc addedFound = this.getValidFundDesc();
 
@@ -373,11 +378,81 @@ public class FundServiceTest {
 		try {
 			fundService.removeFundVl(addedFound, LocalDate.parse("2027-04-22"));
 		} catch (InstanceNotFoundException e) {
-			throw new InstanceNotFoundException(addedFound.getfId(),"foundVl");
+			throw new InstanceNotFoundException(addedFound.getfId(), "foundVl");
 		} finally {
 
 			fundService.removeFund(addedFound);
 		}
 
 	}
+
+	@Test
+	public void testUpdateFundVl() throws InputValidationException, ParseException, InstanceNotFoundException {
+
+		FundDesc baseFound = this.getValidFundDesc();
+
+		fundService.addFund(baseFound);
+
+		FundVl fundVl = getValidFundVl("2020-04-22", baseFound);
+
+		fundVl.setVl(23.23);
+
+		fundService.updateFundVl(fundVl);
+
+		FundVl updatedFundVl = fundService.findFundVl(baseFound, fundVl.getDay());
+
+		fundService.removeFund(baseFound); // Se realiza esta
+											// función antes
+		// para que se complete la
+		// transacción (LAZY)
+
+		assertTrue(updatedFundVl.equals(fundVl));
+
+	}
+
+	@Test(expected = InstanceNotFoundException.class)
+	public void testUpdateUnexistentDayFundVl()
+			throws InputValidationException, ParseException, InstanceNotFoundException {
+
+		FundDesc baseFound = this.getValidFundDesc();
+
+		fundService.addFund(baseFound);
+
+		FundVl fundVl = getValidFundVl("2020-04-30", baseFound);
+
+		fundVl.setVl(23.23);
+
+		try {
+			fundService.updateFundVl(fundVl);
+		} catch (InstanceNotFoundException e) {
+			throw new InstanceNotFoundException(fundVl.getDay().toString(), "foundVl");
+		} finally {
+
+			fundService.removeFund(baseFound);
+		}
+
+	}
+
+	@Test(expected = InputValidationException.class)
+	public void testUpdateNegativeVlFund() throws InputValidationException, InstanceNotFoundException, ParseException {
+
+		FundDesc baseFound = this.getValidFundDesc();
+
+		fundService.addFund(baseFound);
+
+		FundVl fundVl = getValidFundVl("2020-04-30", baseFound);
+
+		fundVl.setVl(-23.2);
+
+		try {
+			fundService.updateFundVl(fundVl);
+		} catch (InputValidationException e) {
+			throw new InputValidationException(e.getMessage());
+		} finally {
+
+			fundService.removeFund(baseFound);
+		}
+
+	}
+
 }
