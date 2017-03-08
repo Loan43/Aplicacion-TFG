@@ -13,7 +13,7 @@ public interface FundService {
 
 	// Actualiza los campos de un FundDesc y actualiza o inserta los valores de
 	// su lista de FundVls
-	public void updateFund(FundDesc fundDesc) throws InputValidationException, InstanceNotFoundException;
+	public void updateFund(FundDesc fundDesc) throws InputValidationException;
 
 	// Elimina un FundDesc y toda su lista de FundVls de la base de datos
 	public void removeFund(FundDesc fundDesc) throws InstanceNotFoundException;
@@ -24,17 +24,17 @@ public interface FundService {
 	// Obtiene todos los FundDesc de la base de datos.
 	public List<FundDesc> findAllFunds();
 
-	// Obtiene el vl de un fondo en un dia concreto
-	public Double findFundVl(String fundId, LocalDate day) throws InstanceNotFoundException;
-	
-	// Elimina una fila de la tabla vl de un fondo en un dia concreto
-	public Double removeFundVl(String fundId, LocalDate day) throws InstanceNotFoundException;
-	
+	// Obtiene el FundVl de un fondo en un dia concreto
+	public FundVl findFundVl(FundDesc fundDesc, LocalDate day) throws InstanceNotFoundException;
+
 	// Obtiene los fundDesc que cohinciden con una serie de cáracteres en algúno
 	// de sus campos
 	public List<FundDesc> findFundsByKeywords(String keywords);
 
 	// Obtiene los Vl de un fondo dado en el intervalo de tiempo deseado
-	public Double findFundVlbyRange(String fundId, LocalDate day) throws InstanceNotFoundException;
+	public List<FundVl> findFundVlbyRange(FundDesc fundDesc, LocalDate startDay, LocalDate endDay);
+
+	// Elimina una fila de la tabla vl de un fondo en un dia concreto
+	public void removeFundVl(FundDesc fundDesc, LocalDate day) throws InstanceNotFoundException;
 
 }

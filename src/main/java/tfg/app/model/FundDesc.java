@@ -128,7 +128,6 @@ public class FundDesc {
 		result = prime * result + ((fGest == null) ? 0 : fGest.hashCode());
 		result = prime * result + ((fId == null) ? 0 : fId.hashCode());
 		result = prime * result + ((fType == null) ? 0 : fType.hashCode());
-		result = prime * result + ((fundVls == null) ? 0 : fundVls.hashCode());
 		return result;
 	}
 
@@ -177,6 +176,12 @@ public class FundDesc {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "FundDesc [id=" + id + ", fId=" + fId + ", fGest=" + fGest + ", fType=" + fType + ", fCategory="
+				+ fCategory + ", fCurrency=" + fCurrency + "]";
 	}
 
 }

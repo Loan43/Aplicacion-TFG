@@ -6,14 +6,14 @@ import java.time.LocalDate;
 @SuppressWarnings("serial")
 public class FundVlPK implements Serializable {
 
-	private FundDesc fundDesc;
+	private Long fundDesc;
 	protected LocalDate day;
 
 	public FundVlPK() {
 	}
 
 	public FundVlPK(FundDesc fundDesc, LocalDate c1) {
-		this.fundDesc = fundDesc;
+		this.fundDesc = fundDesc.getId();
 		this.day = c1;
 	}
 
@@ -46,6 +46,11 @@ public class FundVlPK implements Serializable {
 		} else if (!fundDesc.equals(other.fundDesc))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "FundVlPK [fundDesc=" + fundDesc + ", day=" + day + "]";
 	}
 
 }

@@ -2,9 +2,7 @@ package tfg.app.model;
 
 import java.time.LocalDate;
 import java.util.List;
-
 import tfg.app.util.validator.PropertyValidator;
-
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -94,9 +92,9 @@ public class FundServiceImpl implements FundService {
 			Session session = sessionFactory.openSession();
 			try {
 				tx = session.beginTransaction();
-				session.delete(fundDesc);
+				session.delete((FundDesc) session.get(FundDesc.class, fundDesc.getId()));
 				tx.commit();
-			} catch (java.lang.NullPointerException e) {
+			} catch (java.lang.NullPointerException | java.lang.IllegalArgumentException e) {
 				tx.rollback();
 				throw new InstanceNotFoundException(fundDesc.getfId(), "fundDesc");
 			} catch (HibernateException | Error e) {
@@ -141,9 +139,8 @@ public class FundServiceImpl implements FundService {
 	}
 
 	@Override
-	public Double findFundVl(String fundId, LocalDate day) throws InstanceNotFoundException {
+	public FundVl findFundVl(FundDesc fundDesc, LocalDate day) throws InstanceNotFoundException {
 
-		FundDesc fundDesc = findFund(fundId);
 		try {
 			Session session = sessionFactory.openSession();
 			try {
@@ -152,7 +149,7 @@ public class FundServiceImpl implements FundService {
 				tx.commit();
 				if (fundVl == null)
 					throw new InstanceNotFoundException(day, "FundVl");
-				return fundVl.getVl();
+				return fundVl;
 			} catch (ConstraintViolationException e) {
 				tx.rollback();
 				throw new RuntimeException(e);
@@ -201,13 +198,12 @@ public class FundServiceImpl implements FundService {
 		try {
 			Session session = sessionFactory.openSession();
 			try {
-				// (fGest like ?1) or (fType like ?1) or
 				tx = session.beginTransaction();
 				String hql = "from FundDesc where fId like ?1 or fGest like ?1 or fType like ?1"
 						+ " or fCategory like ?1 or fCurrency like ?1";
 				Query<?> query = session.createQuery(hql);
 				query.setParameter(1, new String("%" + keywords + "%"));
-				List<?> fundDescList = query.list();
+				List<FundDesc> fundDescList = (List<FundDesc>) query.list();
 				tx.commit();
 				return (List<FundDesc>) fundDescList;
 			} catch (ConstraintViolationException e) {
@@ -224,15 +220,58 @@ public class FundServiceImpl implements FundService {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Double findFundVlbyRange(String fundId, LocalDate day) throws InstanceNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+	public List<FundVl> findFundVlbyRange(FundDesc fundDesc, LocalDate startDay, LocalDate endDay) {
+
+		try {
+			Session session = sessionFactory.openSession();
+			try {
+				// (fGest like ?1) or (fType like ?1) or
+				tx = session.beginTransaction();
+				String hql = "from FundVl as vl where vl.fundDesc.id = ?1 and day BETWEEN ?2 and ?3";
+				Query<?> query = session.createQuery(hql);
+				query.setParameter(1, fundDesc.getId());
+				query.setParameter(2, startDay);
+				query.setParameter(3, endDay);
+				List<FundVl> fundVlList = (List<FundVl>) query.list();
+				tx.commit();
+				return (List<FundVl>) fundVlList;
+				
+			} catch (ConstraintViolationException e) {
+				tx.rollback();
+				throw new RuntimeException(e);
+			} catch (HibernateException | Error e) {
+				tx.rollback();
+				throw e;
+			} finally {
+				session.close();
+			}
+		} catch (HibernateException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
-	public Double removeFundVl(String fundId, LocalDate day) throws InstanceNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+	public void removeFundVl(FundDesc fundDesc, LocalDate day) throws InstanceNotFoundException {
+		
+		try {
+			Session session = sessionFactory.openSession();
+			try {
+				tx = session.beginTransaction();
+				session.delete((FundVl) session.get(FundVl.class, new FundVlPK(fundDesc, day)));
+				tx.commit();
+			} catch (java.lang.NullPointerException | java.lang.IllegalArgumentException e) {
+				tx.rollback();
+				throw new InstanceNotFoundException(fundDesc.getfId(), "fundVl");
+			} catch (HibernateException | Error e) {
+				tx.rollback();
+				throw e;
+			} finally {
+				session.close();
+			}
+		} catch (HibernateException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
