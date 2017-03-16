@@ -1,4 +1,4 @@
-package tfg.app.model;
+package tfg.app.model.entities;
 
 import java.util.ArrayList;
 import java.util.List;

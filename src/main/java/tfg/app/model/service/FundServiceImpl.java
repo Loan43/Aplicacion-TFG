@@ -1,4 +1,4 @@
-package tfg.app.model;
+package tfg.app.model.service;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -10,6 +10,10 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.query.Query;
+
+import tfg.app.model.entities.FundDesc;
+import tfg.app.model.entities.FundVl;
+import tfg.app.model.entities.FundVlPK;
 import tfg.app.util.exceptions.InputValidationException;
 import tfg.app.util.exceptions.InstanceNotFoundException;
 
@@ -73,15 +77,12 @@ public class FundServiceImpl implements FundService {
 			Session session = sessionFactory.openSession();
 			try {
 				tx = session.beginTransaction();
-				session.saveOrUpdate(fundDesc);
-				fundDesc.getFundVls().forEach((temp) -> {
-					session.saveOrUpdate(temp);
-				});
+				session.update(fundDesc);
 				tx.commit();
 			} catch (javax.persistence.PersistenceException e) {
 				tx.rollback();
 				throw new InputValidationException("Error, se está intentando modificar un id a otro que ya existe.");
-			} catch (Error e) {
+			} catch (RuntimeException | Error e) {
 				tx.rollback();
 				throw e;
 			} finally {
@@ -282,7 +283,7 @@ public class FundServiceImpl implements FundService {
 	}
 
 	@Override
-	public void updateFundVl( FundVl fundVl) throws InputValidationException, InstanceNotFoundException {
+	public void updateFundVl(FundVl fundVl) throws InputValidationException, InstanceNotFoundException {
 		validateFundVl(fundVl);
 
 		try {
@@ -304,4 +305,31 @@ public class FundServiceImpl implements FundService {
 			throw new RuntimeException(e);
 		}
 	}
+
+	@Override
+	public void addFundVl(FundVl fundVl) throws InputValidationException {
+
+		validateFundVl(fundVl);
+
+		try {
+			Session session = sessionFactory.openSession();
+			try {
+				tx = session.beginTransaction();
+				session.save(fundVl);
+				tx.commit();
+			} catch (javax.persistence.PersistenceException e) {
+				tx.rollback();
+				throw new InputValidationException("Error, el dia: " + fundVl.getDay().toString() + " para el fondo "
+						+ fundVl.getFundDesc().getfId() + " ya existe en la base de datos.");
+			} catch (RuntimeException | Error e) {
+				tx.rollback();
+				throw e;
+			} finally {
+				session.close();
+			}
+		} catch (HibernateException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 }

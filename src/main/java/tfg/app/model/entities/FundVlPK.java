@@ -1,4 +1,4 @@
-package tfg.app.model;
+package tfg.app.model.entities;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -6,14 +6,14 @@ import java.time.LocalDate;
 @SuppressWarnings("serial")
 public class FundVlPK implements Serializable {
 
-	private Long fundDesc;
+	private FundDesc fundDesc;
 	protected LocalDate day;
 
 	public FundVlPK() {
 	}
 
 	public FundVlPK(FundDesc fundDesc, LocalDate c1) {
-		this.fundDesc = fundDesc.getId();
+		this.fundDesc = fundDesc;
 		this.day = c1;
 	}
 

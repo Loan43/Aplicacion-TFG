@@ -1,6 +1,5 @@
-package tfg.app.model;
+package tfg.app.model.entities;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,11 +10,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-@SuppressWarnings("serial")
 @Entity
 @IdClass(FundVlPK.class)
 @Table(name = "fundvl")
-public class FundVl implements Serializable {
+public class FundVl {
 
 	@Id
 	@Column(name = "day")
@@ -25,7 +23,7 @@ public class FundVl implements Serializable {
 	private Double vl;
 
 	@Id
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "id", nullable = false)
 	private FundDesc fundDesc;
 

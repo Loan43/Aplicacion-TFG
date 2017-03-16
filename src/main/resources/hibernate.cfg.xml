@@ -16,8 +16,8 @@
 		<property name="show_sql">false</property>
 		<property name="format_sql">false</property>
 		<property name="hibernate.enable_lazy_load_no_trans">true</property>
-		<mapping class="tfg.app.model.FundVl"></mapping>
-		<mapping class="tfg.app.model.FundDesc"></mapping>
+		<mapping class="tfg.app.model.entities.FundVl"></mapping>
+		<mapping class="tfg.app.model.entities.FundDesc"></mapping>
 
 
 	</session-factory>
