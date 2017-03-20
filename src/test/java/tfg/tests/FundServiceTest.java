@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.BeforeClass;
 
 import tfg.app.model.entities.FundDesc;
+import tfg.app.model.entities.FundPort;
 import tfg.app.model.entities.FundVl;
 import tfg.app.model.service.FundService;
 import tfg.app.model.service.FundServiceImpl;
@@ -36,6 +37,11 @@ public class FundServiceTest {
 	private FundVl getValidFundVl(String date, FundDesc fundDesc) throws ParseException {
 		LocalDate c = LocalDate.parse(date);
 		return new FundVl(c, 25.00, fundDesc);
+	}
+
+	private FundPort getValidFundPort() {
+
+		return new FundPort("Cartera Test 1", "Esto es una cartera de prueba");
 	}
 
 	private FundDesc getValidFundDesc() throws ParseException {
@@ -326,7 +332,7 @@ public class FundServiceTest {
 
 		vlList = fundService.findFundVlbyRange(addedFound, LocalDate.parse("2020-04-20"),
 				LocalDate.parse("2020-04-21"));
-		
+
 		if (vlList.size() != 2)
 			bool = false;
 
@@ -467,4 +473,137 @@ public class FundServiceTest {
 
 	}
 
+	@Test
+	public void testAddPortfolioFindPortfolio() throws InputValidationException, InstanceNotFoundException {
+
+		FundPort fundPortfolio = getValidFundPort();
+		fundService.addFundPortfolio(fundPortfolio);
+
+		FundPort findFundPortfolio = fundService.findFundPortfolio(fundPortfolio.getpId());
+
+		assertTrue(fundPortfolio.equals(findFundPortfolio));
+
+		fundService.removeFundPortfolio(findFundPortfolio);
+	}
+
+	@Test(expected = InputValidationException.class)
+	public void testAddDuplicatePortfolio() throws InputValidationException, InstanceNotFoundException, ParseException {
+
+		FundPort fundPortfolio = getValidFundPort();
+		fundService.addFundPortfolio(fundPortfolio);
+
+		try {
+			fundService.addFundPortfolio(fundPortfolio);
+		} catch (InputValidationException e) {
+			throw new InputValidationException(e.getMessage());
+		} finally {
+			fundService.removeFundPortfolio(fundPortfolio);
+		}
+	}
+
+	@Test(expected = InputValidationException.class)
+	public void testAddInvalidPortfolio() throws InputValidationException, InstanceNotFoundException, ParseException {
+
+		FundPort fundPortfolio = getValidFundPort();
+		fundPortfolio.setpName("");
+		fundService.addFundPortfolio(fundPortfolio);
+
+	}
+
+	@Test
+	public void testUpdatePortfolio() throws InputValidationException, InstanceNotFoundException {
+
+		FundPort fundPortfolio = getValidFundPort();
+		fundService.addFundPortfolio(fundPortfolio);
+
+		FundPort findFundPortfolio = fundService.findFundPortfolio(fundPortfolio.getpId());
+
+		findFundPortfolio.setpDesc("Cartera modificada");
+
+		fundService.updateFundPortfolio(findFundPortfolio);
+
+		FundPort updatedFundPortfolio = fundService.findFundPortfolio(findFundPortfolio.getpId());
+
+		assertTrue(findFundPortfolio.equals(updatedFundPortfolio));
+
+		fundService.removeFundPortfolio(updatedFundPortfolio);
+	}
+
+	@Test(expected = InputValidationException.class)
+	public void testUpdateInvalidNamePortfolio()
+			throws InputValidationException, InstanceNotFoundException, ParseException {
+
+		FundPort fundPortfolio = getValidFundPort();
+		fundService.addFundPortfolio(fundPortfolio);
+		FundPort findFundPortfolio = fundService.findFundPortfolio(fundPortfolio.getpId());
+		findFundPortfolio.setpName("");
+
+		try {
+			fundService.updateFundPortfolio(findFundPortfolio);
+		} catch (InputValidationException e) {
+			throw new InputValidationException(e.getMessage());
+		} finally {
+			fundService.removeFundPortfolio(fundPortfolio);
+		}
+
+	}
+
+	@Test(expected = InstanceNotFoundException.class)
+	public void testFindNoExistentPortfolio()
+			throws InputValidationException, InstanceNotFoundException, ParseException {
+
+		fundService.findFundPortfolio((long) -1);
+
+	}
+
+	@Test
+	public void testFindAllFundPortfolios() throws InstanceNotFoundException, InputValidationException {
+
+		FundPort fundPortfolio1 = getValidFundPort();
+		FundPort fundPortfolio2 = getValidFundPort();
+		FundPort fundPortfolio3 = getValidFundPort();
+
+		fundPortfolio1.setpName("Test 1");
+		fundPortfolio2.setpName("Test 2");
+		fundPortfolio3.setpName("Test 3");
+
+		fundService.addFundPortfolio(fundPortfolio1);
+		fundService.addFundPortfolio(fundPortfolio2);
+		fundService.addFundPortfolio(fundPortfolio3);
+
+		Boolean bool = true;
+
+		List<FundPort> fundPorts = new ArrayList<FundPort>();
+
+		fundPorts.add(fundPortfolio1);
+		fundPorts.add(fundPortfolio2);
+		fundPorts.add(fundPortfolio3);
+
+		List<FundPort> findfundPorts = fundService.findAllFundPortfolios();
+
+		fundService.removeFundPortfolio(fundPortfolio1);
+		fundService.removeFundPortfolio(fundPortfolio2);
+		fundService.removeFundPortfolio(fundPortfolio3);
+
+		if (fundPorts.size() != findfundPorts.size())
+			bool = false;
+
+		for (int x = 0; x < fundPorts.size(); x++) {
+			if (!fundPorts.get(x).equals(findfundPorts.get(x))) {
+				bool = false;
+			}
+		}
+		assertTrue(bool);
+	}
+
+	@Test
+	public void testFindAllEmptyFundPortfolios() {
+
+		List<FundPort> fundPorts = fundService.findAllFundPortfolios();
+
+		if (fundPorts.size() != 0)
+			assertTrue(false);
+		
+		assertTrue(true);
+	}
 }

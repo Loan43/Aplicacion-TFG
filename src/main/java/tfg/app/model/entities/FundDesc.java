@@ -22,7 +22,7 @@ public class FundDesc {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "fId", unique = true , nullable = false)
+	@Column(name = "fId", unique = true, nullable = false)
 	private String fId;
 
 	@Column(name = "fgest")
@@ -38,7 +38,10 @@ public class FundDesc {
 	private String fCurrency;
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "fundDesc", cascade = CascadeType.REMOVE)
-	private List<FundVl> fundVls;
+	private List<FundVl> fundVls = new ArrayList<FundVl>();
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "fundDescId", cascade = CascadeType.REMOVE)
+	private List<PortDesc> portDescs = new ArrayList<PortDesc>();
 
 	public FundDesc() {
 	};
@@ -50,7 +53,6 @@ public class FundDesc {
 		this.fType = fType;
 		this.fCategory = fCategory;
 		this.fCurrency = fCurrency;
-		this.fundVls = new ArrayList<FundVl>();
 	}
 
 	public FundDesc(String fId, String fGest, String fType, String fCategory, String fCurrency, List<FundVl> fundVls) {
@@ -61,6 +63,29 @@ public class FundDesc {
 		this.fCategory = fCategory;
 		this.fCurrency = fCurrency;
 		this.fundVls = fundVls;
+	}
+
+	public FundDesc(List<PortDesc> portfolios, String fId, String fGest, String fType, String fCategory,
+			String fCurrency, List<FundVl> fundVls) {
+		super();
+		this.fId = fId;
+		this.fGest = fGest;
+		this.fType = fType;
+		this.fCategory = fCategory;
+		this.fCurrency = fCurrency;
+		this.fundVls = fundVls;
+		this.portDescs = portfolios;
+	}
+
+	public FundDesc(List<PortDesc> portfolios, String fId, String fGest, String fType, String fCategory,
+			String fCurrency) {
+		super();
+		this.fId = fId;
+		this.fGest = fGest;
+		this.fType = fType;
+		this.fCategory = fCategory;
+		this.fCurrency = fCurrency;
+		this.portDescs = portfolios;
 	}
 
 	public Long getId() {
@@ -117,6 +142,14 @@ public class FundDesc {
 
 	public void setFundvls(List<FundVl> fundVls) {
 		this.fundVls = fundVls;
+	}
+
+	public List<PortDesc> getPortfolios() {
+		return portDescs;
+	}
+
+	public void setPortfolios(List<PortDesc> portfolios) {
+		this.portDescs = portfolios;
 	}
 
 	@Override

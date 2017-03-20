@@ -18,7 +18,8 @@
 		<property name="hibernate.enable_lazy_load_no_trans">true</property>
 		<mapping class="tfg.app.model.entities.FundVl"></mapping>
 		<mapping class="tfg.app.model.entities.FundDesc"></mapping>
-
+		<mapping class="tfg.app.model.entities.FundPort"></mapping>
+		<mapping class="tfg.app.model.entities.PortDesc"></mapping>
 
 	</session-factory>
 </hibernate-configuration>
