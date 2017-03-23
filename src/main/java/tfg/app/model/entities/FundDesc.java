@@ -37,6 +37,12 @@ public class FundDesc {
 	@Column(name = "fcurrency")
 	private String fCurrency;
 
+	@Column(name = "fsubcomm")
+	private Double fSubComm = (double) 0;
+
+	@Column(name = "fcancelcomm")
+	private Double fCancelComm = (double) 0;
+
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "fundDesc", cascade = CascadeType.REMOVE)
 	private List<FundVl> fundVls = new ArrayList<FundVl>();
 
@@ -46,45 +52,55 @@ public class FundDesc {
 	public FundDesc() {
 	};
 
-	public FundDesc(String fId, String fGest, String fType, String fCategory, String fCurrency) {
+	public FundDesc(String fId, String fGest, String fType, String fCategory, String fCurrency, Double fSubComm,
+			Double fCancelComm) {
 		super();
 		this.fId = fId;
 		this.fGest = fGest;
 		this.fType = fType;
 		this.fCategory = fCategory;
 		this.fCurrency = fCurrency;
+		this.fSubComm = fSubComm;
+		this.fCancelComm = fCancelComm;
 	}
 
-	public FundDesc(String fId, String fGest, String fType, String fCategory, String fCurrency, List<FundVl> fundVls) {
+	public FundDesc(String fId, String fGest, String fType, String fCategory, String fCurrency, Double fSubComm,
+			Double fCancelComm, List<FundVl> fundVls) {
 		super();
 		this.fId = fId;
 		this.fGest = fGest;
 		this.fType = fType;
 		this.fCategory = fCategory;
 		this.fCurrency = fCurrency;
+		this.fSubComm = fSubComm;
+		this.fCancelComm = fCancelComm;
 		this.fundVls = fundVls;
 	}
 
 	public FundDesc(List<PortDesc> portfolios, String fId, String fGest, String fType, String fCategory,
-			String fCurrency, List<FundVl> fundVls) {
+			String fCurrency, Double fSubComm, Double fCancelComm, List<FundVl> fundVls) {
 		super();
 		this.fId = fId;
 		this.fGest = fGest;
 		this.fType = fType;
 		this.fCategory = fCategory;
 		this.fCurrency = fCurrency;
+		this.fSubComm = fSubComm;
+		this.fCancelComm = fCancelComm;
 		this.fundVls = fundVls;
 		this.portDescs = portfolios;
 	}
 
 	public FundDesc(List<PortDesc> portfolios, String fId, String fGest, String fType, String fCategory,
-			String fCurrency) {
+			String fCurrency, Double fSubComm, Double fCancelComm) {
 		super();
 		this.fId = fId;
 		this.fGest = fGest;
 		this.fType = fType;
 		this.fCategory = fCategory;
 		this.fCurrency = fCurrency;
+		this.fSubComm = fSubComm;
+		this.fCancelComm = fCancelComm;
 		this.portDescs = portfolios;
 	}
 
@@ -136,20 +152,36 @@ public class FundDesc {
 		this.fCurrency = fCurrency;
 	}
 
+	public Double getfSubComm() {
+		return fSubComm;
+	}
+
+	public void setfSubComm(Double fSubComm) {
+		this.fSubComm = fSubComm;
+	}
+
+	public Double getfCancelComm() {
+		return fCancelComm;
+	}
+
+	public void setfCancelComm(Double fCancelComm) {
+		this.fCancelComm = fCancelComm;
+	}
+
 	public List<FundVl> getFundVls() {
 		return fundVls;
 	}
 
-	public void setFundvls(List<FundVl> fundVls) {
+	public void setFundVls(List<FundVl> fundVls) {
 		this.fundVls = fundVls;
 	}
 
-	public List<PortDesc> getPortfolios() {
+	public List<PortDesc> getPortDescs() {
 		return portDescs;
 	}
 
-	public void setPortfolios(List<PortDesc> portfolios) {
-		this.portDescs = portfolios;
+	public void setPortDescs(List<PortDesc> portDescs) {
+		this.portDescs = portDescs;
 	}
 
 	@Override
@@ -161,6 +193,8 @@ public class FundDesc {
 		result = prime * result + ((fGest == null) ? 0 : fGest.hashCode());
 		result = prime * result + ((fId == null) ? 0 : fId.hashCode());
 		result = prime * result + ((fType == null) ? 0 : fType.hashCode());
+		result = prime * result + ((fCancelComm == null) ? 0 : fCancelComm.hashCode());
+		result = prime * result + ((fSubComm == null) ? 0 : fSubComm.hashCode());
 		return result;
 	}
 
@@ -198,6 +232,16 @@ public class FundDesc {
 				return false;
 		} else if (!fType.equals(other.fType))
 			return false;
+		if (fSubComm == null) {
+			if (other.fSubComm != null)
+				return false;
+		} else if (!fSubComm.equals(other.fSubComm))
+			return false;
+		if (fCancelComm == null) {
+			if (other.fCancelComm != null)
+				return false;
+		} else if (!fCancelComm.equals(other.fCancelComm))
+			return false;
 		if (fundVls == null) {
 			if (other.fundVls != null)
 				return false;
@@ -214,7 +258,9 @@ public class FundDesc {
 	@Override
 	public String toString() {
 		return "FundDesc [id=" + id + ", fId=" + fId + ", fGest=" + fGest + ", fType=" + fType + ", fCategory="
-				+ fCategory + ", fCurrency=" + fCurrency + "]";
+				+ fCategory + ", fCurrency=" + fCurrency + ", fSubComm=" + fSubComm + ", fCancelComm=" + fCancelComm
+				+ "]";
 	}
+
 
 }

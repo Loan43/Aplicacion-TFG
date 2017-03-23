@@ -18,6 +18,7 @@ import tfg.app.model.entities.FundVl;
 import tfg.app.model.entities.FundVlPK;
 import tfg.app.model.entities.PortDesc;
 import tfg.app.model.entities.PortDescPK;
+import tfg.app.model.entities.PortOp;
 import tfg.app.util.exceptions.InputValidationException;
 import tfg.app.util.exceptions.InstanceNotFoundException;
 
@@ -531,6 +532,60 @@ public class FundServiceImpl implements FundService {
 		} catch (HibernateException e) {
 			throw new RuntimeException(e);
 		}
-
 	}
+
+	@Override
+	public void addPortOp(FundDesc fundDesc, FundPort fundPort, LocalDate day, Integer partOp) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addPortOp(FundDesc fundDesc, FundPort fundPort, LocalDate day, Double partOp) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public PortOp UpdatePortOp(FundDesc fundDesc, FundPort fundPort, LocalDate day, Integer partOp) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PortOp UpdatePortOp(FundDesc fundDesc, FundPort fundPort, LocalDate day, Double partOp) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PortOp findPortOp(FundDesc fundDesc, FundPort fundPort, LocalDate day) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<PortOp> findAllPortOp(FundDesc fundDesc, FundPort fundPort, LocalDate day) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<PortOp> findAllPortOpbyRange(FundDesc fundDesc, FundPort fundPort, LocalDate start, LocalDate end) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void removePortOp(FundDesc fundDesc, FundPort fundPort, LocalDate day) throws InstanceNotFoundException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public FundVl findClosestFundVl(FundDesc fundDesc, LocalDate day) throws InstanceNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 }

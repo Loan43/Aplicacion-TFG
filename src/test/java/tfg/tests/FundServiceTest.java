@@ -46,7 +46,7 @@ public class FundServiceTest {
 
 	private FundDesc getValidFundDesc() throws ParseException {
 
-		FundDesc fund = new FundDesc(VALID_FOUND_ID_1, "Pinball Wizards", "Alto riesgo", "Monetario", "Euro");
+		FundDesc fund = new FundDesc(VALID_FOUND_ID_1, "Pinball Wizards", "Alto riesgo", "Monetario", "Euro",0.0,0.0);
 		fund.getFundVls().add(getValidFundVl("2020-04-20", fund));
 		fund.getFundVls().add(getValidFundVl("2020-04-21", fund));
 		fund.getFundVls().add(getValidFundVl("2020-04-22", fund));

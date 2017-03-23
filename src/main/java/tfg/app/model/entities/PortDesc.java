@@ -1,11 +1,16 @@
 package tfg.app.model.entities;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -23,6 +28,9 @@ public class PortDesc {
 	@JoinColumn(name = "fid", nullable = false)
 	private FundDesc fundDescId;
 
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "portDesc", cascade = CascadeType.REMOVE)
+	private List<PortOp> fundVls = new ArrayList<PortOp>();
+
 	public PortDesc() {
 	};
 
@@ -30,6 +38,21 @@ public class PortDesc {
 		super();
 		this.fundDescId = fundDescId;
 		this.fundPortId = fundPortId;
+	}
+
+	public PortDesc(FundPort fundPortId, FundDesc fundDescId, List<PortOp> fundVls) {
+		super();
+		this.fundPortId = fundPortId;
+		this.fundDescId = fundDescId;
+		this.fundVls = fundVls;
+	}
+
+	public List<PortOp> getFundVls() {
+		return fundVls;
+	}
+
+	public void setFundVls(List<PortOp> fundVls) {
+		this.fundVls = fundVls;
 	}
 
 	public FundDesc getFundDesc() {

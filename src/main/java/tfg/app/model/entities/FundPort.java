@@ -85,7 +85,6 @@ public class FundPort {
 		result = prime * result + ((pDesc == null) ? 0 : pDesc.hashCode());
 		result = prime * result + ((pId == null) ? 0 : pId.hashCode());
 		result = prime * result + ((pName == null) ? 0 : pName.hashCode());
-		result = prime * result + ((portDescs == null) ? 0 : portDescs.hashCode());
 		return result;
 	}
 

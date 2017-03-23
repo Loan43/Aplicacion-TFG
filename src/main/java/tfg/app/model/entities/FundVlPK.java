@@ -12,9 +12,9 @@ public class FundVlPK implements Serializable {
 	public FundVlPK() {
 	}
 
-	public FundVlPK(FundDesc fundDesc, LocalDate c1) {
+	public FundVlPK(FundDesc fundDesc, LocalDate day) {
 		this.fundDesc = fundDesc;
-		this.day = c1;
+		this.day = day;
 	}
 
 	@Override
