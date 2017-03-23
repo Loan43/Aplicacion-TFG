@@ -44,7 +44,7 @@ public class FundServiceImpl implements FundService {
 		PropertyValidator.validateNotNegativeDouble(fundVl.getVl());
 
 	}
-	
+
 	private void validateFundPort(FundPort fundPortfolio) throws InputValidationException {
 
 		PropertyValidator.validateMandatoryString("Nombre de la cartera de fondos", fundPortfolio.getpName());
@@ -346,7 +346,7 @@ public class FundServiceImpl implements FundService {
 	public void addFundPortfolio(FundPort fundPortfolio) throws InputValidationException {
 
 		validateFundPort(fundPortfolio);
-		
+
 		try {
 			Session session = sessionFactory.openSession();
 			try {
@@ -392,30 +392,6 @@ public class FundServiceImpl implements FundService {
 	}
 
 	@Override
-	public void addPortDesc(FundDesc fundDesc, FundPort fundPort) throws InstanceNotFoundException, InputValidationException {
-		try {
-			Session session = sessionFactory.openSession();
-			try {
-				tx = session.beginTransaction();
-				session.save(new PortDesc(fundPort,fundDesc));
-				tx.commit();
-			} catch (javax.persistence.PersistenceException e) {
-				tx.rollback();
-				throw new InputValidationException("Error, el fondo : " + fundDesc.getfId()
-						+ " ya se encuentra asignado a la cartera: " + fundPort.getpName());
-			} catch (Error e) {
-				tx.rollback();
-				throw e;
-			} finally {
-				session.close();
-			}
-		} catch (HibernateException e) {
-			throw new RuntimeException(e);
-		}
-
-	}
-
-	@Override
 	public FundPort findFundPortfolio(Long pId) throws InstanceNotFoundException {
 
 		try {
@@ -446,7 +422,7 @@ public class FundServiceImpl implements FundService {
 	public void updateFundPortfolio(FundPort fundPortfolio) throws InstanceNotFoundException, InputValidationException {
 
 		validateFundPort(fundPortfolio);
-		
+
 		try {
 			Session session = sessionFactory.openSession();
 			try {
@@ -497,11 +473,13 @@ public class FundServiceImpl implements FundService {
 	}
 
 	@Override
-	public List<FundDesc> findFundsOfPortfolio(FundPort fundPortfolio) {
+	public List<FundDesc> findFundsOfPortfolio(FundPort fundPortfolio) throws InstanceNotFoundException {
 
 		List<FundDesc> fundDescList = new ArrayList<FundDesc>();
 
-		fundPortfolio.getFundDescs().forEach((temp) -> {
+		FundPort findFundPortfolio = findFundPortfolio(fundPortfolio.getpId());
+
+		findFundPortfolio.getPortDescs().forEach((temp) -> {
 			fundDescList.add(temp.getFundDesc());
 		});
 
@@ -509,7 +487,7 @@ public class FundServiceImpl implements FundService {
 	}
 
 	@Override
-	public void removePortDesc( FundDesc fundDesc, FundPort fundPort) throws InstanceNotFoundException {
+	public void removePortDesc(FundDesc fundDesc, FundPort fundPort) throws InstanceNotFoundException {
 		try {
 			Session session = sessionFactory.openSession();
 			try {
@@ -530,5 +508,29 @@ public class FundServiceImpl implements FundService {
 		}
 
 	}
+	
+	@Override
+	public void addPortDesc(FundDesc fundDesc, FundPort fundPort)
+			throws InstanceNotFoundException, InputValidationException {
+		try {
+			Session session = sessionFactory.openSession();
+			try {
+				tx = session.beginTransaction();
+				session.save(new PortDesc(fundPort, fundDesc));
+				tx.commit();
+			} catch (javax.persistence.PersistenceException e) {
+				tx.rollback();
+				throw new InputValidationException("Error, el fondo : " + fundDesc.getfId()
+						+ " ya se encuentra asignado a la cartera: " + fundPort.getpName());
+			} catch (Error e) {
+				tx.rollback();
+				throw e;
+			} finally {
+				session.close();
+			}
+		} catch (HibernateException e) {
+			throw new RuntimeException(e);
+		}
 
+	}
 }

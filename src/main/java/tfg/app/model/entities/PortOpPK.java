@@ -1,5 +1,5 @@
 package tfg.app.model.entities;
 
-public class PortfolioOp {
+public class PortOpPK {
 
 }

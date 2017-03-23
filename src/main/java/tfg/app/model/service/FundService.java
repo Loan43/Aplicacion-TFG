@@ -79,7 +79,7 @@ public interface FundService {
 	public List<FundPort> findAllFundPortfolios();
 	
 	//Obtiene todos los fondos de una cartera ++
-	public List<FundDesc> findFundsOfPortfolio(FundPort fundPortfolio);
+	public List<FundDesc> findFundsOfPortfolio(FundPort fundPortfolio) throws InstanceNotFoundException;
 
 	// ################################################################
 	// # 															  #

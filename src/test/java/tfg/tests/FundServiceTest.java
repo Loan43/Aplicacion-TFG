@@ -603,7 +603,148 @@ public class FundServiceTest {
 
 		if (fundPorts.size() != 0)
 			assertTrue(false);
-		
+
 		assertTrue(true);
 	}
+
+	@Test
+	public void testAddPortDescFindFundsOfPortfolio()
+			throws InputValidationException, ParseException, InstanceNotFoundException {
+
+		FundPort fundPortfolio1 = getValidFundPort();
+		FundPort fundPortfolio2 = getValidFundPort();
+		FundPort fundPortfolio3 = getValidFundPort();
+
+		fundPortfolio1.setpName("Test 1");
+		fundPortfolio2.setpName("Test 2");
+		fundPortfolio3.setpName("Test 3");
+
+		fundService.addFundPortfolio(fundPortfolio1);
+		fundService.addFundPortfolio(fundPortfolio2);
+		fundService.addFundPortfolio(fundPortfolio3);
+
+		FundDesc addedFound1 = this.getValidFundDesc();
+		FundDesc addedFound2 = this.getValidFundDesc();
+		Boolean bool = true;
+
+		addedFound2.setfId(VALID_FOUND_ID_2);
+
+		fundService.addFund(addedFound1);
+		fundService.addFund(addedFound2);
+
+		fundService.addPortDesc(addedFound1, fundPortfolio1);
+		fundService.addPortDesc(addedFound2, fundPortfolio1);
+
+		fundService.addPortDesc(addedFound2, fundPortfolio2);
+
+		if (fundService.findFundsOfPortfolio(fundPortfolio1).size() != 2) {
+			bool = false;
+		}
+		if (fundService.findFundsOfPortfolio(fundPortfolio2).size() != 1) {
+			bool = false;
+		}
+		if (fundService.findFundsOfPortfolio(fundPortfolio3).size() != 0) {
+			bool = false;
+		}
+
+		fundService.removeFundPortfolio(fundPortfolio1);
+		fundService.removeFundPortfolio(fundPortfolio2);
+		fundService.removeFundPortfolio(fundPortfolio3);
+
+		fundService.removeFund(addedFound1);
+		fundService.removeFund(addedFound2);
+
+		assertTrue(bool);
+
+	}
+
+	@Test
+	public void testRemovePortDesc() throws InstanceNotFoundException, InputValidationException, ParseException {
+
+		FundPort fundPortfolio1 = getValidFundPort();
+		FundPort fundPortfolio2 = getValidFundPort();
+
+		fundPortfolio1.setpName("Test 1");
+		fundPortfolio2.setpName("Test 2");
+
+		fundService.addFundPortfolio(fundPortfolio1);
+		fundService.addFundPortfolio(fundPortfolio2);
+
+		FundDesc addedFound1 = this.getValidFundDesc();
+		FundDesc addedFound2 = this.getValidFundDesc();
+		Boolean bool = true;
+
+		addedFound2.setfId(VALID_FOUND_ID_2);
+
+		fundService.addFund(addedFound1);
+		fundService.addFund(addedFound2);
+
+		fundService.addPortDesc(addedFound1, fundPortfolio1);
+		fundService.addPortDesc(addedFound2, fundPortfolio1);
+
+		fundService.addPortDesc(addedFound2, fundPortfolio2);
+
+		if (fundService.findFundsOfPortfolio(fundPortfolio1).size() != 2) {
+			bool = false;
+		}
+		if (fundService.findFundsOfPortfolio(fundPortfolio2).size() != 1) {
+			bool = false;
+		}
+
+		fundService.removePortDesc(addedFound1, fundPortfolio1);
+		fundService.removePortDesc(addedFound2, fundPortfolio1);
+
+		fundService.removePortDesc(addedFound2, fundPortfolio2);
+
+		if (fundService.findFundsOfPortfolio(fundPortfolio1).size() != 0) {
+			bool = false;
+		}
+		if (fundService.findFundsOfPortfolio(fundPortfolio2).size() != 0) {
+			bool = false;
+		}
+
+		fundService.removeFundPortfolio(fundPortfolio1);
+		fundService.removeFundPortfolio(fundPortfolio2);
+
+		fundService.removeFund(addedFound1);
+		fundService.removeFund(addedFound2);
+
+		assertTrue(bool);
+
+	}
+
+	@Test(expected = InstanceNotFoundException.class)
+	public void testFindFundsOfUnexistentPortfolio() throws InstanceNotFoundException, InputValidationException {
+
+		FundPort fundPortfolio1 = getValidFundPort();
+		fundService.addFundPortfolio(fundPortfolio1);
+		fundService.removeFundPortfolio(fundPortfolio1);
+
+		fundService.findFundsOfPortfolio(fundPortfolio1);
+
+	}
+
+	@Test(expected = InstanceNotFoundException.class)
+	public void testRemoveUnexistentPortDesc() throws InstanceNotFoundException, InputValidationException, ParseException {
+
+		FundPort fundPortfolio1 = getValidFundPort();
+		fundService.addFundPortfolio(fundPortfolio1);
+		
+		FundDesc addedFound1 = this.getValidFundDesc();
+		fundService.addFund(addedFound1);
+		
+		fundService.addPortDesc(addedFound1, fundPortfolio1);
+		fundService.removePortDesc(addedFound1, fundPortfolio1);
+		
+		try {
+			fundService.removePortDesc(addedFound1, fundPortfolio1);
+		} catch (InstanceNotFoundException e) {
+			throw new InstanceNotFoundException("Fondo: "+addedFound1.getfId()+" "+"Cartera: "+fundPortfolio1.getpName(),"PortDesc");
+		} finally {
+			fundService.removeFundPortfolio(fundPortfolio1);
+			fundService.removeFund(addedFound1);
+		}
+		
+	}
+
 }

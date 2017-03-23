@@ -70,11 +70,11 @@ public class FundPort {
 		this.pDesc = pDesc;
 	}
 
-	public List<PortDesc> getFundDescs() {
+	public List<PortDesc> getPortDescs() {
 		return portDescs;
 	}
 
-	public void setFundDescs(List<PortDesc> fundDescs) {
+	public void setPortDescs(List<PortDesc> fundDescs) {
 		this.portDescs = fundDescs;
 	}
 
