@@ -24,26 +24,26 @@ public class PortOp {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private PortDesc portDesc;
 
-	@Column(name = "fpartini")
-	private Integer fPartini;
-
-	@Column(name = "fpartfin")
-	private Integer fPartfin;
+	@Column(name = "fpartop")
+	private Integer fPartOp = 0;
 
 	@Transient
-	private Integer fPartOp;
+	private Integer fPartini = 0;
 
 	@Transient
-	private Double fPrice;
+	private Integer fPartfin = 0;
+
+	@Transient
+	private Double fPrice = 0.0;
 
 	public PortOp() {
 	}
 
-	public PortOp(LocalDate day, PortDesc portDesc, Integer fPartfin) {
+	public PortOp(LocalDate day, FundPort fundPort, FundDesc fundDesc, Integer fPartOp) {
 		super();
 		this.day = day;
-		this.portDesc = portDesc;
-		this.fPartfin = fPartfin;
+		this.portDesc = new PortDesc(fundPort,fundDesc);
+		this.fPartOp = fPartOp;
 	}
 
 	public LocalDate getDay() {
@@ -100,9 +100,7 @@ public class PortOp {
 		int result = 1;
 		result = prime * result + ((day == null) ? 0 : day.hashCode());
 		result = prime * result + ((fPartOp == null) ? 0 : fPartOp.hashCode());
-		result = prime * result + ((fPartfin == null) ? 0 : fPartfin.hashCode());
-		result = prime * result + ((fPartini == null) ? 0 : fPartini.hashCode());
-		result = prime * result + ((fPrice == null) ? 0 : fPrice.hashCode());
+		result = prime * result + ((portDesc == null) ? 0 : portDesc.hashCode());
 		return result;
 	}
 
@@ -124,21 +122,6 @@ public class PortOp {
 			if (other.fPartOp != null)
 				return false;
 		} else if (!fPartOp.equals(other.fPartOp))
-			return false;
-		if (fPartfin == null) {
-			if (other.fPartfin != null)
-				return false;
-		} else if (!fPartfin.equals(other.fPartfin))
-			return false;
-		if (fPartini == null) {
-			if (other.fPartini != null)
-				return false;
-		} else if (!fPartini.equals(other.fPartini))
-			return false;
-		if (fPrice == null) {
-			if (other.fPrice != null)
-				return false;
-		} else if (!fPrice.equals(other.fPrice))
 			return false;
 		return true;
 	}

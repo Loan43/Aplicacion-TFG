@@ -14,6 +14,14 @@ public final class PropertyValidator {
 		}
 
 	}
+	
+	public static void validateNotZeroInt(int intValue) throws InputValidationException {
+
+		if (intValue == 0) {
+			throw new InputValidationException("Operación inválida (Debe ser distinta a 0): " + intValue);
+		}
+
+	}
 
 	public static void validateMandatoryString(String propertyName, String stringValue)
 			throws InputValidationException {

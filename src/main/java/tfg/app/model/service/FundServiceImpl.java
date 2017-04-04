@@ -19,6 +19,7 @@ import tfg.app.model.entities.FundVlPK;
 import tfg.app.model.entities.PortDesc;
 import tfg.app.model.entities.PortDescPK;
 import tfg.app.model.entities.PortOp;
+import tfg.app.model.entities.PortOpPK;
 import tfg.app.util.exceptions.InputValidationException;
 import tfg.app.util.exceptions.InstanceNotFoundException;
 
@@ -36,13 +37,20 @@ public class FundServiceImpl implements FundService {
 
 		PropertyValidator.validateIsin(fundDesc.getfId());
 		for (int x = 0; x < fundDesc.getFundVls().size(); x++) {
-			PropertyValidator.validateNotNegativeDouble(fundDesc.getFundVls().get(x).getVl());
+			validateFundVl(fundDesc.getFundVls().get(x));
 		}
 	}
 
 	private void validateFundVl(FundVl fundVl) throws InputValidationException {
 
 		PropertyValidator.validateNotNegativeDouble(fundVl.getVl());
+
+	}
+
+	private void validatePortOp(PortOp portOp) throws InputValidationException {
+
+		PropertyValidator.validateNotZeroInt(portOp.getfPartOp());
+		calculatePortOp(portOp);
 
 	}
 
@@ -271,17 +279,18 @@ public class FundServiceImpl implements FundService {
 	}
 
 	@Override
-	public void removeFundVl(FundDesc fundDesc, LocalDate day) throws InstanceNotFoundException {
+	public void removeFundVl(FundVl fundVl) throws InstanceNotFoundException {
 
 		try {
 			Session session = sessionFactory.openSession();
 			try {
 				tx = session.beginTransaction();
-				session.delete((FundVl) session.get(FundVl.class, new FundVlPK(fundDesc, day)));
+				session.delete((FundVl) session.get(FundVl.class, new FundVlPK(fundVl.getFundDesc(), fundVl.getDay())));
 				tx.commit();
 			} catch (java.lang.NullPointerException | java.lang.IllegalArgumentException e) {
 				tx.rollback();
-				throw new InstanceNotFoundException(fundDesc.getfId(), "fundVl");
+				throw new InstanceNotFoundException(fundVl.getFundDesc().getfId() + " dia " + fundVl.getDay(),
+						"fundVl");
 			} catch (HibernateException | Error e) {
 				tx.rollback();
 				throw e;
@@ -488,7 +497,7 @@ public class FundServiceImpl implements FundService {
 	}
 
 	@Override
-	public void removePortDesc(FundDesc fundDesc, FundPort fundPort) throws InstanceNotFoundException {
+	public void removePortDesc(FundPort fundPort, FundDesc fundDesc) throws InstanceNotFoundException {
 		try {
 			Session session = sessionFactory.openSession();
 			try {
@@ -509,9 +518,9 @@ public class FundServiceImpl implements FundService {
 		}
 
 	}
-	
+
 	@Override
-	public void addPortDesc(FundDesc fundDesc, FundPort fundPort)
+	public void addPortDesc(FundPort fundPort, FundDesc fundDesc)
 			throws InstanceNotFoundException, InputValidationException {
 		try {
 			Session session = sessionFactory.openSession();
@@ -535,57 +544,290 @@ public class FundServiceImpl implements FundService {
 	}
 
 	@Override
-	public void addPortOp(FundDesc fundDesc, FundPort fundPort, LocalDate day, Integer partOp) {
-		// TODO Auto-generated method stub
+	public FundVl findLatestFundVl(FundDesc fundDesc, LocalDate day) throws InstanceNotFoundException {
+
+		try {
+			Session session = sessionFactory.openSession();
+			try {
+
+				tx = session.beginTransaction();
+				String hql = "from FundVl as vl where vl.fundDesc.id = ?1 and day <= ?2 order by day desc";
+				Query<?> query = session.createQuery(hql);
+				query.setParameter(1, fundDesc.getId());
+				query.setParameter(2, day);
+				query.setMaxResults(1);
+				FundVl fundVl = (FundVl) query.uniqueResult();
+				tx.commit();
+				if (fundVl == null)
+					throw new InstanceNotFoundException("Vl anterior a " + day.toString(), "FundVl");
+				return fundVl;
+			} catch (ConstraintViolationException e) {
+				tx.rollback();
+				throw new RuntimeException(e);
+			} catch (HibernateException | Error e) {
+				tx.rollback();
+				throw e;
+			} finally {
+				session.close();
+			}
+		} catch (HibernateException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public void addPortOp(PortOp portOp) throws InputValidationException {
+
+		validatePortOp(portOp);
+
+		try {
+			Session session = sessionFactory.openSession();
+			try {
+				tx = session.beginTransaction();
+				session.save(portOp);
+				tx.commit();
+			} catch (javax.persistence.PersistenceException e) {
+				tx.rollback();
+				throw new InputValidationException("Error, ya existe una operación en la cartera: "
+						+ portOp.getPortDesc().getFundPort().getpName() + " para el fondo: "
+						+ portOp.getPortDesc().getFundDesc().getfId() + " el día: " + portOp.getDay());
+			} catch (Error e) {
+				tx.rollback();
+				throw e;
+			} finally {
+				session.close();
+			}
+		} catch (HibernateException e) {
+			throw new RuntimeException(e);
+		}
+
+	}
+
+	@Override
+	public void removePortOp(PortOp portOp) throws InstanceNotFoundException {
+		try {
+			Session session = sessionFactory.openSession();
+			try {
+				tx = session.beginTransaction();
+				session.delete((PortOp) session.get(PortOp.class, new PortOpPK(portOp.getPortDesc(), portOp.getDay())));
+				tx.commit();
+			} catch (java.lang.NullPointerException | java.lang.IllegalArgumentException e) {
+				tx.rollback();
+				throw new InstanceNotFoundException("Cartera: " + portOp.getPortDesc().getFundPort().getpName()
+						+ " fondo: " + portOp.getPortDesc().getFundDesc().getfId() + " día " + portOp.getDay(),
+						"PortOp");
+			} catch (HibernateException | Error e) {
+				tx.rollback();
+				throw e;
+			} finally {
+				session.close();
+			}
+		} catch (HibernateException e) {
+			throw new RuntimeException(e);
+		}
+
+	}
+
+	@Override
+	public void UpdatePortOp(PortOp portOp) {
+
+		try {
+			Session session = sessionFactory.openSession();
+			try {
+				tx = session.beginTransaction();
+				session.update(portOp);
+				tx.commit();
+			} catch (ConstraintViolationException e) {
+				tx.rollback();
+				throw new RuntimeException(e);
+			} catch (RuntimeException | Error e) {
+				tx.rollback();
+				throw e;
+			} finally {
+				session.close();
+			}
+		} catch (HibernateException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public PortOp findPortOp(FundPort fundPort, FundDesc fundDesc, LocalDate day)
+			throws InstanceNotFoundException, InputValidationException {
+
+		try {
+			Session session = sessionFactory.openSession();
+			try {
+				tx = session.beginTransaction();
+				PortOp portOp = (PortOp) session.get(PortOp.class, new PortOpPK(new PortDesc(fundPort, fundDesc), day));
+				tx.commit();
+				if (portOp == null)
+					throw new InstanceNotFoundException(day, "PortOp");
+
+				return calculatePortOp(portOp);
+			} catch (ConstraintViolationException e) {
+				tx.rollback();
+				throw new RuntimeException(e);
+			} catch (HibernateException | Error e) {
+				tx.rollback();
+				throw e;
+			} finally {
+				session.close();
+			}
+		} catch (HibernateException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<PortOp> findAllPortOp(FundPort fundPort, FundDesc fundDesc) throws InputValidationException {
+		try {
+			Session session = sessionFactory.openSession();
+			try {
+				tx = session.beginTransaction();
+				String hql = "from PortOp as po where po.portDesc.fundPortId.pId = ?1 and po.portDesc.fundDescId.id = ?2";
+				Query<?> query = session.createQuery(hql);
+				query.setParameter(1, fundPort.getpId());
+				query.setParameter(2, fundDesc.getId());
+				List<PortOp> fundPortOpList = (List<PortOp>) query.list();
+				tx.commit();
+
+				for (int x = 0; x < fundPortOpList.size(); x++) {
+					calculatePortOp(fundPortOpList.get(x));
+				}
+
+				return (List<PortOp>) fundPortOpList;
+			} catch (ConstraintViolationException e) {
+				tx.rollback();
+				throw new RuntimeException(e);
+			} catch (HibernateException | Error e) {
+				tx.rollback();
+				throw e;
+			} finally {
+				session.close();
+			}
+		} catch (HibernateException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<PortOp> findAllPortOpbyRange(FundPort fundPort, FundDesc fundDesc, LocalDate startDay, LocalDate endDay)
+			throws InputValidationException {
+
+		try {
+			Session session = sessionFactory.openSession();
+			try {
+				tx = session.beginTransaction();
+				String hql = "from PortOp as po where po.portDesc.fundPortId.pId = ?1 and po.portDesc.fundDescId.id = ?2 and (day BETWEEN ?3 and ?4)";
+				Query<?> query = session.createQuery(hql);
+				query.setParameter(1, fundPort.getpId());
+				query.setParameter(2, fundDesc.getId());
+				query.setParameter(3, startDay);
+				query.setParameter(4, endDay);
+				List<PortOp> fundPortOpList = (List<PortOp>) query.list();
+				tx.commit();
+
+				// for (int x = 0; x < fundPortOpList.size(); x++) {
+				// calculatePortOp(fundPortOpList.get(x));
+				// }
+
+				return (List<PortOp>) fundPortOpList;
+			} catch (ConstraintViolationException e) {
+				tx.rollback();
+				throw new RuntimeException(e);
+			} catch (HibernateException | Error e) {
+				tx.rollback();
+				throw e;
+			} finally {
+				session.close();
+			}
+		} catch (HibernateException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public PortOp findLatestPortOp(FundPort fundPort, FundDesc fundDesc, LocalDate day)
+			throws InstanceNotFoundException, InputValidationException {
+
+		try {
+			Session session = sessionFactory.openSession();
+			try {
+
+				tx = session.beginTransaction();
+				String hql = "from PortOp as po where po.portDesc.fundPortId.pId = ?1 "
+						+ "and po.portDesc.fundDescId.id = ?2 and day <= ?3 order by day desc";
+				Query<?> query = session.createQuery(hql);
+				query.setParameter(1, fundPort.getpId());
+				query.setParameter(2, fundDesc.getId());
+				query.setParameter(3, day);
+				query.setMaxResults(1);
+				PortOp portOp = (PortOp) query.uniqueResult();
+				tx.commit();
+				if (portOp == null)
+					throw new InstanceNotFoundException("Operación anterior a " + day.toString(), "FundOp");
+				return calculatePortOp(portOp);
+			} catch (ConstraintViolationException e) {
+				tx.rollback();
+				throw new RuntimeException(e);
+			} catch (HibernateException | Error e) {
+				tx.rollback();
+				throw e;
+			} finally {
+				session.close();
+			}
+		} catch (HibernateException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private PortOp calculatePortOp(PortOp portOp) throws InputValidationException {
 		
-	}
-
-	@Override
-	public void addPortOp(FundDesc fundDesc, FundPort fundPort, LocalDate day, Double partOp) {
-		// TODO Auto-generated method stub
+		//REVISAR BIEN ESTA MAL PLANTEADO
 		
+		FundVl fundVl;
+		try {
+			fundVl = findLatestFundVl(portOp.getPortDesc().getFundDesc(), portOp.getDay());
+		} catch (InstanceNotFoundException e) {
+			throw new InputValidationException(
+					"Error: No existe un vl anterior a la operación, por favor inserte uno.");
+		}
+
+		List<PortOp> fundPortOpList = findAllPortOpbyRange(portOp.getPortDesc().getFundPort(),
+				portOp.getPortDesc().getFundDesc(), LocalDate.parse("1950-01-01"), portOp.getDay());
+
+		int i = 0;
+
+		for (int x = 0; x < fundPortOpList.size(); x++) {
+			i += fundPortOpList.get(x).getfPartOp();
+		}
+		if ((i + portOp.getfPartOp()) < 0) {
+			throw new InputValidationException(
+					"Error: el conjunto de operaciones es erroneo, el total de participaciones es negativo.");
+		}
+
+		portOp.setfPartfin(i);
+
+		portOp.setfPartini(i - portOp.getfPartOp());
+
+		if (portOp.getfPartOp() > 0) {
+
+			portOp.setfPrice(
+					(portOp.getfPartOp() * fundVl.getVl()) * (1 + portOp.getPortDesc().getFundDesc().getfSubComm()));
+
+		} else {
+			if (portOp.getfPartOp() < 0) {
+
+				portOp.setfPrice((portOp.getfPartOp() * fundVl.getVl()) - ((portOp.getfPartOp() * fundVl.getVl())
+						* portOp.getPortDesc().getFundDesc().getfCancelComm()));
+
+			}
+		}
+		return portOp;
+
 	}
 
-	@Override
-	public PortOp UpdatePortOp(FundDesc fundDesc, FundPort fundPort, LocalDate day, Integer partOp) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public PortOp UpdatePortOp(FundDesc fundDesc, FundPort fundPort, LocalDate day, Double partOp) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public PortOp findPortOp(FundDesc fundDesc, FundPort fundPort, LocalDate day) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<PortOp> findAllPortOp(FundDesc fundDesc, FundPort fundPort, LocalDate day) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<PortOp> findAllPortOpbyRange(FundDesc fundDesc, FundPort fundPort, LocalDate start, LocalDate end) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void removePortOp(FundDesc fundDesc, FundPort fundPort, LocalDate day) throws InstanceNotFoundException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public FundVl findClosestFundVl(FundDesc fundDesc, LocalDate day) throws InstanceNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
 }

@@ -32,6 +32,11 @@ public class FundVl {
 		this.vl = vl;
 	}
 
+	public FundVl(FundDesc fundDesc, LocalDate c1) {
+		this.day = c1;
+		this.fundDesc = fundDesc;
+	}
+
 	public FundVl(LocalDate c1, Double vl, FundDesc fundDesc) {
 		this.day = c1;
 		this.vl = vl;
