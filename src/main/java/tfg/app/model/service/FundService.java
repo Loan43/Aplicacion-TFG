@@ -60,7 +60,7 @@ public interface FundService {
 	
 	//Obtiene el vl del dia mas proximo a un dia dado (Se comporta exactamente igual a findFundVl si existe un valor
 	//vl en ese dia)
-	public FundVl findLatestFundVl(FundDesc fundDesc, LocalDate day) throws InstanceNotFoundException;
+	public FundVl findLatestFundVl(FundDesc fundDesc, LocalDate day);
 	
 
 	// ################################################################
@@ -112,23 +112,23 @@ public interface FundService {
 	public void addPortOp(PortOp portOp) throws InputValidationException;
 	
 	//Elimina una operacion realizada sobre un fondo en una cartera en una fecha
-	public void removePortOp(PortOp portOp) throws InstanceNotFoundException;
+	public void removePortOp(PortOp portOp) throws InstanceNotFoundException, InputValidationException;
 	
 	//Actualiza un PortOp(Con participaciones como unidad) sobre un fondo en una cartera en un día determinado
-	public void UpdatePortOp(PortOp portOp);
+	public void UpdatePortOp(PortOp portOp) throws InputValidationException;
 	
 	//Obtiene una operacion sobre un fondo en una cartera en un día determinado
-	public PortOp findPortOp(FundPort fundPort, FundDesc fundDesc, LocalDate day) throws InstanceNotFoundException, InputValidationException;
+	public PortOp findPortOp(FundPort fundPort, FundDesc fundDesc, LocalDate day) throws InstanceNotFoundException;
 	
 	//Devuelve todas las operaciones realizadas sobre un fondo en una cartera
-	public List<PortOp> findAllPortOp(FundPort fundPort, FundDesc fundDesc) throws InputValidationException;
+	public List<PortOp> findAllPortOp(FundPort fundPort, FundDesc fundDesc) throws InstanceNotFoundException;
 	
 	//Devuelve todas las operaciones realizadas sobre un fondo en una cartera entre dos fechas
-	public List<PortOp> findAllPortOpbyRange(FundPort fundPort, FundDesc fundDesc, LocalDate startDay, LocalDate endDay) throws InputValidationException;
+	public List<PortOp> findAllPortOpbyRange(FundPort fundPort, FundDesc fundDesc, LocalDate startDay, LocalDate endDay, int flag) throws InstanceNotFoundException;
 	
 	//Obtiene el la operacion sobre un fondo en una cartera del dia mas proximo a un dia dado 
 	//(Se comporta exactamente igual a findPortOp si existe un PortOp en ese dia)
-	public PortOp findLatestPortOp(FundPort fundPort, FundDesc fundDesc, LocalDate day) throws InstanceNotFoundException, InputValidationException;
+	public PortOp findLatestPortOp(FundPort fundPort, FundDesc fundDesc, LocalDate day) throws InstanceNotFoundException;
 	
 
 }

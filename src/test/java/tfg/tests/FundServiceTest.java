@@ -790,21 +790,19 @@ public class FundServiceTest {
 
 	}
 
-	@Test(expected = InstanceNotFoundException.class)
-	public void testInvalidFindClosestFundVl()
+	@Test
+	public void testUnExistentFindClosestFundVl()
 			throws ParseException, InputValidationException, InstanceNotFoundException {
 
 		FundDesc addedFound = this.getValidFundDesc();
 
 		fundService.addFund(addedFound);
 
-		try {
-			fundService.findLatestFundVl(addedFound, LocalDate.parse("2020-04-17"));
-		} catch (InstanceNotFoundException e) {
-			throw e;
-		} finally {
-			fundService.removeFund(addedFound);
-		}
+		FundVl fundVl = fundService.findLatestFundVl(addedFound, LocalDate.parse("2020-04-17"));
+
+		fundService.removeFund(addedFound);
+
+		assertTrue(fundVl == null);
 
 	}
 
@@ -898,7 +896,7 @@ public class FundServiceTest {
 
 		fundService.addPortOp(portOp1);
 
-		portOp1.setfPartOp(1000);
+		portOp1.setfPartOp(10);
 
 		fundService.UpdatePortOp(portOp1);
 
@@ -910,6 +908,88 @@ public class FundServiceTest {
 		fundService.removeFund(addedFound2);
 
 		assertTrue(findPortOp.equals(portOp1));
+	}
+	
+	@Test(expected = InputValidationException.class)
+	public void testUpdatePortOp2() throws InputValidationException, InstanceNotFoundException, ParseException {
+
+		FundPort fundPortfolio1 = getValidFundPort();
+
+		fundService.addFundPortfolio(fundPortfolio1);
+
+		FundDesc addedFound1 = this.getValidFundDesc();
+
+		fundService.addFund(addedFound1);
+
+		fundService.addPortDesc(fundPortfolio1, addedFound1);
+
+		PortOp portOp1 = getValidPortOp("2020-04-20", fundPortfolio1, addedFound1);
+
+		fundService.addPortOp(portOp1);
+
+		PortOp portOp2 = getValidPortOp("2020-04-22", fundPortfolio1, addedFound1);
+
+		fundService.addPortOp(portOp2);
+
+		PortOp portOp3 = getValidPortOp("2020-04-23", fundPortfolio1, addedFound1);
+		portOp3.setfPartOp(-200);
+
+		fundService.addPortOp(portOp3);
+		
+		portOp3.setfPartOp(-201);
+
+		try {
+			fundService.UpdatePortOp(portOp3);
+		} catch (InputValidationException e) {
+			throw e;
+		} finally {
+
+			fundService.removeFundPortfolio(fundPortfolio1);
+			fundService.removeFund(addedFound1);
+
+		}
+
+	}
+	
+	@Test(expected = InputValidationException.class)
+	public void testUpdatePortOp3() throws InputValidationException, InstanceNotFoundException, ParseException {
+
+		FundPort fundPortfolio1 = getValidFundPort();
+
+		fundService.addFundPortfolio(fundPortfolio1);
+
+		FundDesc addedFound1 = this.getValidFundDesc();
+
+		fundService.addFund(addedFound1);
+
+		fundService.addPortDesc(fundPortfolio1, addedFound1);
+
+		PortOp portOp1 = getValidPortOp("2020-04-20", fundPortfolio1, addedFound1);
+
+		fundService.addPortOp(portOp1);
+
+		PortOp portOp2 = getValidPortOp("2020-04-22", fundPortfolio1, addedFound1);
+
+		fundService.addPortOp(portOp2);
+
+		PortOp portOp3 = getValidPortOp("2020-04-23", fundPortfolio1, addedFound1);
+		portOp3.setfPartOp(-200);
+
+		fundService.addPortOp(portOp3);
+		
+		portOp2.setfPartOp(-200);
+
+		try {
+			fundService.UpdatePortOp(portOp2);
+		} catch (InputValidationException e) {
+			throw e;
+		} finally {
+
+			fundService.removeFundPortfolio(fundPortfolio1);
+			fundService.removeFund(addedFound1);
+
+		}
+
 	}
 
 	@Test
@@ -1026,27 +1106,27 @@ public class FundServiceTest {
 		boolean bool = true;
 
 		if (!fundService.findAllPortOpbyRange(fundPortfolio1, addedFound1, LocalDate.parse("2020-04-17"),
-				LocalDate.parse("2020-04-17")).get(0).equals(portOp1)) {
+				LocalDate.parse("2020-04-17"), 1).get(0).equals(portOp1)) {
 			bool = false;
 		}
 
 		if (fundService.findAllPortOpbyRange(fundPortfolio1, addedFound1, LocalDate.parse("2020-04-17"),
-				LocalDate.parse("2020-04-20")).size() != 4) {
+				LocalDate.parse("2020-04-20"), 0).size() != 4) {
 			bool = false;
 		}
 
 		if (!fundService.findAllPortOpbyRange(fundPortfolio1, addedFound1, LocalDate.parse("2020-04-18"),
-				LocalDate.parse("2020-04-18")).get(0).equals(portOp2)) {
+				LocalDate.parse("2020-04-18"), 0).get(0).equals(portOp2)) {
 			bool = false;
 		}
 
 		if (fundService.findAllPortOpbyRange(fundPortfolio1, addedFound1, LocalDate.parse("2020-04-18"),
-				LocalDate.parse("2020-04-20")).size() != 3) {
+				LocalDate.parse("2020-04-20"), 0).size() != 3) {
 			bool = false;
 		}
 
 		if (fundService.findAllPortOpbyRange(fundPortfolio1, addedFound1, LocalDate.parse("2020-04-23"),
-				LocalDate.parse("2020-04-27")).size() != 0) {
+				LocalDate.parse("2020-04-27"), 0).size() != 0) {
 			bool = false;
 		}
 
@@ -1106,7 +1186,7 @@ public class FundServiceTest {
 	}
 
 	@Test(expected = InputValidationException.class)
-	public void testAddInvalidPortOp() throws InputValidationException, ParseException, InstanceNotFoundException {
+	public void testAddDuplicatePortOp() throws InputValidationException, ParseException, InstanceNotFoundException {
 
 		FundPort fundPortfolio1 = getValidFundPort();
 
@@ -1197,11 +1277,203 @@ public class FundServiceTest {
 		}
 	}
 
+	@Test(expected = InputValidationException.class)
+	public void testAddInvalidPortOp() throws InputValidationException, ParseException, InstanceNotFoundException {
+
+		FundPort fundPortfolio1 = getValidFundPort();
+
+		fundService.addFundPortfolio(fundPortfolio1);
+
+		FundDesc addedFound1 = this.getValidFundDesc();
+
+		fundService.addFund(addedFound1);
+
+		fundService.addPortDesc(fundPortfolio1, addedFound1);
+
+		PortOp portOp1 = getValidPortOp("2020-04-30", fundPortfolio1, addedFound1);
+
+		fundService.addPortOp(portOp1);
+
+		PortOp portOp2 = getValidPortOp("2020-04-27", fundPortfolio1, addedFound1);
+
+		fundService.addPortOp(portOp2);
+
+		PortOp portOp3 = getValidPortOp("2020-05-27", fundPortfolio1, addedFound1);
+
+		portOp3.setfPartOp(-500);
+
+		try {
+			fundService.addPortOp(portOp3);
+		} catch (InputValidationException e) {
+			throw e;
+		} finally {
+
+			fundService.removeFundPortfolio(fundPortfolio1);
+			fundService.removeFund(addedFound1);
+
+		}
+
+	}
+
+	@Test(expected = InputValidationException.class)
+	public void testAddInvalidPortOp2() throws InputValidationException, ParseException, InstanceNotFoundException {
+
+		FundPort fundPortfolio1 = getValidFundPort();
+
+		fundService.addFundPortfolio(fundPortfolio1);
+
+		FundDesc addedFound1 = this.getValidFundDesc();
+
+		fundService.addFund(addedFound1);
+
+		fundService.addPortDesc(fundPortfolio1, addedFound1);
+
+		PortOp portOp1 = getValidPortOp("2020-04-30", fundPortfolio1, addedFound1);
+
+		fundService.addPortOp(portOp1);
+
+		PortOp portOp2 = getValidPortOp("2020-04-27", fundPortfolio1, addedFound1);
+
+		fundService.addPortOp(portOp2);
+
+		PortOp portOp3 = getValidPortOp("2020-04-28", fundPortfolio1, addedFound1);
+
+		portOp3.setfPartOp(-200);
+
+		try {
+			fundService.addPortOp(portOp3);
+		} catch (InputValidationException e) {
+			throw e;
+		} finally {
+
+			fundService.removeFundPortfolio(fundPortfolio1);
+			fundService.removeFund(addedFound1);
+
+		}
+
+	}
+
+	@Test(expected = InputValidationException.class)
+	public void testAddInvalidPortOp3() throws InputValidationException, ParseException, InstanceNotFoundException {
+
+		FundPort fundPortfolio1 = getValidFundPort();
+
+		fundService.addFundPortfolio(fundPortfolio1);
+
+		FundDesc addedFound1 = this.getValidFundDesc();
+
+		fundService.addFund(addedFound1);
+
+		fundService.addPortDesc(fundPortfolio1, addedFound1);
+
+		PortOp portOp1 = getValidPortOp("2020-04-20", fundPortfolio1, addedFound1);
+
+		fundService.addPortOp(portOp1);
+
+		PortOp portOp2 = getValidPortOp("2020-04-22", fundPortfolio1, addedFound1);
+
+		fundService.addPortOp(portOp2);
+
+		PortOp portOp3 = getValidPortOp("2020-04-23", fundPortfolio1, addedFound1);
+		portOp3.setfPartOp(-200);
+
+		fundService.addPortOp(portOp3);
+
+		PortOp portOp4 = getValidPortOp("2020-04-21", fundPortfolio1, addedFound1);
+		portOp4.setfPartOp(-1);
+
+		try {
+			fundService.addPortOp(portOp4);
+		} catch (InputValidationException e) {
+			throw e;
+		} finally {
+
+			fundService.removeFundPortfolio(fundPortfolio1);
+			fundService.removeFund(addedFound1);
+
+		}
+
+	}
+
+	@Test
+	public void testRemovePortOp() throws InputValidationException, ParseException, InstanceNotFoundException {
+
+		FundPort fundPortfolio1 = getValidFundPort();
+
+		fundService.addFundPortfolio(fundPortfolio1);
+
+		FundDesc addedFound1 = this.getValidFundDesc();
+
+		fundService.addFund(addedFound1);
+
+		fundService.addPortDesc(fundPortfolio1, addedFound1);
+
+		PortOp portOp1 = getValidPortOp("2020-04-20", fundPortfolio1, addedFound1);
+
+		fundService.addPortOp(portOp1);
+
+		PortOp portOp2 = getValidPortOp("2020-04-22", fundPortfolio1, addedFound1);
+
+		fundService.addPortOp(portOp2);
+
+		PortOp portOp3 = getValidPortOp("2020-04-23", fundPortfolio1, addedFound1);
+		portOp3.setfPartOp(-200);
+
+		fundService.addPortOp(portOp3);
+
+		fundService.removePortOp(portOp3);
+		fundService.removePortOp(portOp2);
+		fundService.removePortOp(portOp1);
+
+		fundService.removeFundPortfolio(fundPortfolio1);
+		fundService.removeFund(addedFound1);
+
+	}
+
+	@Test(expected = InputValidationException.class)
+	public void testRemovePortOp2() throws InputValidationException, ParseException, InstanceNotFoundException {
+
+		FundPort fundPortfolio1 = getValidFundPort();
+
+		fundService.addFundPortfolio(fundPortfolio1);
+
+		FundDesc addedFound1 = this.getValidFundDesc();
+
+		fundService.addFund(addedFound1);
+
+		fundService.addPortDesc(fundPortfolio1, addedFound1);
+
+		PortOp portOp1 = getValidPortOp("2020-04-20", fundPortfolio1, addedFound1);
+
+		fundService.addPortOp(portOp1);
+
+		PortOp portOp2 = getValidPortOp("2020-04-22", fundPortfolio1, addedFound1);
+
+		fundService.addPortOp(portOp2);
+
+		PortOp portOp3 = getValidPortOp("2020-04-23", fundPortfolio1, addedFound1);
+		portOp3.setfPartOp(-200);
+
+		fundService.addPortOp(portOp3);
+
+		try {
+			fundService.removePortOp(portOp2);
+			fundService.removePortOp(portOp3);
+			fundService.removePortOp(portOp1);
+		} catch (InputValidationException e) {
+			throw e;
+		} finally {
+
+			fundService.removeFundPortfolio(fundPortfolio1);
+			fundService.removeFund(addedFound1);
+
+		}
+
+	}
+
 	@Test
 	public void testCalculatePortOp() throws InputValidationException, ParseException, InstanceNotFoundException {
 
-		//REVISAR BIEN ESTE TEST ESTA MAL
-		
 		FundPort fundPortfolio1 = getValidFundPort();
 
 		fundService.addFundPortfolio(fundPortfolio1);
@@ -1265,7 +1537,7 @@ public class FundServiceTest {
 		if (findPortOp2.getfPrice() != -2450.0) {
 			bool = false;
 		}
-		
+
 		fundService.removeFundPortfolio(fundPortfolio1);
 		fundService.removeFund(addedFound1);
 		assertTrue(bool);

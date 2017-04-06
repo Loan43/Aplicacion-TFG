@@ -47,10 +47,42 @@ public class FundServiceImpl implements FundService {
 
 	}
 
-	private void validatePortOp(PortOp portOp) throws InputValidationException {
-
+	private void validatePortOp(PortOp portOp, int flag) throws InputValidationException {
+		// Flag = 0 para validar add.
+		// Flag != 0 para validar remove.
 		PropertyValidator.validateNotZeroInt(portOp.getfPartOp());
-		calculatePortOp(portOp);
+
+		List<PortOp> fundPortOpList = findAllPortOpbyRange(portOp.getPortDesc().getFundPort(),
+				portOp.getPortDesc().getFundDesc(), LocalDate.parse("1950-01-01"), portOp.getDay().minusDays(1), 0);
+
+		int i = 0;
+
+		for (int x = 0; x < fundPortOpList.size(); x++) {
+			i += fundPortOpList.get(x).getfPartOp();
+		}
+
+		// Validacion de Add
+		if (flag == 0) {
+			i += portOp.getfPartOp();
+			if (i < 0) {
+				throw new InputValidationException(
+						"Error: el conjunto de operaciones es erroneo, el total de participaciones el día: "
+								+ portOp.getDay() + " es negativo: " + i + ".");
+			}
+
+		}
+
+		fundPortOpList = findAllPortOpbyRange(portOp.getPortDesc().getFundPort(), portOp.getPortDesc().getFundDesc(),
+				portOp.getDay().plusDays(1), LocalDate.parse("2150-01-01"), 0);
+
+		for (int x = 0; x < fundPortOpList.size(); x++) {
+			i += fundPortOpList.get(x).getfPartOp();
+			if (i < 0) {
+				throw new InputValidationException(
+						"Error: el conjunto de operaciones es erroneo, el total de participaciones el día: "
+								+ fundPortOpList.get(x).getDay() + " es negativo: " + i + ".");
+			}
+		}
 
 	}
 
@@ -544,7 +576,7 @@ public class FundServiceImpl implements FundService {
 	}
 
 	@Override
-	public FundVl findLatestFundVl(FundDesc fundDesc, LocalDate day) throws InstanceNotFoundException {
+	public FundVl findLatestFundVl(FundDesc fundDesc, LocalDate day) {
 
 		try {
 			Session session = sessionFactory.openSession();
@@ -558,8 +590,6 @@ public class FundServiceImpl implements FundService {
 				query.setMaxResults(1);
 				FundVl fundVl = (FundVl) query.uniqueResult();
 				tx.commit();
-				if (fundVl == null)
-					throw new InstanceNotFoundException("Vl anterior a " + day.toString(), "FundVl");
 				return fundVl;
 			} catch (ConstraintViolationException e) {
 				tx.rollback();
@@ -578,7 +608,7 @@ public class FundServiceImpl implements FundService {
 	@Override
 	public void addPortOp(PortOp portOp) throws InputValidationException {
 
-		validatePortOp(portOp);
+		validatePortOp(portOp, 0);
 
 		try {
 			Session session = sessionFactory.openSession();
@@ -604,7 +634,10 @@ public class FundServiceImpl implements FundService {
 	}
 
 	@Override
-	public void removePortOp(PortOp portOp) throws InstanceNotFoundException {
+	public void removePortOp(PortOp portOp) throws InstanceNotFoundException, InputValidationException {
+
+		validatePortOp(portOp, 1);
+
 		try {
 			Session session = sessionFactory.openSession();
 			try {
@@ -629,8 +662,10 @@ public class FundServiceImpl implements FundService {
 	}
 
 	@Override
-	public void UpdatePortOp(PortOp portOp) {
+	public void UpdatePortOp(PortOp portOp) throws InputValidationException {
 
+		validatePortOp(portOp, 0);
+		
 		try {
 			Session session = sessionFactory.openSession();
 			try {
@@ -652,8 +687,7 @@ public class FundServiceImpl implements FundService {
 	}
 
 	@Override
-	public PortOp findPortOp(FundPort fundPort, FundDesc fundDesc, LocalDate day)
-			throws InstanceNotFoundException, InputValidationException {
+	public PortOp findPortOp(FundPort fundPort, FundDesc fundDesc, LocalDate day) throws InstanceNotFoundException {
 
 		try {
 			Session session = sessionFactory.openSession();
@@ -681,7 +715,7 @@ public class FundServiceImpl implements FundService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<PortOp> findAllPortOp(FundPort fundPort, FundDesc fundDesc) throws InputValidationException {
+	public List<PortOp> findAllPortOp(FundPort fundPort, FundDesc fundDesc) throws InstanceNotFoundException {
 		try {
 			Session session = sessionFactory.openSession();
 			try {
@@ -714,9 +748,10 @@ public class FundServiceImpl implements FundService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<PortOp> findAllPortOpbyRange(FundPort fundPort, FundDesc fundDesc, LocalDate startDay, LocalDate endDay)
-			throws InputValidationException {
-
+	public List<PortOp> findAllPortOpbyRange(FundPort fundPort, FundDesc fundDesc, LocalDate startDay, LocalDate endDay,
+			int flag) {
+		// Con flag = 0 devuelve los objetos PortOp sin rellenar sus campos
+		// Con flag != 0 devuelve los objetos PortOp rellenando sus campos
 		try {
 			Session session = sessionFactory.openSession();
 			try {
@@ -730,9 +765,11 @@ public class FundServiceImpl implements FundService {
 				List<PortOp> fundPortOpList = (List<PortOp>) query.list();
 				tx.commit();
 
-				// for (int x = 0; x < fundPortOpList.size(); x++) {
-				// calculatePortOp(fundPortOpList.get(x));
-				// }
+				if (flag != 0) {
+					for (int x = 0; x < fundPortOpList.size(); x++) {
+						calculatePortOp(fundPortOpList.get(x));
+					}
+				}
 
 				return (List<PortOp>) fundPortOpList;
 			} catch (ConstraintViolationException e) {
@@ -751,7 +788,7 @@ public class FundServiceImpl implements FundService {
 
 	@Override
 	public PortOp findLatestPortOp(FundPort fundPort, FundDesc fundDesc, LocalDate day)
-			throws InstanceNotFoundException, InputValidationException {
+			throws InstanceNotFoundException {
 
 		try {
 			Session session = sessionFactory.openSession();
@@ -784,48 +821,41 @@ public class FundServiceImpl implements FundService {
 		}
 	}
 
-	private PortOp calculatePortOp(PortOp portOp) throws InputValidationException {
-		
-		//REVISAR BIEN ESTA MAL PLANTEADO
-		
-		FundVl fundVl;
-		try {
-			fundVl = findLatestFundVl(portOp.getPortDesc().getFundDesc(), portOp.getDay());
-		} catch (InstanceNotFoundException e) {
-			throw new InputValidationException(
-					"Error: No existe un vl anterior a la operación, por favor inserte uno.");
-		}
+	private PortOp calculatePortOp(PortOp portOp) {
 
 		List<PortOp> fundPortOpList = findAllPortOpbyRange(portOp.getPortDesc().getFundPort(),
-				portOp.getPortDesc().getFundDesc(), LocalDate.parse("1950-01-01"), portOp.getDay());
+				portOp.getPortDesc().getFundDesc(), LocalDate.parse("1950-01-01"), portOp.getDay(), 0);
 
 		int i = 0;
 
 		for (int x = 0; x < fundPortOpList.size(); x++) {
 			i += fundPortOpList.get(x).getfPartOp();
 		}
-		if ((i + portOp.getfPartOp()) < 0) {
-			throw new InputValidationException(
-					"Error: el conjunto de operaciones es erroneo, el total de participaciones es negativo.");
-		}
 
 		portOp.setfPartfin(i);
 
 		portOp.setfPartini(i - portOp.getfPartOp());
 
-		if (portOp.getfPartOp() > 0) {
+		FundVl fundVl = findLatestFundVl(portOp.getPortDesc().getFundDesc(), portOp.getDay());
 
-			portOp.setfPrice(
-					(portOp.getfPartOp() * fundVl.getVl()) * (1 + portOp.getPortDesc().getFundDesc().getfSubComm()));
+		if (fundVl != null) {
 
-		} else {
-			if (portOp.getfPartOp() < 0) {
+			if (portOp.getfPartOp() > 0) {
 
-				portOp.setfPrice((portOp.getfPartOp() * fundVl.getVl()) - ((portOp.getfPartOp() * fundVl.getVl())
-						* portOp.getPortDesc().getFundDesc().getfCancelComm()));
+				portOp.setfPrice((portOp.getfPartOp() * fundVl.getVl())
+						* (1 + portOp.getPortDesc().getFundDesc().getfSubComm()));
 
+			} else {
+				if (portOp.getfPartOp() < 0) {
+
+					portOp.setfPrice((portOp.getfPartOp() * fundVl.getVl()) - ((portOp.getfPartOp() * fundVl.getVl())
+							* portOp.getPortDesc().getFundDesc().getfCancelComm()));
+
+				}
 			}
+
 		}
+
 		return portOp;
 
 	}
