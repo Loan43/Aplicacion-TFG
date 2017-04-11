@@ -4,7 +4,7 @@ Como TFG se realiza una aplicación de escritorio en Java con la finalidad de ha
 
 ## Estado
 
-El proyecto se encuentra en el proceso de desarrollo de la capa modelo.
+El proyecto se encuentra en el proceso de desarrollo de la vista.
 
 ### Requisitos
 
