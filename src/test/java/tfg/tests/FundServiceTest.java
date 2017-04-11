@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 
 import tfg.app.model.entities.FundDesc;
 import tfg.app.model.entities.FundPort;
@@ -59,6 +60,22 @@ public class FundServiceTest {
 		fund.getFundVls().add(getValidFundVl("2020-04-22", fund));
 
 		return fund;
+	}
+
+	private FundDesc getSpeedTestFundDesc() throws ParseException {
+
+		FundDesc fund = new FundDesc(VALID_FOUND_ID_1, "Pinball Wizards", "Alto riesgo", "Monetario", "Euro", 0.01,
+				0.02);
+
+		LocalDate date = LocalDate.parse("2020-04-20");
+
+		for (int x = 0; x < 1250; x++) {
+			date = date.plusDays(1);
+			fund.getFundVls().add(getValidFundVl(date.toString(), fund));
+		}
+
+		return fund;
+
 	}
 
 	@Test
@@ -909,7 +926,7 @@ public class FundServiceTest {
 
 		assertTrue(findPortOp.equals(portOp1));
 	}
-	
+
 	@Test(expected = InputValidationException.class)
 	public void testUpdatePortOp2() throws InputValidationException, InstanceNotFoundException, ParseException {
 
@@ -935,7 +952,7 @@ public class FundServiceTest {
 		portOp3.setfPartOp(-200);
 
 		fundService.addPortOp(portOp3);
-		
+
 		portOp3.setfPartOp(-201);
 
 		try {
@@ -950,7 +967,7 @@ public class FundServiceTest {
 		}
 
 	}
-	
+
 	@Test(expected = InputValidationException.class)
 	public void testUpdatePortOp3() throws InputValidationException, InstanceNotFoundException, ParseException {
 
@@ -976,7 +993,7 @@ public class FundServiceTest {
 		portOp3.setfPartOp(-200);
 
 		fundService.addPortOp(portOp3);
-		
+
 		portOp2.setfPartOp(-200);
 
 		try {
@@ -1541,6 +1558,56 @@ public class FundServiceTest {
 		fundService.removeFundPortfolio(fundPortfolio1);
 		fundService.removeFund(addedFound1);
 		assertTrue(bool);
+	}
+
+	@Ignore
+	@Test(timeout = 3000)
+	public void testVlOperationsSpeed() throws ParseException, InputValidationException, InstanceNotFoundException {
+
+		FundDesc fund = this.getSpeedTestFundDesc();
+
+		// long startTime = System.currentTimeMillis();
+
+		fundService.addFund(fund);
+
+		// long stopTime = System.currentTimeMillis();
+		// long elapsedTime = stopTime - startTime;
+		//
+		// System.out.println(elapsedTime);
+
+		fundService.findFundVlbyRange(fund, LocalDate.parse("2020-04-21"), LocalDate.parse("2021-04-21"));
+
+		fundService.findFundVl(fund, LocalDate.parse("2021-04-21"));
+
+		fundService.removeFund(fund);
+
+	}
+
+	@Ignore
+	@Test(timeout = 3000)
+	public void testSpeedPortOp() throws InputValidationException, ParseException, InstanceNotFoundException {
+
+		FundPort fundPortfolio1 = getValidFundPort();
+
+		fundService.addFundPortfolio(fundPortfolio1);
+
+		FundDesc addedFound1 = this.getValidFundDesc();
+
+		fundService.addFund(addedFound1);
+
+		fundService.addPortDesc(fundPortfolio1, addedFound1);
+
+		LocalDate date = LocalDate.parse("2020-04-30");
+
+		for (int x = 0; x < 200; x++) {
+			PortOp portOp1 = getValidPortOp(date.toString(), fundPortfolio1, addedFound1);
+			fundService.addPortOp(portOp1);
+			date = date.plusDays(1);
+		}
+
+		fundService.removeFundPortfolio(fundPortfolio1);
+		fundService.removeFund(addedFound1);
+
 	}
 
 }

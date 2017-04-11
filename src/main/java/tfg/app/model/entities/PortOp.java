@@ -24,7 +24,7 @@ public class PortOp {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private PortDesc portDesc;
 
-	@Column(name = "fpartop")
+	@Column(name = "fpartop", length = 10)
 	private Integer fPartOp = 0;
 
 	@Transient

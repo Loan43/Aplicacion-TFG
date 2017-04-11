@@ -22,19 +22,19 @@ public class FundDesc {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "fId", unique = true, nullable = false)
+	@Column(name = "fId", unique = true, nullable = false, length = 12)
 	private String fId;
 
-	@Column(name = "fgest")
+	@Column(name = "fgest", length = 40)
 	private String fGest;
 
-	@Column(name = "ftype")
+	@Column(name = "ftype", length = 20)
 	private String fType;
 
-	@Column(name = "fcategory")
+	@Column(name = "fcategory", length = 30)
 	private String fCategory;
 
-	@Column(name = "fcurrency")
+	@Column(name = "fcurrency", length = 20)
 	private String fCurrency;
 
 	@Column(name = "fsubcomm")
@@ -261,6 +261,5 @@ public class FundDesc {
 				+ fCategory + ", fCurrency=" + fCurrency + ", fSubComm=" + fSubComm + ", fCancelComm=" + fCancelComm
 				+ "]";
 	}
-
 
 }

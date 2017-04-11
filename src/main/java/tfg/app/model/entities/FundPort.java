@@ -21,10 +21,10 @@ public class FundPort {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long pId;
 
-	@Column(name = "pname", unique = true, nullable = false)
+	@Column(name = "pname", unique = true, nullable = false, length = 40)
 	private String pName;
 
-	@Column(name = "pdesc")
+	@Column(name = "pdesc", length = 200)
 	private String pDesc;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "fundPortId", cascade = CascadeType.REMOVE)
@@ -115,7 +115,7 @@ public class FundPort {
 		if (portDescs == null) {
 			if (other.portDescs != null)
 				return false;
-		} else if (!(portDescs.size()==other.portDescs.size()))
+		} else if (!(portDescs.size() == other.portDescs.size()))
 			return false;
 		return true;
 	}
