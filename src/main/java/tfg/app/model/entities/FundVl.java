@@ -72,7 +72,7 @@ public class FundVl {
 
 	@Override
 	public String toString() {
-		return "FundVl [day=" + day + ", vl=" + vl + ", fundDesc=" + fundDesc.getfId() + "]";
+		return  day + ": vl=" + vl;
 	}
 
 	@Override

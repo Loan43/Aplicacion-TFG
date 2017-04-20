@@ -257,9 +257,7 @@ public class FundDesc {
 
 	@Override
 	public String toString() {
-		return "FundDesc [id=" + id + ", fId=" + fId + ", fGest=" + fGest + ", fType=" + fType + ", fCategory="
-				+ fCategory + ", fCurrency=" + fCurrency + ", fSubComm=" + fSubComm + ", fCancelComm=" + fCancelComm
-				+ "]";
+		return fId;
 	}
 
 }

@@ -120,4 +120,9 @@ public class FundPort {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return pName;
+	}
+
 }
