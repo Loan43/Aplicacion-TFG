@@ -2,6 +2,7 @@ package tfg.app.controller;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -22,6 +23,7 @@ import tfg.app.util.exceptions.InstanceNotFoundException;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 /**
  *
  * @author angel
@@ -127,6 +129,29 @@ public class ui extends javax.swing.JFrame {
 		opOperacionText1 = new javax.swing.JFormattedTextField();
 		opCancBoton1 = new javax.swing.JButton();
 		opAccBoton1 = new javax.swing.JButton();
+		anadirFondoCartera = new javax.swing.JDialog();
+		carteraLabel = new javax.swing.JLabel();
+		fondoLabel = new javax.swing.JLabel();
+		fondoDesplegable = new javax.swing.JComboBox<>();
+		canAnFondoCartBoton = new javax.swing.JButton();
+		aceptAnFondoCartBoton = new javax.swing.JButton();
+		borrarFondoCartera = new javax.swing.JDialog();
+		carteraLabel1 = new javax.swing.JLabel();
+		fondoLabel1 = new javax.swing.JLabel();
+		fondoDesplegable1 = new javax.swing.JComboBox<>();
+		canBoFondoCartBoton = new javax.swing.JButton();
+		aceptBoFondoCartBoton = new javax.swing.JButton();
+		ventanaError = new javax.swing.JOptionPane();
+		ventanaConfirmacion = new javax.swing.JDialog();
+		confirmacionLabel = new javax.swing.JLabel();
+		aceptarConfirBoton = new javax.swing.JButton();
+		cancelarConfirBoton = new javax.swing.JButton();
+		tablaVls = new javax.swing.JDialog();
+		jScrollPane3 = new javax.swing.JScrollPane();
+		vlTabla = new javax.swing.JTable();
+		tablaOps = new javax.swing.JDialog();
+		jScrollPane4 = new javax.swing.JScrollPane();
+		opTabla = new javax.swing.JTable();
 		vlMenu = new javax.swing.JPopupMenu();
 		actuVl = new javax.swing.JMenuItem();
 		borrarVl = new javax.swing.JMenuItem();
@@ -144,30 +169,23 @@ public class ui extends javax.swing.JFrame {
 		opMenu = new javax.swing.JPopupMenu();
 		actuOp = new javax.swing.JMenuItem();
 		borrarOp = new javax.swing.JMenuItem();
-		tablaVls = new javax.swing.JDialog();
-		jScrollPane3 = new javax.swing.JScrollPane();
-		vlTabla = new javax.swing.JTable();
-		tablaOps = new javax.swing.JDialog();
-		jScrollPane4 = new javax.swing.JScrollPane();
-		opTabla = new javax.swing.JTable();
-		ventanaError = new javax.swing.JOptionPane();
-		ventanaConfirmacion = new javax.swing.JDialog();
-		confirmacionLabel = new javax.swing.JLabel();
-		aceptarConfirBoton = new javax.swing.JButton();
-		cancelarConfirBoton = new javax.swing.JButton();
 		buscarText = new javax.swing.JTextField();
 		buscarLabel = new javax.swing.JLabel();
 		jScrollPane2 = new javax.swing.JScrollPane();
-		top = new DefaultMutableTreeNode("Carteras");
-		createNodes(top);
-		arbolFondos = new javax.swing.JTree(top);
-		arbolFondosModel = (DefaultTreeModel) arbolFondos.getModel();
+		arbolFondos = new javax.swing.JTree();
 		barraMenu = new javax.swing.JMenuBar();
 		jMenu3 = new javax.swing.JMenu();
 		jMenu1 = new javax.swing.JMenu();
 		botonAnadirFondo = new javax.swing.JMenuItem();
 		botonAnadirCartera = new javax.swing.JMenuItem();
 		jMenu4 = new javax.swing.JMenu();
+
+		///////////////////////////////////////////
+		top = new DefaultMutableTreeNode("Carteras");
+		createNodes(top);
+		arbolFondos = new javax.swing.JTree(top);
+		arbolFondosModel = (DefaultTreeModel) arbolFondos.getModel();
+		///////////////////////////////////////////
 
 		anadirFondo.setTitle("Añadir Fondo");
 		anadirFondo.setAlwaysOnTop(true);
@@ -956,6 +974,217 @@ public class ui extends javax.swing.JFrame {
 								.addComponent(opCancBoton1).addComponent(opAccBoton1))
 						.addContainerGap(81, Short.MAX_VALUE)));
 
+		anadirFondoCartera.setTitle("Seleccionar Fondo");
+		anadirFondoCartera.setModal(true);
+		anadirFondoCartera.setPreferredSize(new java.awt.Dimension(300, 220));
+		anadirFondoCartera.setResizable(false);
+		anadirFondoCartera.setSize(new java.awt.Dimension(300, 220));
+
+		carteraLabel.setText("Cartera:");
+
+		fondoLabel.setText("Fondo:");
+
+		fondoDesplegable.setEditable(false);
+		fondoDesplegable.setModel(new javax.swing.DefaultComboBoxModel<>());
+
+		canAnFondoCartBoton.setText("Cancelar");
+		canAnFondoCartBoton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				canAnFondoCartBotonActionPerformed(evt);
+			}
+		});
+
+		aceptAnFondoCartBoton.setText("Aceptar");
+		aceptAnFondoCartBoton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				aceptAnFondoCartBotonActionPerformed(evt);
+			}
+		});
+
+		javax.swing.GroupLayout anadirFondoCarteraLayout = new javax.swing.GroupLayout(
+				anadirFondoCartera.getContentPane());
+		anadirFondoCartera.getContentPane().setLayout(anadirFondoCarteraLayout);
+		anadirFondoCarteraLayout.setHorizontalGroup(
+				anadirFondoCarteraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(
+						javax.swing.GroupLayout.Alignment.TRAILING, anadirFondoCarteraLayout.createSequentialGroup()
+								.addContainerGap(81, Short.MAX_VALUE)
+								.addGroup(anadirFondoCarteraLayout
+										.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+										.addComponent(carteraLabel)
+										.addGroup(anadirFondoCarteraLayout.createSequentialGroup()
+												.addComponent(fondoLabel).addGap(18, 18, 18).addComponent(
+														fondoDesplegable, javax.swing.GroupLayout.PREFERRED_SIZE, 120,
+														javax.swing.GroupLayout.PREFERRED_SIZE))
+										.addGroup(anadirFondoCarteraLayout.createSequentialGroup()
+												.addComponent(canAnFondoCartBoton)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(aceptAnFondoCartBoton)))
+								.addGap(23, 23, 23)));
+		anadirFondoCarteraLayout.setVerticalGroup(anadirFondoCarteraLayout
+				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(anadirFondoCarteraLayout.createSequentialGroup().addGap(51, 51, 51).addComponent(carteraLabel)
+						.addGap(30, 30, 30)
+						.addGroup(anadirFondoCarteraLayout
+								.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+								.addComponent(fondoLabel).addComponent(fondoDesplegable,
+										javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
+										javax.swing.GroupLayout.PREFERRED_SIZE))
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
+						.addGroup(
+								anadirFondoCarteraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+										.addComponent(canAnFondoCartBoton).addComponent(aceptAnFondoCartBoton))
+						.addContainerGap()));
+
+		borrarFondoCartera.setTitle("Seleccionar Fondo");
+		borrarFondoCartera.setModal(true);
+		borrarFondoCartera.setPreferredSize(new java.awt.Dimension(300, 220));
+		borrarFondoCartera.setResizable(false);
+		borrarFondoCartera.setSize(new java.awt.Dimension(300, 220));
+
+		carteraLabel1.setText("Cartera:");
+
+		fondoLabel1.setText("Fondo:");
+
+		fondoDesplegable1.setEditable(false);
+		fondoDesplegable1.setModel(new javax.swing.DefaultComboBoxModel<>());
+
+		canBoFondoCartBoton.setText("Cancelar");
+		canBoFondoCartBoton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				canBoFondoCartBotonActionPerformed(evt);
+			}
+		});
+
+		aceptBoFondoCartBoton.setText("Aceptar");
+		aceptBoFondoCartBoton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				aceptBoFondoCartBotonActionPerformed(evt);
+			}
+		});
+
+		javax.swing.GroupLayout borrarFondoCarteraLayout = new javax.swing.GroupLayout(
+				borrarFondoCartera.getContentPane());
+		borrarFondoCartera.getContentPane().setLayout(borrarFondoCarteraLayout);
+		borrarFondoCarteraLayout.setHorizontalGroup(
+				borrarFondoCarteraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(
+						javax.swing.GroupLayout.Alignment.TRAILING, borrarFondoCarteraLayout.createSequentialGroup()
+								.addContainerGap(81, Short.MAX_VALUE)
+								.addGroup(borrarFondoCarteraLayout
+										.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+										.addComponent(carteraLabel1)
+										.addGroup(borrarFondoCarteraLayout.createSequentialGroup()
+												.addComponent(fondoLabel1).addGap(18, 18, 18).addComponent(
+														fondoDesplegable1, javax.swing.GroupLayout.PREFERRED_SIZE, 120,
+														javax.swing.GroupLayout.PREFERRED_SIZE))
+										.addGroup(borrarFondoCarteraLayout.createSequentialGroup()
+												.addComponent(canBoFondoCartBoton)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(aceptBoFondoCartBoton)))
+								.addGap(23, 23, 23)));
+		borrarFondoCarteraLayout.setVerticalGroup(borrarFondoCarteraLayout
+				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(borrarFondoCarteraLayout.createSequentialGroup().addGap(51, 51, 51)
+						.addComponent(carteraLabel1).addGap(30, 30, 30)
+						.addGroup(borrarFondoCarteraLayout
+								.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+								.addComponent(fondoLabel1).addComponent(fondoDesplegable1,
+										javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
+										javax.swing.GroupLayout.PREFERRED_SIZE))
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
+						.addGroup(
+								borrarFondoCarteraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+										.addComponent(canBoFondoCartBoton).addComponent(aceptBoFondoCartBoton))
+						.addContainerGap()));
+
+		ventanaConfirmacion.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+		ventanaConfirmacion.setTitle("Confirmación");
+		ventanaConfirmacion.setModal(true);
+		ventanaConfirmacion.setResizable(false);
+
+		confirmacionLabel.setText("Pregunta de confirmación");
+
+		aceptarConfirBoton.setText("Cancelar");
+		aceptarConfirBoton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				aceptarConfirBotonActionPerformed(evt);
+			}
+		});
+
+		cancelarConfirBoton.setText("Aceptar");
+		cancelarConfirBoton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				cancelarConfirBotonActionPerformed(evt);
+			}
+		});
+
+		javax.swing.GroupLayout ventanaConfirmacionLayout = new javax.swing.GroupLayout(
+				ventanaConfirmacion.getContentPane());
+		ventanaConfirmacion.getContentPane().setLayout(ventanaConfirmacionLayout);
+		ventanaConfirmacionLayout.setHorizontalGroup(ventanaConfirmacionLayout
+				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(ventanaConfirmacionLayout.createSequentialGroup().addGap(53, 53, 53)
+						.addGroup(ventanaConfirmacionLayout
+								.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+								.addComponent(confirmacionLabel, javax.swing.GroupLayout.DEFAULT_SIZE,
+										javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addGroup(ventanaConfirmacionLayout.createSequentialGroup()
+										.addComponent(aceptarConfirBoton)
+										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+										.addComponent(cancelarConfirBoton)))
+						.addContainerGap(54, Short.MAX_VALUE)));
+		ventanaConfirmacionLayout.setVerticalGroup(
+				ventanaConfirmacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+						.addGroup(ventanaConfirmacionLayout.createSequentialGroup().addGap(43, 43, 43)
+								.addComponent(confirmacionLabel).addGap(53, 53, 53)
+								.addGroup(ventanaConfirmacionLayout
+										.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+										.addComponent(aceptarConfirBoton).addComponent(cancelarConfirBoton))
+								.addContainerGap(53, Short.MAX_VALUE)));
+
+		tablaVls.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+		tablaVls.setTitle("Valores Liquidativos");
+
+		vlTabla.setModel(new javax.swing.table.DefaultTableModel(new Object[][] {
+
+		}, new String[] { "ISIN", "Fecha", "Valor Liquidativo" }) {
+			boolean[] canEdit = new boolean[] { false, false, false };
+
+			public boolean isCellEditable(int rowIndex, int columnIndex) {
+				return canEdit[columnIndex];
+			}
+		});
+		jScrollPane3.setViewportView(vlTabla);
+
+		javax.swing.GroupLayout tablaVlsLayout = new javax.swing.GroupLayout(tablaVls.getContentPane());
+		tablaVls.getContentPane().setLayout(tablaVlsLayout);
+		tablaVlsLayout.setHorizontalGroup(tablaVlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(tablaVlsLayout.createSequentialGroup().addContainerGap()
+						.addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 539, Short.MAX_VALUE)
+						.addContainerGap()));
+		tablaVlsLayout.setVerticalGroup(tablaVlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(tablaVlsLayout.createSequentialGroup().addContainerGap()
+						.addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 431, Short.MAX_VALUE)
+						.addContainerGap()));
+
+		tablaOps.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+		tablaOps.setTitle("Operaciones");
+
+		opTabla.setModel(new javax.swing.table.DefaultTableModel(new Object[][] {
+
+		}, new String[] { "Fecha", "Operación", "Precio", "Participaciones Finales" }));
+		jScrollPane4.setViewportView(opTabla);
+
+		javax.swing.GroupLayout tablaOpsLayout = new javax.swing.GroupLayout(tablaOps.getContentPane());
+		tablaOps.getContentPane().setLayout(tablaOpsLayout);
+		tablaOpsLayout.setHorizontalGroup(tablaOpsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(tablaOpsLayout.createSequentialGroup().addContainerGap()
+						.addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 679, Short.MAX_VALUE)
+						.addContainerGap()));
+		tablaOpsLayout.setVerticalGroup(tablaOpsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(tablaOpsLayout.createSequentialGroup().addContainerGap()
+						.addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 427, Short.MAX_VALUE)
+						.addContainerGap()));
+
 		actuVl.setText("Actualizar");
 		actuVl.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1060,95 +1289,6 @@ public class ui extends javax.swing.JFrame {
 		});
 		opMenu.add(borrarOp);
 
-		tablaVls.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-		tablaVls.setTitle("Valores Liquidativos");
-
-		vlTabla.setModel(new javax.swing.table.DefaultTableModel(new Object[][] {
-
-		}, new String[] { "ISIN", "Fecha", "Valor Liquidativo" }) {
-			boolean[] canEdit = new boolean[] { false, false, false };
-
-			public boolean isCellEditable(int rowIndex, int columnIndex) {
-				return canEdit[columnIndex];
-			}
-		});
-		jScrollPane3.setViewportView(vlTabla);
-
-		javax.swing.GroupLayout tablaVlsLayout = new javax.swing.GroupLayout(tablaVls.getContentPane());
-		tablaVls.getContentPane().setLayout(tablaVlsLayout);
-		tablaVlsLayout.setHorizontalGroup(tablaVlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(tablaVlsLayout.createSequentialGroup().addContainerGap()
-						.addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 539, Short.MAX_VALUE)
-						.addContainerGap()));
-		tablaVlsLayout.setVerticalGroup(tablaVlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(tablaVlsLayout.createSequentialGroup().addContainerGap()
-						.addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 431, Short.MAX_VALUE)
-						.addContainerGap()));
-
-		tablaOps.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-		tablaOps.setTitle("Operaciones");
-
-		opTabla.setModel(new javax.swing.table.DefaultTableModel(new Object[][] {
-
-		}, new String[] { "Fecha", "Operación", "Precio", "Participaciones Finales" }));
-		jScrollPane4.setViewportView(opTabla);
-
-		javax.swing.GroupLayout tablaOpsLayout = new javax.swing.GroupLayout(tablaOps.getContentPane());
-		tablaOps.getContentPane().setLayout(tablaOpsLayout);
-		tablaOpsLayout.setHorizontalGroup(tablaOpsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(tablaOpsLayout.createSequentialGroup().addContainerGap()
-						.addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 679, Short.MAX_VALUE)
-						.addContainerGap()));
-		tablaOpsLayout.setVerticalGroup(tablaOpsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(tablaOpsLayout.createSequentialGroup().addContainerGap()
-						.addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 427, Short.MAX_VALUE)
-						.addContainerGap()));
-
-		ventanaConfirmacion.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-		ventanaConfirmacion.setTitle("Confirmación");
-		ventanaConfirmacion.setModal(true);
-		ventanaConfirmacion.setResizable(false);
-
-		confirmacionLabel.setText("Pregunta de confirmación");
-
-		aceptarConfirBoton.setText("Cancelar");
-		aceptarConfirBoton.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				aceptarConfirBotonActionPerformed(evt);
-			}
-		});
-
-		cancelarConfirBoton.setText("Aceptar");
-		cancelarConfirBoton.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				cancelarConfirBotonActionPerformed(evt);
-			}
-		});
-
-		javax.swing.GroupLayout ventanaConfirmacionLayout = new javax.swing.GroupLayout(
-				ventanaConfirmacion.getContentPane());
-		ventanaConfirmacion.getContentPane().setLayout(ventanaConfirmacionLayout);
-		ventanaConfirmacionLayout.setHorizontalGroup(ventanaConfirmacionLayout
-				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(ventanaConfirmacionLayout.createSequentialGroup().addGap(53, 53, 53)
-						.addGroup(ventanaConfirmacionLayout
-								.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-								.addComponent(confirmacionLabel, javax.swing.GroupLayout.DEFAULT_SIZE,
-										javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addGroup(ventanaConfirmacionLayout.createSequentialGroup()
-										.addComponent(aceptarConfirBoton)
-										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(cancelarConfirBoton)))
-						.addContainerGap(54, Short.MAX_VALUE)));
-		ventanaConfirmacionLayout.setVerticalGroup(
-				ventanaConfirmacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(ventanaConfirmacionLayout.createSequentialGroup().addGap(43, 43, 43)
-								.addComponent(confirmacionLabel).addGap(53, 53, 53)
-								.addGroup(ventanaConfirmacionLayout
-										.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-										.addComponent(aceptarConfirBoton).addComponent(cancelarConfirBoton))
-								.addContainerGap(53, Short.MAX_VALUE)));
-
 		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 		setTitle("Aplicación");
 		setName("Ventana Principal"); // NOI18N
@@ -1229,7 +1369,9 @@ public class ui extends javax.swing.JFrame {
 		pack();
 	}// </editor-fold>
 
-	// Click en el boton de añadir fondo del menu archivo -> añadir
+	//////////////////////////////////////////////////////////////////////////////////////////
+
+	// Click en el boton de aÃ±adir fondo del menu archivo -> aÃ±adir
 	private void botonAnadirFondoActionPerformed(java.awt.event.ActionEvent evt) {
 
 		isinText.setText("");
@@ -1244,7 +1386,7 @@ public class ui extends javax.swing.JFrame {
 
 	}
 
-	// Click en el boton aceptar de la ventana de añadir fondo
+	// Click en el boton aceptar de la ventana de aÃ±adir fondo
 	private void anadFondoBotonActionPerformed(java.awt.event.ActionEvent evt) {
 
 		FundDesc fund = new FundDesc(isinText.getText(), gestoraText.getText(), tipoText.getText(),
@@ -1262,14 +1404,14 @@ public class ui extends javax.swing.JFrame {
 
 	}
 
-	// Click en el boton cancelar de la ventana de añadir fondo
+	// Click en el boton cancelar de la ventana de aÃ±adir fondo
 	private void canAnaFondoBotonActionPerformed(java.awt.event.ActionEvent evt) {
 
 		anadirFondo.setVisible(false);
 
 	}
 
-	// Click en el boton de añadir cartera del menu archivo -> añadir
+	// Click en el boton de aÃ±adir cartera del menu archivo -> aÃ±adir
 	private void botonAnadirCarteraActionPerformed(java.awt.event.ActionEvent evt) {
 
 		descCarteraText.setText("");
@@ -1278,14 +1420,14 @@ public class ui extends javax.swing.JFrame {
 
 	}
 
-	// Click en el boton cancelar de la ventana de añadir cartera
+	// Click en el boton cancelar de la ventana de aÃ±adir cartera
 	private void canAnaCarteraBotonActionPerformed(java.awt.event.ActionEvent evt) {
 
 		anadirCartera.setVisible(false);
 
 	}
 
-	// Click en el boton añadir de la ventana de añadir cartera
+	// Click en el boton aÃ±adir de la ventana de aÃ±adir cartera
 	private void anaCarteraBotonActionPerformed(java.awt.event.ActionEvent evt) {
 
 		FundPort fundPort = new FundPort(nomCarteraText.getText(), descCarteraText.getText());
@@ -1301,14 +1443,13 @@ public class ui extends javax.swing.JFrame {
 		anadirCartera.setVisible(false);
 	}
 
-	// Seleccionar un elemento del árbol
+	// Seleccionar un elemento del Ã¡rbol
 	private void arbolFondosValueChanged(javax.swing.event.TreeSelectionEvent evt) {
 		// TODO add your handling code here:
 	}
 
 	// Popupmenu en el arbol
 	private void arbolFondosMousePressed(java.awt.event.MouseEvent evt) {
-
 		if (evt.isPopupTrigger()) {
 
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
@@ -1319,11 +1460,11 @@ public class ui extends javax.swing.JFrame {
 			Object nodeInfo = node.getUserObject();
 
 			if (nodeInfo.getClass() == tfg.app.model.entities.FundDesc.class) {
-				fondoMenu.show(this, evt.getX(), evt.getY());
+				fondoMenu.show(evt.getComponent(), evt.getX(), evt.getY());
 				return;
 			}
 			if (nodeInfo.getClass() == tfg.app.model.entities.FundPort.class) {
-				carteraMenu.show(this, evt.getX(), evt.getY());
+				carteraMenu.show(evt.getComponent(), evt.getX(), evt.getY());
 				return;
 			}
 
@@ -1344,11 +1485,11 @@ public class ui extends javax.swing.JFrame {
 			Object nodeInfo = node.getUserObject();
 
 			if (nodeInfo.getClass() == tfg.app.model.entities.FundDesc.class) {
-				fondoMenu.show(this, evt.getX(), evt.getY());
+				fondoMenu.show(evt.getComponent(), evt.getX(), evt.getY());
 				return;
 			}
 			if (nodeInfo.getClass() == tfg.app.model.entities.FundPort.class) {
-				carteraMenu.show(this, evt.getX(), evt.getY());
+				carteraMenu.show(evt.getComponent(), evt.getX(), evt.getY());
 				return;
 			}
 
@@ -1427,21 +1568,46 @@ public class ui extends javax.swing.JFrame {
 
 	// Anadir fondo a cartera del popupmenu de cartera
 	private void anFondoAcarteraActionPerformed(java.awt.event.ActionEvent evt) {
-		// TODO add your handling code here:
+
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		Object nodeInfo = node.getUserObject();
+		FundPort fundPort = (FundPort) nodeInfo;
+
+		carteraLabel.setText("Cartera: " + fundPort.getpName());
+
+		List<FundDesc> allFunds = fundService.findAllFunds();
+		List<FundDesc> fundsOfPortfolio = null;
+
+		try {
+			fundsOfPortfolio = fundService.findFundsOfPortfolio(fundPort);
+		} catch (InstanceNotFoundException e) {
+			JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de entrada", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		allFunds.removeAll(fundsOfPortfolio);
+
+		fondoDesplegable.removeAllItems();
+
+		for (int x = 0; x < allFunds.size(); x++) {
+			fondoDesplegable.addItem(allFunds.get(x));
+		}
+
+		anadirFondoCartera.setVisible(true);
 	}
 
 	// Actualizar cartera del popupmenu de cartera
 	private void actualizarCarteraActionPerformed(java.awt.event.ActionEvent evt) {
-		
+
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
 		Object nodeInfo = node.getUserObject();
 		FundPort fundPort = (FundPort) nodeInfo;
 
 		nomCarteraText1.setText(fundPort.getpName());
 		descCarteraText1.setText(fundPort.getpDesc());
-		
+
 		actuaCartera.setVisible(true);
-		
+
 	}
 
 	// Borrar cartera del popupmenu de cartera
@@ -1528,12 +1694,35 @@ public class ui extends javax.swing.JFrame {
 
 	// Eliminar fondo de cartera del popupmenu de cartera
 	private void elFondoCarteraActionPerformed(java.awt.event.ActionEvent evt) {
-		// TODO add your handling code here:
+
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		Object nodeInfo = node.getUserObject();
+		FundPort fundPort = (FundPort) nodeInfo;
+
+		carteraLabel1.setText("Cartera: " + fundPort.getpName());
+
+		List<FundDesc> fundsOfPortfolio = null;
+
+		try {
+			fundsOfPortfolio = fundService.findFundsOfPortfolio(fundPort);
+		} catch (InstanceNotFoundException e) {
+			JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de entrada", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		fondoDesplegable1.removeAllItems();
+
+		for (int x = 0; x < fundsOfPortfolio.size(); x++) {
+			fondoDesplegable1.addItem(fundsOfPortfolio.get(x));
+		}
+
+		borrarFondoCartera.setVisible(true);
+
 	}
 
 	// Añadir operacion del popupmenu de cartera
 	private void anOperacionActionPerformed(java.awt.event.ActionEvent evt) {
-		// TODO add your handling code here:
+
 	}
 
 	// Ver operaciones del popupmenu de cartera
@@ -1553,36 +1742,40 @@ public class ui extends javax.swing.JFrame {
 
 	// Click en el boton cancelar de la ventana actualizar cartera
 	private void canAnaCarteraBoton1ActionPerformed(java.awt.event.ActionEvent evt) {
-		
+
 		actuaCartera.setVisible(false);
-		
+
 	}
 
-	// Click en el boton anadir de la ventana actualizar catera
+	// Click en el boton aceptar de la ventana actualizar cartera
 	private void anaCarteraBoton1ActionPerformed(java.awt.event.ActionEvent evt) {
-		
+
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
 		Object nodeInfo = node.getUserObject();
 		FundPort fundPort = (FundPort) nodeInfo;
-		
+
 		fundPort.setpName(nomCarteraText1.getText());
 		fundPort.setpDesc(descCarteraText1.getText());
-		
+
 		try {
-			
+
 			fundService.updateFundPortfolio(fundPort);
-			
+
 		} catch (InstanceNotFoundException e) {
-			JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de actualización", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de actualización",
+					JOptionPane.ERROR_MESSAGE);
 			return;
 		} catch (InputValidationException e) {
-			JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de actualización", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de actualización",
+					JOptionPane.ERROR_MESSAGE);
 			return;
+		} finally {
+
+			createNodes(top);
+			arbolFondosModel.reload(top);
+
 		}
-		
-		createNodes(top);
-		arbolFondosModel.reload(top);
-		
+
 		actuaCartera.setVisible(false);
 	}
 
@@ -1655,6 +1848,81 @@ public class ui extends javax.swing.JFrame {
 				e.printStackTrace();
 			}
 		}
+	}
+	///////////////////////////
+
+	// Click en el boton de aceptar de la ventana añadir fondo a cartera
+	private void aceptAnFondoCartBotonActionPerformed(java.awt.event.ActionEvent evt) {
+
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		Object nodeInfo = node.getUserObject();
+		FundPort fundPort = (FundPort) nodeInfo;
+
+		FundDesc fundDesc = (FundDesc) fondoDesplegable.getSelectedItem();
+
+		if (fundDesc == null) {
+
+			anadirFondoCartera.setVisible(false);
+			return;
+
+		}
+
+		try {
+			fundService.addPortDesc(fundPort, fundDesc);
+		} catch (InstanceNotFoundException | InputValidationException e) {
+			JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de actualización",
+					JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		createNodes(top);
+		arbolFondosModel.reload(top);
+		anadirFondoCartera.setVisible(false);
+
+	}
+
+	// Click en el boton cancelar de la ventana añadir fondo a cartera
+	private void canAnFondoCartBotonActionPerformed(java.awt.event.ActionEvent evt) {
+
+		anadirFondoCartera.setVisible(false);
+
+	}
+
+	// Click en el boton cancelar de la ventana borrar fondo de cartera
+	private void canBoFondoCartBotonActionPerformed(java.awt.event.ActionEvent evt) {
+
+		borrarFondoCartera.setVisible(false);
+
+	}
+
+	// Click en el boton aceptar de la ventana borrar fondo de cartera
+	private void aceptBoFondoCartBotonActionPerformed(java.awt.event.ActionEvent evt) {
+
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		Object nodeInfo = node.getUserObject();
+		FundPort fundPort = (FundPort) nodeInfo;
+
+		FundDesc fundDesc = (FundDesc) fondoDesplegable1.getSelectedItem();
+
+		if (fundDesc == null) {
+
+			borrarFondoCartera.setVisible(false);
+			return;
+
+		}
+
+		try {
+			fundService.removePortDesc(fundPort, fundDesc);
+		} catch (InstanceNotFoundException e) {
+			JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de borrado",
+					JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		createNodes(top);
+		arbolFondosModel.reload(top);
+		borrarFondoCartera.setVisible(false);
+
 	}
 
 	// Main de la app
@@ -1734,7 +2002,16 @@ public class ui extends javax.swing.JFrame {
 	}
 
 	// Variables declaration - do not modify
+	////////////////////////////////////////////
+
+	private DefaultMutableTreeNode top;
+	private DefaultTreeModel arbolFondosModel;
 	private static FundService fundService = null;
+
+	////////////////////////////////////////////
+
+	private javax.swing.JButton aceptAnFondoCartBoton;
+	private javax.swing.JButton aceptBoFondoCartBoton;
 	private javax.swing.JButton aceptarConfirBoton;
 	private javax.swing.JMenuItem actuOp;
 	private javax.swing.JMenuItem actuVl;
@@ -1753,15 +2030,18 @@ public class ui extends javax.swing.JFrame {
 	private javax.swing.JMenuItem anadVlaFondo;
 	private javax.swing.JDialog anadirCartera;
 	private javax.swing.JDialog anadirFondo;
+	private javax.swing.JDialog anadirFondoCartera;
 	private javax.swing.JDialog anadirOp;
 	private javax.swing.JDialog anadirVl;
 	private javax.swing.JLabel apComLabel;
 	private javax.swing.JLabel apComLabel1;
 	private javax.swing.JFormattedTextField apComText;
 	private javax.swing.JFormattedTextField apComText1;
+	private javax.swing.JTree arbolFondos;
 	private javax.swing.JMenuBar barraMenu;
 	private javax.swing.JMenuItem borrarCartera;
 	private javax.swing.JMenuItem borrarFondo;
+	private javax.swing.JDialog borrarFondoCartera;
 	private javax.swing.JMenuItem borrarOp;
 	private javax.swing.JMenuItem borrarVl;
 	private javax.swing.JMenuItem botonAnadirCartera;
@@ -1769,14 +2049,18 @@ public class ui extends javax.swing.JFrame {
 	private javax.swing.JLabel buscarLabel;
 	private javax.swing.JTextField buscarText;
 	private javax.swing.JButton canActuaFondoBoton1;
+	private javax.swing.JButton canAnFondoCartBoton;
 	private javax.swing.JButton canAnaCarteraBoton;
 	private javax.swing.JButton canAnaCarteraBoton1;
 	private javax.swing.JButton canAnaFondoBoton;
+	private javax.swing.JButton canBoFondoCartBoton;
 	private javax.swing.JLabel cancelComLabel;
 	private javax.swing.JLabel cancelComLabel1;
 	private javax.swing.JFormattedTextField cancelComText;
 	private javax.swing.JFormattedTextField cancelComText1;
 	private javax.swing.JButton cancelarConfirBoton;
+	private javax.swing.JLabel carteraLabel;
+	private javax.swing.JLabel carteraLabel1;
 	private javax.swing.JPopupMenu carteraMenu;
 	private javax.swing.JLabel categoriaLabel;
 	private javax.swing.JLabel categoriaLabel1;
@@ -1792,6 +2076,10 @@ public class ui extends javax.swing.JFrame {
 	private javax.swing.JTextField divisaText;
 	private javax.swing.JTextField divisaText1;
 	private javax.swing.JMenuItem elFondoCartera;
+	private javax.swing.JComboBox<FundDesc> fondoDesplegable;
+	private javax.swing.JComboBox<FundDesc> fondoDesplegable1;
+	private javax.swing.JLabel fondoLabel;
+	private javax.swing.JLabel fondoLabel1;
 	private javax.swing.JPopupMenu fondoMenu;
 	private javax.swing.JLabel gestoraLabel;
 	private javax.swing.JLabel gestoraLabel1;
@@ -1836,7 +2124,6 @@ public class ui extends javax.swing.JFrame {
 	private javax.swing.JTextField tipoText;
 	private javax.swing.JTextField tipoText1;
 	private javax.swing.JDialog ventanaConfirmacion;
-	private javax.swing.JTree arbolFondos;
 	private javax.swing.JOptionPane ventanaError;
 	private javax.swing.JMenuItem verOperaciones;
 	private javax.swing.JButton vlAccBoton;
@@ -1855,7 +2142,5 @@ public class ui extends javax.swing.JFrame {
 	private javax.swing.JLabel vlVlLabel1;
 	private javax.swing.JFormattedTextField vlVlText;
 	private javax.swing.JFormattedTextField vlVlText1;
-	private DefaultMutableTreeNode top;
-	private DefaultTreeModel arbolFondosModel;
 	// End of variables declaration
 }
