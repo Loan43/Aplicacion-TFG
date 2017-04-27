@@ -72,7 +72,7 @@ public class FundVl {
 
 	@Override
 	public String toString() {
-		return  day + ": vl=" + vl;
+		return  day.toString();
 	}
 
 	@Override

@@ -126,4 +126,9 @@ public class PortOp {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return (day.toString());
+	}
+
 }
