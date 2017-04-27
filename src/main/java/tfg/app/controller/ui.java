@@ -1,14 +1,23 @@
 package tfg.app.controller;
 
+import java.awt.BorderLayout;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
 
 import tfg.app.model.entities.FundDesc;
 import tfg.app.model.entities.FundPort;
@@ -48,6 +57,7 @@ public class ui extends javax.swing.JFrame {
 	// <editor-fold defaultstate="collapsed" desc="Generated Code">
 	private void initComponents() {
 
+		panelGraficas = new javax.swing.JPanel();
 		verVl = new javax.swing.JMenuItem();
 		anadirFondo = new javax.swing.JDialog();
 		isinLabel = new javax.swing.JLabel();
@@ -1382,6 +1392,7 @@ public class ui extends javax.swing.JFrame {
 		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 		setTitle("Aplicación");
 		setName("Ventana Principal"); // NOI18N
+		setSize(new java.awt.Dimension(1024, 768));
 
 		buscarText.setText("Buscar");
 
@@ -1402,6 +1413,16 @@ public class ui extends javax.swing.JFrame {
 			}
 		});
 		jScrollPane2.setViewportView(arbolFondos);
+
+		panelGraficas.setPreferredSize(new java.awt.Dimension(756, 635));
+		panelGraficas.setRequestFocusEnabled(false);
+
+		javax.swing.GroupLayout panelGraficasLayout = new javax.swing.GroupLayout(panelGraficas);
+		panelGraficas.setLayout(panelGraficasLayout);
+		panelGraficasLayout.setHorizontalGroup(panelGraficasLayout
+				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(0, 743, Short.MAX_VALUE));
+		panelGraficasLayout.setVerticalGroup(panelGraficasLayout
+				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(0, 626, Short.MAX_VALUE));
 
 		jMenu3.setText("Archivo");
 
@@ -1443,18 +1464,23 @@ public class ui extends javax.swing.JFrame {
 										layout.createSequentialGroup().addComponent(buscarText)
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
 												.addComponent(buscarLabel)))
-						.addContainerGap(789, Short.MAX_VALUE)));
-		layout.setVerticalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(layout.createSequentialGroup().addContainerGap()
-						.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-								.addComponent(buscarText, javax.swing.GroupLayout.PREFERRED_SIZE,
-										javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-								.addComponent(buscarLabel))
-						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-						.addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 670, Short.MAX_VALUE)
+						.addGap(18, 18, 18).addComponent(panelGraficas, javax.swing.GroupLayout.DEFAULT_SIZE,
+								javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 						.addContainerGap()));
-
-		layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] { buscarLabel, buscarText });
+		layout.setVerticalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(layout
+				.createSequentialGroup().addContainerGap()
+				.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+						.addComponent(buscarText, javax.swing.GroupLayout.PREFERRED_SIZE,
+								javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+						.addComponent(buscarLabel))
+				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+				.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+						.addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 670, Short.MAX_VALUE)
+						.addGroup(layout.createSequentialGroup()
+								.addComponent(panelGraficas, javax.swing.GroupLayout.DEFAULT_SIZE,
+										javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addGap(35, 35, 35)))
+				.addContainerGap()));
 
 		pack();
 	}// </editor-fold>
@@ -1533,9 +1559,75 @@ public class ui extends javax.swing.JFrame {
 		anadirCartera.setVisible(false);
 	}
 
-	// Seleccionar un elemento del Ã¡rbol
+	// Seleccionar un elemento del arbol
 	private void arbolFondosValueChanged(javax.swing.event.TreeSelectionEvent evt) {
-		//
+
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+
+		if (node == null) {
+			return;
+		}
+		Object nodeInfo = node.getUserObject();
+
+		if (nodeInfo.getClass() == tfg.app.model.entities.FundDesc.class) {
+
+			FundDesc fundDesc = (FundDesc) nodeInfo;
+
+			try {
+				fundDesc = fundService.findFund(fundDesc.getfId());
+			} catch (InstanceNotFoundException e) {
+				JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de borrado",
+						JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+
+			DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
+
+			for (int x = 0; x < fundDesc.getFundVls().size(); x++) {
+				line_chart_dataset.addValue(fundDesc.getFundVls().get(x).getVl(), "Valor liquidativo",
+						fundDesc.getFundVls().get(x).getDay().toString());
+			}
+
+			JFreeChart lineChartObject = ChartFactory.createLineChart("Historial del valor liquidativo", "Días",
+					"Valor", line_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
+
+			ChartPanel CP = new ChartPanel(lineChartObject);
+			panelGraficas.removeAll();
+			panelGraficas.updateUI();
+			panelGraficas.setLayout(new java.awt.BorderLayout());
+			panelGraficas.add(CP, BorderLayout.CENTER);
+
+		}
+		if (nodeInfo.getClass() == tfg.app.model.entities.FundPort.class) {
+
+			FundPort fundPort = (FundPort) nodeInfo;
+			DefaultPieDataset dataset = new DefaultPieDataset();
+
+			try {
+				List<FundDesc> fundDescs = fundService.findFundsOfPortfolio(fundPort);
+
+				for (int x = 0; x < fundDescs.size(); x++) {
+					dataset.setValue(fundDescs.get(x).getfId(),
+							fundService.findLatestPortOp(fundPort, fundDescs.get(x), LocalDate.now()).getfPartfin());
+				}
+
+			} catch (InstanceNotFoundException e) {
+
+			}
+
+			JFreeChart chart = ChartFactory.createPieChart("Participaciones de la cartera " + fundPort.getpName(), // chart
+					// title
+					dataset, // data
+					true, // include legend
+					true, false);
+			ChartPanel CP = new ChartPanel(chart);
+			panelGraficas.removeAll();
+			panelGraficas.updateUI();
+			panelGraficas.setLayout(new java.awt.BorderLayout());
+			panelGraficas.add(CP, BorderLayout.CENTER);
+			panelGraficas.validate();
+		}
+
 	}
 
 	// Popupmenu en el arbol
@@ -2299,18 +2391,25 @@ public class ui extends javax.swing.JFrame {
 		FundPort fundPort1 = new FundPort("Cartera Test 1", "Esto es una cartera de prueba");
 		FundPort fundPort2 = new FundPort("Cartera Test 2", "Esto es una cartera de prueba");
 
-		FundVl fundVl1 = new FundVl(LocalDate.parse("2020-04-20"), 25.00, fundDesc1);
-		FundVl fundVl2 = new FundVl(LocalDate.parse("2020-04-21"), 25.00, fundDesc1);
+		LocalDate date = LocalDate.parse("2020-04-23");
 
-		FundVl fundVl11 = new FundVl(LocalDate.parse("2020-04-20"), 25.00, fundDesc2);
-		FundVl fundVl21 = new FundVl(LocalDate.parse("2020-04-22"), 25.00, fundDesc2);
+		for (int x = 0; x < 250; x++) {
+			date = date.plusDays(1);
+			fundDesc1.getFundVls().add(new FundVl(date, ThreadLocalRandom.current().nextDouble(0.0, 100.0), fundDesc1));
+		}
 
-		fundDesc1.getFundVls().add(fundVl1);
-		fundDesc1.getFundVls().add(fundVl2);
+		date = LocalDate.parse("2020-04-23");
 
-		fundDesc2.getFundVls().add(fundVl11);
-		fundDesc2.getFundVls().add(fundVl21);
-
+		for (int x = 0; x < 250; x++) {
+			date = date.plusDays(1);
+			fundDesc2.getFundVls().add(new FundVl(date, ThreadLocalRandom.current().nextDouble(0.0, 100.0), fundDesc2));
+		}
+		
+		PortOp portOp = new PortOp(LocalDate.parse("2000-04-27"), fundPort1, fundDesc1, 100);
+		PortOp portOp1 = new PortOp(LocalDate.parse("2000-04-28"), fundPort1, fundDesc2, 100);
+		PortOp portOp2 = new PortOp(LocalDate.parse("2000-04-29"), fundPort2, fundDesc2, 100);
+		
+		
 		try {
 
 			fundService.addFund(fundDesc1);
@@ -2320,6 +2419,9 @@ public class ui extends javax.swing.JFrame {
 			fundService.addPortDesc(fundPort1, fundDesc1);
 			fundService.addPortDesc(fundPort1, fundDesc2);
 			fundService.addPortDesc(fundPort2, fundDesc2);
+			fundService.addPortOp(portOp);
+			fundService.addPortOp(portOp1);
+			fundService.addPortOp(portOp2);
 
 		} catch (InputValidationException e) {
 			//
@@ -2503,5 +2605,6 @@ public class ui extends javax.swing.JFrame {
 	private javax.swing.JFormattedTextField vlVlText;
 	private javax.swing.JFormattedTextField vlVlText1;
 	private javax.swing.JMenuItem verVl;
+	private javax.swing.JPanel panelGraficas;
 	// End of variables declaration
 }
