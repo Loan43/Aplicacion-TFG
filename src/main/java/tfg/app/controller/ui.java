@@ -195,6 +195,7 @@ public class ui extends javax.swing.JFrame {
 		botonAnadirFondo = new javax.swing.JMenuItem();
 		botonAnadirCartera = new javax.swing.JMenuItem();
 		jMenu4 = new javax.swing.JMenu();
+		graficasBox = new javax.swing.JComboBox<>();
 
 		///////////////////////////////////////////
 		opIsinLabel = new javax.swing.JLabel();
@@ -1424,6 +1425,15 @@ public class ui extends javax.swing.JFrame {
 		panelGraficasLayout.setVerticalGroup(panelGraficasLayout
 				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(0, 626, Short.MAX_VALUE));
 
+		graficasBox.setModel(new javax.swing.DefaultComboBoxModel<>(
+				new String[] { "Historial Vl", "Grafica 2", "Grafica 3", "Grafica 4" }));
+		graficasBox.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				graficasBoxActionPerformed(evt);
+			}
+		});
+		graficasBox.setVisible(false);
+
 		jMenu3.setText("Archivo");
 
 		jMenu1.setText("Añadir");
@@ -1464,23 +1474,30 @@ public class ui extends javax.swing.JFrame {
 										layout.createSequentialGroup().addComponent(buscarText)
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
 												.addComponent(buscarLabel)))
-						.addGap(18, 18, 18).addComponent(panelGraficas, javax.swing.GroupLayout.DEFAULT_SIZE,
+						.addGap(18, 18, 18)
+						.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+								.addComponent(panelGraficas, javax.swing.GroupLayout.PREFERRED_SIZE, 743,
+										javax.swing.GroupLayout.PREFERRED_SIZE)
+								.addComponent(graficasBox, javax.swing.GroupLayout.PREFERRED_SIZE, 100,
+										javax.swing.GroupLayout.PREFERRED_SIZE))
+						.addContainerGap(28, Short.MAX_VALUE)));
+		layout.setVerticalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(layout.createSequentialGroup().addContainerGap().addGroup(layout
+						.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false).addComponent(buscarText)
+						.addComponent(buscarLabel, javax.swing.GroupLayout.DEFAULT_SIZE,
 								javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.addComponent(graficasBox))
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+						.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+								.addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 670, Short.MAX_VALUE)
+								.addGroup(layout.createSequentialGroup()
+										.addComponent(panelGraficas, javax.swing.GroupLayout.PREFERRED_SIZE, 626,
+												javax.swing.GroupLayout.PREFERRED_SIZE)
+										.addGap(0, 0, Short.MAX_VALUE)))
 						.addContainerGap()));
-		layout.setVerticalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(layout
-				.createSequentialGroup().addContainerGap()
-				.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-						.addComponent(buscarText, javax.swing.GroupLayout.PREFERRED_SIZE,
-								javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-						.addComponent(buscarLabel))
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-						.addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 670, Short.MAX_VALUE)
-						.addGroup(layout.createSequentialGroup()
-								.addComponent(panelGraficas, javax.swing.GroupLayout.DEFAULT_SIZE,
-										javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addGap(35, 35, 35)))
-				.addContainerGap()));
+
+		layout.linkSize(javax.swing.SwingConstants.VERTICAL,
+				new java.awt.Component[] { buscarLabel, buscarText, graficasBox });
 
 		pack();
 	}// </editor-fold>
@@ -1572,6 +1589,7 @@ public class ui extends javax.swing.JFrame {
 		if (nodeInfo.getClass() == tfg.app.model.entities.FundDesc.class) {
 
 			FundDesc fundDesc = (FundDesc) nodeInfo;
+			graficasBox.setVisible(true);
 
 			try {
 				fundDesc = fundService.findFund(fundDesc.getfId());
@@ -1602,6 +1620,7 @@ public class ui extends javax.swing.JFrame {
 
 			FundPort fundPort = (FundPort) nodeInfo;
 			DefaultPieDataset dataset = new DefaultPieDataset();
+			graficasBox.setVisible(false);
 
 			try {
 				List<FundDesc> fundDescs = fundService.findFundsOfPortfolio(fundPort);
@@ -2371,6 +2390,56 @@ public class ui extends javax.swing.JFrame {
 
 	}
 
+	// Seleccionar una grafica en el scroll de la ventana principal
+	private void graficasBoxActionPerformed(java.awt.event.ActionEvent evt) {
+		System.out.println(graficasBox.getSelectedItem());
+
+		if (graficasBox.getSelectedItem().equals("Historial Vl")) {
+
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+
+			if (node == null) {
+				return;
+			}
+			Object nodeInfo = node.getUserObject();
+
+			if (nodeInfo.getClass() == tfg.app.model.entities.FundDesc.class) {
+
+				FundDesc fundDesc = (FundDesc) nodeInfo;
+				graficasBox.setVisible(true);
+
+				try {
+					fundDesc = fundService.findFund(fundDesc.getfId());
+				} catch (InstanceNotFoundException e) {
+					JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de borrado",
+							JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+
+				DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
+
+				for (int x = 0; x < fundDesc.getFundVls().size(); x++) {
+					line_chart_dataset.addValue(fundDesc.getFundVls().get(x).getVl(), "Valor liquidativo",
+							fundDesc.getFundVls().get(x).getDay().toString());
+				}
+
+				JFreeChart lineChartObject = ChartFactory.createLineChart("Historial del valor liquidativo", "Días",
+						"Valor", line_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
+
+				ChartPanel CP = new ChartPanel(lineChartObject);
+				panelGraficas.removeAll();
+				panelGraficas.updateUI();
+				panelGraficas.setLayout(new java.awt.BorderLayout());
+				panelGraficas.add(CP, BorderLayout.CENTER);
+
+			}
+
+		}
+		
+		
+
+	}
+
 	// Main de la app
 	public static void main(String args[]) {
 		/* Set the Nimbus look and feel */
@@ -2391,25 +2460,24 @@ public class ui extends javax.swing.JFrame {
 		FundPort fundPort1 = new FundPort("Cartera Test 1", "Esto es una cartera de prueba");
 		FundPort fundPort2 = new FundPort("Cartera Test 2", "Esto es una cartera de prueba");
 
-		LocalDate date = LocalDate.parse("2020-04-23");
+		LocalDate date = LocalDate.parse("2017-01-27");
 
 		for (int x = 0; x < 250; x++) {
 			date = date.plusDays(1);
-			fundDesc1.getFundVls().add(new FundVl(date, ThreadLocalRandom.current().nextDouble(0.0, 100.0), fundDesc1));
+			fundDesc1.getFundVls().add(new FundVl(date, ThreadLocalRandom.current().nextDouble(20, 30), fundDesc1));
 		}
 
-		date = LocalDate.parse("2020-04-23");
+		date = LocalDate.parse("2017-01-27");
 
 		for (int x = 0; x < 250; x++) {
 			date = date.plusDays(1);
-			fundDesc2.getFundVls().add(new FundVl(date, ThreadLocalRandom.current().nextDouble(0.0, 100.0), fundDesc2));
+			fundDesc2.getFundVls().add(new FundVl(date, ThreadLocalRandom.current().nextDouble(20, 30), fundDesc2));
 		}
-		
-		PortOp portOp = new PortOp(LocalDate.parse("2000-04-27"), fundPort1, fundDesc1, 100);
-		PortOp portOp1 = new PortOp(LocalDate.parse("2000-04-28"), fundPort1, fundDesc2, 100);
-		PortOp portOp2 = new PortOp(LocalDate.parse("2000-04-29"), fundPort2, fundDesc2, 100);
-		
-		
+
+		PortOp portOp = new PortOp(LocalDate.parse("2017-04-27"), fundPort1, fundDesc1, 100);
+		PortOp portOp1 = new PortOp(LocalDate.parse("2017-04-28"), fundPort1, fundDesc2, 100);
+		PortOp portOp2 = new PortOp(LocalDate.parse("2017-04-29"), fundPort2, fundDesc2, 100);
+
 		try {
 
 			fundService.addFund(fundDesc1);
@@ -2606,5 +2674,6 @@ public class ui extends javax.swing.JFrame {
 	private javax.swing.JFormattedTextField vlVlText1;
 	private javax.swing.JMenuItem verVl;
 	private javax.swing.JPanel panelGraficas;
+	private javax.swing.JComboBox<String> graficasBox;
 	// End of variables declaration
 }
