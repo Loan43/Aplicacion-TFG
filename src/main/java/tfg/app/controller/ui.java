@@ -196,6 +196,8 @@ public class ui extends javax.swing.JFrame {
 		botonAnadirCartera = new javax.swing.JMenuItem();
 		jMenu4 = new javax.swing.JMenu();
 		graficasBox = new javax.swing.JComboBox<>();
+		nombreLabel = new javax.swing.JLabel();
+		nombreText = new javax.swing.JTextField();
 
 		///////////////////////////////////////////
 		opIsinLabel = new javax.swing.JLabel();
@@ -212,7 +214,7 @@ public class ui extends javax.swing.JFrame {
 		anadirFondo.setLocationByPlatform(true);
 		anadirFondo.setModal(true);
 		anadirFondo.setResizable(false);
-		anadirFondo.setSize(new java.awt.Dimension(360, 350));
+		anadirFondo.setSize(new java.awt.Dimension(415, 370));
 
 		isinLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		isinLabel.setText("ISIN:");
@@ -253,51 +255,104 @@ public class ui extends javax.swing.JFrame {
 
 		apComText.setValue(new Integer(0));
 
+		nombreLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+		nombreLabel.setText("Nombre:");
+
 		javax.swing.GroupLayout anadirFondoLayout = new javax.swing.GroupLayout(anadirFondo.getContentPane());
 		anadirFondo.getContentPane().setLayout(anadirFondoLayout);
-		anadirFondoLayout.setHorizontalGroup(anadirFondoLayout
-				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
-						anadirFondoLayout.createSequentialGroup().addContainerGap().addGroup(anadirFondoLayout
-								.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addComponent(isinLabel)
-								.addComponent(gestoraLabel).addComponent(tipoLabel).addComponent(categoriaLabel)
-								.addComponent(divisaLabel).addComponent(cancelComLabel).addComponent(apComLabel))
-								.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED,
-										javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+		anadirFondoLayout
+				.setHorizontalGroup(
+						anadirFondoLayout
+								.createParallelGroup(
+										javax.swing.GroupLayout.Alignment.LEADING)
 								.addGroup(
-										anadirFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-												.addComponent(divisaText, javax.swing.GroupLayout.Alignment.TRAILING,
-														javax.swing.GroupLayout.PREFERRED_SIZE, 122,
-														javax.swing.GroupLayout.PREFERRED_SIZE)
-												.addComponent(cancelComText, javax.swing.GroupLayout.Alignment.TRAILING,
-														javax.swing.GroupLayout.PREFERRED_SIZE, 139,
-														javax.swing.GroupLayout.PREFERRED_SIZE)
-												.addComponent(categoriaText, javax.swing.GroupLayout.Alignment.TRAILING,
-														javax.swing.GroupLayout.PREFERRED_SIZE, 122,
-														javax.swing.GroupLayout.PREFERRED_SIZE)
-												.addComponent(tipoText, javax.swing.GroupLayout.Alignment.TRAILING,
-														javax.swing.GroupLayout.PREFERRED_SIZE, 122,
-														javax.swing.GroupLayout.PREFERRED_SIZE)
-												.addComponent(gestoraText, javax.swing.GroupLayout.Alignment.TRAILING,
-														javax.swing.GroupLayout.PREFERRED_SIZE, 122,
-														javax.swing.GroupLayout.PREFERRED_SIZE)
-												.addComponent(isinText, javax.swing.GroupLayout.Alignment.TRAILING,
-														javax.swing.GroupLayout.PREFERRED_SIZE, 122,
-														javax.swing.GroupLayout.PREFERRED_SIZE)
-												.addComponent(apComText, javax.swing.GroupLayout.Alignment.TRAILING,
-														javax.swing.GroupLayout.PREFERRED_SIZE, 139,
-														javax.swing.GroupLayout.PREFERRED_SIZE))
-								.addContainerGap())
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
-						anadirFondoLayout.createSequentialGroup().addContainerGap(158, Short.MAX_VALUE)
-								.addComponent(canAnaFondoBoton).addGap(18, 18, 18).addComponent(anadFondoBoton)
-								.addGap(15, 15, 15)));
+										anadirFondoLayout.createSequentialGroup().addGroup(anadirFondoLayout
+												.createParallelGroup(
+														javax.swing.GroupLayout.Alignment.LEADING)
+												.addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+														anadirFondoLayout.createSequentialGroup().addGap(202, 202, 202)
+																.addComponent(canAnaFondoBoton).addGap(18, 18, 18)
+																.addComponent(anadFondoBoton))
+												.addGroup(anadirFondoLayout.createSequentialGroup().addContainerGap()
+														.addGroup(anadirFondoLayout
+																.createParallelGroup(
+																		javax.swing.GroupLayout.Alignment.LEADING)
+																.addGroup(anadirFondoLayout.createSequentialGroup()
+																		.addGroup(anadirFondoLayout
+																				.createParallelGroup(
+																						javax.swing.GroupLayout.Alignment.LEADING)
+																				.addComponent(gestoraLabel)
+																				.addComponent(tipoLabel)
+																				.addComponent(categoriaLabel)
+																				.addComponent(divisaLabel)
+																				.addComponent(cancelComLabel)
+																				.addComponent(apComLabel))
+																		.addPreferredGap(
+																				javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+																				javax.swing.GroupLayout.DEFAULT_SIZE,
+																				Short.MAX_VALUE)
+																		.addGroup(anadirFondoLayout
+																				.createParallelGroup(
+																						javax.swing.GroupLayout.Alignment.LEADING)
+																				.addComponent(divisaText,
+																						javax.swing.GroupLayout.Alignment.TRAILING,
+																						javax.swing.GroupLayout.PREFERRED_SIZE,
+																						122,
+																						javax.swing.GroupLayout.PREFERRED_SIZE)
+																				.addComponent(cancelComText,
+																						javax.swing.GroupLayout.Alignment.TRAILING,
+																						javax.swing.GroupLayout.PREFERRED_SIZE,
+																						139,
+																						javax.swing.GroupLayout.PREFERRED_SIZE)
+																				.addComponent(categoriaText,
+																						javax.swing.GroupLayout.Alignment.TRAILING,
+																						javax.swing.GroupLayout.PREFERRED_SIZE,
+																						122,
+																						javax.swing.GroupLayout.PREFERRED_SIZE)
+																				.addComponent(tipoText,
+																						javax.swing.GroupLayout.Alignment.TRAILING,
+																						javax.swing.GroupLayout.PREFERRED_SIZE,
+																						122,
+																						javax.swing.GroupLayout.PREFERRED_SIZE)
+																				.addComponent(gestoraText,
+																						javax.swing.GroupLayout.Alignment.TRAILING,
+																						javax.swing.GroupLayout.PREFERRED_SIZE,
+																						122,
+																						javax.swing.GroupLayout.PREFERRED_SIZE)
+																				.addComponent(apComText,
+																						javax.swing.GroupLayout.Alignment.TRAILING,
+																						javax.swing.GroupLayout.PREFERRED_SIZE,
+																						139,
+																						javax.swing.GroupLayout.PREFERRED_SIZE)))
+																.addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+																		anadirFondoLayout.createSequentialGroup()
+																				.addGroup(anadirFondoLayout
+																						.createParallelGroup(
+																								javax.swing.GroupLayout.Alignment.LEADING)
+																						.addComponent(nombreLabel)
+																						.addComponent(isinLabel))
+																				.addPreferredGap(
+																						javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+																						javax.swing.GroupLayout.DEFAULT_SIZE,
+																						Short.MAX_VALUE)
+																				.addGroup(anadirFondoLayout
+																						.createParallelGroup(
+																								javax.swing.GroupLayout.Alignment.LEADING)
+																						.addComponent(nombreText,
+																								javax.swing.GroupLayout.PREFERRED_SIZE,
+																								javax.swing.GroupLayout.DEFAULT_SIZE,
+																								javax.swing.GroupLayout.PREFERRED_SIZE)
+																						.addComponent(isinText,
+																								javax.swing.GroupLayout.PREFERRED_SIZE,
+																								122,
+																								javax.swing.GroupLayout.PREFERRED_SIZE))))))
+												.addContainerGap()));
 
 		anadirFondoLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] { apComLabel,
-				cancelComLabel, categoriaLabel, divisaLabel, gestoraLabel, isinLabel, tipoLabel });
+				cancelComLabel, categoriaLabel, divisaLabel, gestoraLabel, isinLabel, nombreLabel, tipoLabel });
 
-		anadirFondoLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL,
-				new java.awt.Component[] { cancelComText, categoriaText, divisaText, gestoraText, isinText, tipoText });
+		anadirFondoLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] { cancelComText,
+				categoriaText, divisaText, gestoraText, isinText, nombreText, tipoText });
 
 		anadirFondoLayout.setVerticalGroup(anadirFondoLayout
 				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -305,6 +360,11 @@ public class ui extends javax.swing.JFrame {
 						.addGroup(anadirFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 								.addComponent(isinLabel).addComponent(isinText, javax.swing.GroupLayout.PREFERRED_SIZE,
 										javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+						.addGroup(anadirFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+								.addComponent(nombreText, javax.swing.GroupLayout.PREFERRED_SIZE,
+										javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+								.addComponent(nombreLabel))
 						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 						.addGroup(anadirFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 								.addComponent(gestoraLabel).addComponent(gestoraText,
@@ -335,13 +395,13 @@ public class ui extends javax.swing.JFrame {
 								.addComponent(cancelComLabel).addComponent(cancelComText,
 										javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
 										javax.swing.GroupLayout.PREFERRED_SIZE))
-						.addGap(18, 18, 18)
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
 						.addGroup(anadirFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 								.addComponent(anadFondoBoton).addComponent(canAnaFondoBoton))
-						.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+						.addContainerGap()));
 
 		anadirFondoLayout.linkSize(javax.swing.SwingConstants.VERTICAL,
-				new java.awt.Component[] { isinLabel, isinText });
+				new java.awt.Component[] { isinLabel, isinText, nombreLabel, nombreText });
 
 		anadirFondoLayout.linkSize(javax.swing.SwingConstants.VERTICAL,
 				new java.awt.Component[] { apComLabel, cancelComLabel, categoriaLabel, categoriaText, divisaLabel,
@@ -1522,9 +1582,9 @@ public class ui extends javax.swing.JFrame {
 	// Click en el boton aceptar de la ventana de aÃ±adir fondo
 	private void anadFondoBotonActionPerformed(java.awt.event.ActionEvent evt) {
 
-		FundDesc fund = new FundDesc(isinText.getText(), "Fondazo", gestoraText.getText(), tipoText.getText(),
-				categoriaText.getText(), divisaText.getText(), Double.valueOf(apComText.getValue().toString()),
-				Double.valueOf(cancelComText.getValue().toString()));
+		FundDesc fund = new FundDesc(isinText.getText(), nombreText.getText(), gestoraText.getText(),
+				tipoText.getText(), categoriaText.getText(), divisaText.getText(),
+				Double.valueOf(apComText.getValue().toString()), Double.valueOf(cancelComText.getValue().toString()));
 
 		try {
 			fundService.addFund(fund);
@@ -2678,5 +2738,7 @@ public class ui extends javax.swing.JFrame {
 	private javax.swing.JMenuItem verVl;
 	private javax.swing.JPanel panelGraficas;
 	private javax.swing.JComboBox<String> graficasBox;
+	private javax.swing.JLabel nombreLabel;
+	private javax.swing.JTextField nombreText;
 	// End of variables declaration
 }
