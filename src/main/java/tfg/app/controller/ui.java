@@ -57,6 +57,9 @@ public class ui extends javax.swing.JFrame {
 	// <editor-fold defaultstate="collapsed" desc="Generated Code">
 	private void initComponents() {
 
+		ventaBoton = new javax.swing.JRadioButton();
+		compraBoton = new javax.swing.JRadioButton();
+		buttonGroup1 = new javax.swing.ButtonGroup();
 		panelGraficas = new javax.swing.JPanel();
 		verVl = new javax.swing.JMenuItem();
 		anadirFondo = new javax.swing.JDialog();
@@ -907,50 +910,51 @@ public class ui extends javax.swing.JFrame {
 		fondoDesplegable2.setEditable(true);
 		fondoDesplegable2.setModel(new javax.swing.DefaultComboBoxModel<>());
 
+		buttonGroup1.add(ventaBoton);
+		ventaBoton.setText("Venta");
+
+		buttonGroup1.add(compraBoton);
+		compraBoton.setText("Compra");
+
 		javax.swing.GroupLayout anadirOpLayout = new javax.swing.GroupLayout(anadirOp.getContentPane());
 		anadirOp.getContentPane().setLayout(anadirOpLayout);
-		anadirOpLayout
-				.setHorizontalGroup(
-						anadirOpLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-								.addGroup(anadirOpLayout
-										.createSequentialGroup().addGap(36, 36, 36).addGroup(
-												anadirOpLayout
-														.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-														.addGroup(anadirOpLayout
-																.createSequentialGroup().addComponent(opCancBoton)
-																.addPreferredGap(
-																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																.addComponent(opAccBoton))
-														.addGroup(javax.swing.GroupLayout.Alignment.LEADING,
-																anadirOpLayout.createSequentialGroup()
-																		.addGroup(anadirOpLayout
-																				.createParallelGroup(
-																						javax.swing.GroupLayout.Alignment.LEADING)
-																				.addGroup(anadirOpLayout
-																						.createParallelGroup(
-																								javax.swing.GroupLayout.Alignment.LEADING)
-																						.addComponent(opFechaLabel,
-																								javax.swing.GroupLayout.Alignment.TRAILING,
-																								javax.swing.GroupLayout.PREFERRED_SIZE,
-																								161,
-																								javax.swing.GroupLayout.PREFERRED_SIZE)
-																						.addGroup(anadirOpLayout
-																								.createSequentialGroup()
-																								.addComponent(
-																										opOperacionLabel)
-																								.addGap(15, 15, 15)))
-																				.addComponent(opCarteraLabel))
-																		.addGap(33, 33, 33)
-																		.addGroup(anadirOpLayout
-																				.createParallelGroup(
-																						javax.swing.GroupLayout.Alignment.LEADING)
-																				.addComponent(opOperacionText)
-																				.addComponent(opFechaText,
-																						javax.swing.GroupLayout.DEFAULT_SIZE,
-																						148, Short.MAX_VALUE)
-																				.addComponent(fondoDesplegable2, 0, 1,
-																						Short.MAX_VALUE))))
-										.addGap(22, 22, 22)));
+		anadirOpLayout.setHorizontalGroup(
+				anadirOpLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(anadirOpLayout
+						.createSequentialGroup().addGap(36, 36, 36).addGroup(anadirOpLayout
+								.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+								.addGroup(javax.swing.GroupLayout.Alignment.LEADING,
+										anadirOpLayout.createSequentialGroup().addGroup(anadirOpLayout
+												.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+												.addGroup(anadirOpLayout
+														.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+														.addComponent(opFechaLabel,
+																javax.swing.GroupLayout.Alignment.TRAILING,
+																javax.swing.GroupLayout.PREFERRED_SIZE,
+																161, javax.swing.GroupLayout.PREFERRED_SIZE)
+														.addGroup(anadirOpLayout.createSequentialGroup()
+																.addComponent(opOperacionLabel).addGap(15, 15, 15)))
+												.addComponent(opCarteraLabel))
+												.addGap(33, 33, 33)
+												.addGroup(anadirOpLayout
+														.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+														.addComponent(opOperacionText,
+																javax.swing.GroupLayout.PREFERRED_SIZE, 148,
+																javax.swing.GroupLayout.PREFERRED_SIZE)
+														.addComponent(opFechaText)
+														.addComponent(fondoDesplegable2, 0, 1, Short.MAX_VALUE)))
+								.addGroup(anadirOpLayout.createSequentialGroup().addGap(0, 0, Short.MAX_VALUE)
+										.addComponent(opCancBoton)
+										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+										.addComponent(opAccBoton))
+								.addGroup(anadirOpLayout.createSequentialGroup().addComponent(compraBoton)
+										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+												javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addComponent(ventaBoton)))
+						.addGap(22, 22, 22)));
+
+		anadirOpLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL,
+				new java.awt.Component[] { compraBoton, opOperacionText, ventaBoton });
+
 		anadirOpLayout.setVerticalGroup(anadirOpLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 				.addGroup(anadirOpLayout.createSequentialGroup().addGap(22, 22, 22)
 						.addGroup(anadirOpLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -966,10 +970,13 @@ public class ui extends javax.swing.JFrame {
 								.addComponent(opOperacionLabel).addComponent(opOperacionText,
 										javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
 										javax.swing.GroupLayout.PREFERRED_SIZE))
+						.addGap(17, 17, 17)
+						.addGroup(anadirOpLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+								.addComponent(ventaBoton).addComponent(compraBoton))
 						.addGap(18, 18, 18)
 						.addGroup(anadirOpLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 								.addComponent(opCancBoton).addComponent(opAccBoton))
-						.addContainerGap(72, Short.MAX_VALUE)));
+						.addContainerGap(29, Short.MAX_VALUE)));
 
 		actuaOp.setTitle("Añadir Operación");
 		actuaOp.setAlwaysOnTop(true);
@@ -1310,10 +1317,10 @@ public class ui extends javax.swing.JFrame {
 
 		opTabla.setModel(new javax.swing.table.DefaultTableModel(new Object[][] {
 
-		}, new String[] { "Fecha", "Operación", "Precio", "Participaciones Finales" }) {
+		}, new String[] { "Fecha", "Operación", "Cantidad", "Precio", "Participaciones Finales" }) {
 
-			Class[] types = new Class[] { FundPort.class, java.lang.Integer.class, java.lang.Double.class,
-					java.lang.Integer.class };
+			Class[] types = new Class[] { FundPort.class, java.lang.String.class, java.lang.Integer.class,
+					java.lang.Double.class, java.lang.Integer.class };
 
 			public Class getColumnClass(int columnIndex) {
 				return types[columnIndex];
@@ -1692,7 +1699,7 @@ public class ui extends javax.swing.JFrame {
 
 			for (int x = 0; x < fundDescs.size(); x++) {
 				try {
-					dataset.setValue(fundDescs.get(x).getfId(),
+					dataset.setValue(fundDescs.get(x).toString(),
 							fundService.findLatestPortOp(fundPort, fundDescs.get(x), LocalDate.now()).getfPartfin());
 				} catch (InstanceNotFoundException e) {
 					continue;
@@ -2017,6 +2024,7 @@ public class ui extends javax.swing.JFrame {
 		FundPort fundPort = (FundPort) nodeInfo;
 
 		opCarteraLabel.setText(fundPort.getpName());
+		compraBoton.setSelected(true);
 
 		List<FundDesc> fundsOfPortfolio = null;
 
@@ -2184,19 +2192,24 @@ public class ui extends javax.swing.JFrame {
 
 		FundDesc fundDesc = (FundDesc) fondoDesplegable2.getSelectedItem();
 
-		if (fundDesc == null) {
+		Integer x = Integer.valueOf(opOperacionText.getValue().toString());
+		x = Math.abs(x);// Quizas es mejor formatear la entrada de texto para
+						// que no admita valores negativos
 
+		if (ventaBoton.isSelected()) {
+			x = x * -1;
+		}
+
+		if (fundDesc == null) {
 			anadirOp.setVisible(false);
 			return;
-
 		}
 
 		try {
 
 			Date input = (Date) opFechaText.getValue();
 			LocalDate date = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-			PortOp portOp = new PortOp(date, fundPort, fundDesc,
-					Integer.valueOf(opOperacionText.getValue().toString()));
+			PortOp portOp = new PortOp(date, fundPort, fundDesc, x);
 
 			fundService.addPortOp(portOp);
 		} catch (InputValidationException e) {
@@ -2393,7 +2406,17 @@ public class ui extends javax.swing.JFrame {
 		for (int x = 0; x < portOpsOfPortfolio.size(); x++) {
 
 			PortOp portOp = portOpsOfPortfolio.get(x);
-			model.addRow(new Object[] { portOp, portOp.getfPartOp(), portOp.getfPrice(), portOp.getfPartfin() });
+			Integer partOp = portOp.getfPartOp();
+			String string = "";
+
+			if (partOp < 0) {
+				partOp = Math.abs(partOp);
+				string = "Venta";
+			} else {
+				string = "Compra";
+			}
+
+			model.addRow(new Object[] { portOp, string, partOp, portOp.getfPrice(), portOp.getfPartfin() });
 		}
 
 		tablaOps.setVisible(true);
@@ -2740,5 +2763,8 @@ public class ui extends javax.swing.JFrame {
 	private javax.swing.JComboBox<String> graficasBox;
 	private javax.swing.JLabel nombreLabel;
 	private javax.swing.JTextField nombreText;
+	private javax.swing.JRadioButton ventaBoton;
+	private javax.swing.JRadioButton compraBoton;
+	private javax.swing.ButtonGroup buttonGroup1;
 	// End of variables declaration
 }
