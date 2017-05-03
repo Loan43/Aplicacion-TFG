@@ -10,6 +10,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+/**
+ *  Clase que modela un valor liquidativo de un fondo de inversión usando hibernate.
+ *
+ * 
+ */
 @Entity
 @IdClass(FundVlPK.class)
 @Table(name = "fundvl")

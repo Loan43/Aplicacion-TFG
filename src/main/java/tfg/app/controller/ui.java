@@ -1522,7 +1522,7 @@ public class ui extends javax.swing.JFrame {
 	// Click en el boton aceptar de la ventana de aÃ±adir fondo
 	private void anadFondoBotonActionPerformed(java.awt.event.ActionEvent evt) {
 
-		FundDesc fund = new FundDesc(isinText.getText(), gestoraText.getText(), tipoText.getText(),
+		FundDesc fund = new FundDesc(isinText.getText(), "Fondazo", gestoraText.getText(), tipoText.getText(),
 				categoriaText.getText(), divisaText.getText(), Double.valueOf(apComText.getValue().toString()),
 				Double.valueOf(cancelComText.getValue().toString()));
 
@@ -1622,16 +1622,21 @@ public class ui extends javax.swing.JFrame {
 			DefaultPieDataset dataset = new DefaultPieDataset();
 			graficasBox.setVisible(false);
 
+			List<FundDesc> fundDescs = null;
 			try {
-				List<FundDesc> fundDescs = fundService.findFundsOfPortfolio(fundPort);
+				fundDescs = fundService.findFundsOfPortfolio(fundPort);
+			} catch (InstanceNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 
-				for (int x = 0; x < fundDescs.size(); x++) {
+			for (int x = 0; x < fundDescs.size(); x++) {
+				try {
 					dataset.setValue(fundDescs.get(x).getfId(),
 							fundService.findLatestPortOp(fundPort, fundDescs.get(x), LocalDate.now()).getfPartfin());
+				} catch (InstanceNotFoundException e) {
+					continue;
 				}
-
-			} catch (InstanceNotFoundException e) {
-
 			}
 
 			JFreeChart chart = ChartFactory.createPieChart("Participaciones de la cartera " + fundPort.getpName(), // chart
@@ -2435,8 +2440,6 @@ public class ui extends javax.swing.JFrame {
 			}
 
 		}
-		
-		
 
 	}
 
@@ -2453,10 +2456,10 @@ public class ui extends javax.swing.JFrame {
 		 */
 		fundService = new FundServiceImpl();
 
-		FundDesc fundDesc1 = new FundDesc("DE0008490962", "Pinball Wizards", "Alto riesgo", "Monetario", "Euro", 0.01,
-				0.02);
-		FundDesc fundDesc2 = new FundDesc("ES0173394034", "Pinball Wizards", "Alto riesgo", "Monetario", "Euro", 0.01,
-				0.02);
+		FundDesc fundDesc1 = new FundDesc("DE0008490962", "Fondazo 1", "Pinball Wizards", "Alto riesgo", "Monetario",
+				"Euro", 0.01, 0.02);
+		FundDesc fundDesc2 = new FundDesc("ES0173394034", "Fondazo 2", "Pinball Wizards", "Alto riesgo", "Monetario",
+				"Euro", 0.01, 0.02);
 		FundPort fundPort1 = new FundPort("Cartera Test 1", "Esto es una cartera de prueba");
 		FundPort fundPort2 = new FundPort("Cartera Test 2", "Esto es una cartera de prueba");
 

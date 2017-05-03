@@ -53,8 +53,8 @@ public class FundServiceTest {
 
 	private FundDesc getValidFundDesc() throws ParseException {
 
-		FundDesc fund = new FundDesc(VALID_FOUND_ID_1, "Pinball Wizards", "Alto riesgo", "Monetario", "Euro", 0.01,
-				0.02);
+		FundDesc fund = new FundDesc(VALID_FOUND_ID_1, "Fondo 1", "Pinball Wizards", "Alto riesgo", "Monetario", "Euro",
+				0.01, 0.02);
 		fund.getFundVls().add(getValidFundVl("2020-04-20", fund));
 		fund.getFundVls().add(getValidFundVl("2020-04-21", fund));
 		fund.getFundVls().add(getValidFundVl("2020-04-22", fund));
@@ -64,8 +64,8 @@ public class FundServiceTest {
 
 	private FundDesc getSpeedTestFundDesc() throws ParseException {
 
-		FundDesc fund = new FundDesc(VALID_FOUND_ID_1, "Pinball Wizards", "Alto riesgo", "Monetario", "Euro", 0.01,
-				0.02);
+		FundDesc fund = new FundDesc(VALID_FOUND_ID_1, "Fondo 1", "Pinball Wizards", "Alto riesgo", "Monetario", "Euro",
+				0.01, 0.02);
 
 		LocalDate date = LocalDate.parse("2020-04-20");
 
@@ -102,6 +102,15 @@ public class FundServiceTest {
 
 		FundDesc baseFound = this.getValidFundDesc();
 		baseFound.setfId(INVALID_FOUND_ID);
+		fundService.addFund(baseFound);
+
+	}
+
+	@Test(expected = InputValidationException.class)
+	public void testAddInvalidFundName() throws InputValidationException, InstanceNotFoundException, ParseException {
+
+		FundDesc baseFound = this.getValidFundDesc();
+		baseFound.setfName("");
 		fundService.addFund(baseFound);
 
 	}

@@ -36,6 +36,7 @@ public class FundServiceImpl implements FundService {
 	private void validateFund(FundDesc fundDesc) throws InputValidationException {
 
 		PropertyValidator.validateIsin(fundDesc.getfId());
+		PropertyValidator.validateMandatoryString("Nombre de la cartera de fondos", fundDesc.getfName());
 		for (int x = 0; x < fundDesc.getFundVls().size(); x++) {
 			validateFundVl(fundDesc.getFundVls().get(x));
 		}

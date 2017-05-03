@@ -18,23 +18,46 @@ public interface FundService {
 	// # 															  #
 	// ################################################################
 
-	// Añade un FundDesc y toda su lista de FundVLs a la base de datos
+	/**
+     *  Añade un FundDesc y toda su lista de FundVLs a la base de datos
+     *
+     * @param
+     */
 	public void addFund(FundDesc fundDesc) throws InputValidationException;
 
-	// Devuelve el FundDesc y su lista de FundVls a partir de su ISIN
+	/**
+     *  Devuelve el FundDesc y su lista de FundVls a partir de su ISIN
+     *
+     * @param
+     */
 	public FundDesc findFund(String fundId) throws InstanceNotFoundException;
 
-	// Actualiza los campos de un FundDesc
+	/**
+     *  Actualiza los campos de un FundDesc
+     *
+     * @param
+     */
 	public void updateFund(FundDesc fundDesc) throws InputValidationException;
 
-	// Elimina un FundDesc y toda su lista de FundVls de la base de datos
+	/**
+     *  Elimina un FundDesc y toda su lista de FundVls de la base de datos
+     *
+     * @param
+     */
 	public void removeFund(FundDesc fundDesc) throws InstanceNotFoundException;
 
-	// Obtiene todos los FundDesc de la base de datos.
+	/**
+     *  Obtiene todos los FundDesc de la base de datos.
+     *
+     * @param
+     */
 	public List<FundDesc> findAllFunds();
 
-	// Obtiene los fundDesc que cohinciden con una serie de cáracteres en algúno
-	// de sus campos
+	/**
+     *  Obtiene los fundDesc que cohinciden con una serie de cáracteres en algúno de sus campos
+     *
+     * @param
+     */
 	public List<FundDesc> findFundsByKeywords(String keywords);
 
 	// ################################################################
@@ -43,23 +66,46 @@ public interface FundService {
 	// # 															  #
 	// ################################################################
 
-	// Añade un unico FundVl a un fondo en un día concreto
+	/**
+     *  Añade un unico FundVl a un fondo en un día concreto
+     *
+     * @param
+     */
 	public void addFundVl(FundVl fundVl) throws InputValidationException;
 
-	// Actualiza un unico FundVl de un fondo en un día concreto
+	/**
+     *  Actualiza un unico FundVl de un fondo en un día concreto
+     *
+     * @param
+     */
 	public void updateFundVl(FundVl fundVl) throws InputValidationException, InstanceNotFoundException;
 
-	// Obtiene el FundVl de un fondo en un dia concreto
+	/**
+     *  Obtiene el FundVl de un fondo en un dia concreto
+     *
+     * @param
+     */
 	public FundVl findFundVl(FundDesc fundDesc, LocalDate day) throws InstanceNotFoundException;
 
-	// Obtiene los Vl de un fondo dado en el intervalo de tiempo deseado
+	/**
+     *  Obtiene los Vl de un fondo dado en el intervalo de tiempo deseado
+     *
+     * @param
+     */
 	public List<FundVl> findFundVlbyRange(FundDesc fundDesc, LocalDate startDay, LocalDate endDay);
 
-	// Elimina una fila de la tabla vl de un fondo en un dia concreto
+	/**
+     *  Elimina una fila de la tabla vl de un fondo en un dia concreto
+     *
+     * @param
+     */
 	public void removeFundVl(FundVl fundVl) throws InstanceNotFoundException;
 	
-	//Obtiene el vl del dia mas proximo a un dia dado (Se comporta exactamente igual a findFundVl si existe un valor
-	//vl en ese dia)
+	/**
+     *  Obtiene el vl del dia mas proximo a un dia dado (Se comporta exactamente igual a findFundVl si existe un valor vl en ese dia)
+     *
+     * @param
+     */
 	public FundVl findLatestFundVl(FundDesc fundDesc, LocalDate day);
 	
 
@@ -69,22 +115,46 @@ public interface FundService {
 	// # 															  #
 	// ################################################################
 
-	//Añade una cartera de fondos
+	/**
+     * Añade una cartera de fondos
+     *
+     * @param
+     */
 	public void addFundPortfolio(FundPort fundPortfolio) throws InputValidationException;
 
-	//Elimina una cartera de fondos
+	/**
+     *  Elimina una cartera de fondos
+     *
+     * @param
+     */
 	public void removeFundPortfolio(FundPort fundPortfolio) throws InstanceNotFoundException;
 	
-	//Obtiene una cartera de fondos a partir de su Id
+	/**
+     *  Obtiene una cartera de fondos a partir de su Id
+     *
+     * @param
+     */
 	public FundPort findFundPortfolio(Long pId) throws InstanceNotFoundException;
 
-	//Actualiza los campos de una cartera de fondos
+	/**
+     *  Actualiza los campos de una cartera de fondos
+     *
+     * @param
+     */
 	public void updateFundPortfolio(FundPort fundPortfolio) throws InstanceNotFoundException, InputValidationException;
 	
-	//Obtiene Todas las carteras de la base de datos
+	/**
+     * Obtiene Todas las carteras de la base de datos
+     *
+     * @param
+     */
 	public List<FundPort> findAllFundPortfolios();
 	
-	//Obtiene todos los fondos de una cartera 
+	/**
+     *  Obtiene todos los fondos de una cartera 
+     *
+     * @param
+     */
 	public List<FundDesc> findFundsOfPortfolio(FundPort fundPortfolio) throws InstanceNotFoundException;
 
 	// ################################################################
@@ -93,10 +163,18 @@ public interface FundService {
 	// # 															  #
 	// ################################################################	
 	
-	//Añade un fondo a una cartera 
+	/**
+     *  Añade un fondo a una cartera
+     *
+     * @param
+     */
 	public void addPortDesc(FundPort fundPort, FundDesc fundDesc) throws InstanceNotFoundException, InputValidationException;
 	
-	//Elimina un fondo de una cartera
+	/**
+     *  Elimina un fondo de una cartera
+     *
+     * @param
+     */
 	public void removePortDesc( FundPort fundPort, FundDesc fundDesc) throws InstanceNotFoundException;
 	
 	// ################################################################
@@ -108,26 +186,53 @@ public interface FundService {
 	//Al añadir una operacion sobre un fondo en un dia determinado, si ese dia no se encuentra en la tabla de vl
 	//se selecciona para calcular el VL de cada participacion el día más próximo al dado.
 	
-	//Añade una operacion (Con participaciones como unidad) sobre un fondo en una cartera en un día determinado
+	/**
+     *  Añade una operacion (Con participaciones como unidad) sobre un fondo en una cartera en un día determinado
+     *
+     * @param
+     */
 	public void addPortOp(PortOp portOp) throws InputValidationException;
 	
-	//Elimina una operacion realizada sobre un fondo en una cartera en una fecha
+	/**
+     *  Elimina una operacion realizada sobre un fondo en una cartera en una fecha
+     *
+     * @param
+     */
 	public void removePortOp(PortOp portOp) throws InstanceNotFoundException, InputValidationException;
 	
-	//Actualiza un PortOp(Con participaciones como unidad) sobre un fondo en una cartera en un día determinado
+	/**
+     *  Actualiza un PortOp(Con participaciones como unidad) sobre un fondo en una cartera en un día determinado
+     *
+     * @param
+     */
 	public void UpdatePortOp(PortOp portOp) throws InputValidationException;
 	
-	//Obtiene una operacion sobre un fondo en una cartera en un día determinado
+	/**
+     *  Obtiene una operacion sobre un fondo en una cartera en un día determinado
+     *
+     * @param
+     */
 	public PortOp findPortOp(FundPort fundPort, FundDesc fundDesc, LocalDate day) throws InstanceNotFoundException;
 	
-	//Devuelve todas las operaciones realizadas sobre un fondo en una cartera
+	/**
+     *  Devuelve todas las operaciones realizadas sobre un fondo en una cartera
+     *
+     * @param
+     */
 	public List<PortOp> findAllPortOp(FundPort fundPort, FundDesc fundDesc) throws InstanceNotFoundException;
 	
-	//Devuelve todas las operaciones realizadas sobre un fondo en una cartera entre dos fechas
+	/**
+     *  Devuelve todas las operaciones realizadas sobre un fondo en una cartera entre dos fechas
+     *
+     * @param
+     */
 	public List<PortOp> findAllPortOpbyRange(FundPort fundPort, FundDesc fundDesc, LocalDate startDay, LocalDate endDay, int flag) throws InstanceNotFoundException;
 	
-	//Obtiene el la operacion sobre un fondo en una cartera del dia mas proximo a un dia dado 
-	//(Se comporta exactamente igual a findPortOp si existe un PortOp en ese dia)
+	/**
+     *  Obtiene el la operacion sobre un fondo en una cartera del dia mas proximo a un dia dado (Se comporta exactamente igual a findPortOp si existe un PortOp en ese dia)
+     *
+     * @param
+     */
 	public PortOp findLatestPortOp(FundPort fundPort, FundDesc fundDesc, LocalDate day) throws InstanceNotFoundException;
 	
 

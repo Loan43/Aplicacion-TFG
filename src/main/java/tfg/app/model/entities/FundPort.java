@@ -12,6 +12,11 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+/**
+ *  Clase que modela una cartera de fondos de inversión usando hibernate.
+ *
+ * 
+ */
 @Entity
 @Table(name = "fundport")
 public class FundPort {

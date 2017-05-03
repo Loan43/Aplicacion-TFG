@@ -13,6 +13,12 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+
+/**
+ *  Clase que modela un fondo de inversión usando hibernate.
+ *
+ * 
+ */
 @Entity
 @Table(name = "fundesc")
 public class FundDesc {
@@ -24,6 +30,9 @@ public class FundDesc {
 
 	@Column(name = "fId", unique = true, nullable = false, length = 12)
 	private String fId;
+
+	@Column(name = "fName", nullable = false, length = 40)
+	private String fName;
 
 	@Column(name = "fgest", length = 40)
 	private String fGest;
@@ -52,10 +61,11 @@ public class FundDesc {
 	public FundDesc() {
 	};
 
-	public FundDesc(String fId, String fGest, String fType, String fCategory, String fCurrency, Double fSubComm,
-			Double fCancelComm) {
+	public FundDesc(String fId, String fName, String fGest, String fType, String fCategory, String fCurrency,
+			Double fSubComm, Double fCancelComm) {
 		super();
 		this.fId = fId;
+		this.fName = fName;
 		this.fGest = fGest;
 		this.fType = fType;
 		this.fCategory = fCategory;
@@ -64,10 +74,11 @@ public class FundDesc {
 		this.fCancelComm = fCancelComm;
 	}
 
-	public FundDesc(String fId, String fGest, String fType, String fCategory, String fCurrency, Double fSubComm,
-			Double fCancelComm, List<FundVl> fundVls) {
+	public FundDesc(String fId, String fName, String fGest, String fType, String fCategory, String fCurrency,
+			Double fSubComm, Double fCancelComm, List<FundVl> fundVls) {
 		super();
 		this.fId = fId;
+		this.fName = fName;
 		this.fGest = fGest;
 		this.fType = fType;
 		this.fCategory = fCategory;
@@ -77,10 +88,11 @@ public class FundDesc {
 		this.fundVls = fundVls;
 	}
 
-	public FundDesc(List<PortDesc> portfolios, String fId, String fGest, String fType, String fCategory,
+	public FundDesc(List<PortDesc> portfolios, String fId, String fName, String fGest, String fType, String fCategory,
 			String fCurrency, Double fSubComm, Double fCancelComm, List<FundVl> fundVls) {
 		super();
 		this.fId = fId;
+		this.fName = fName;
 		this.fGest = fGest;
 		this.fType = fType;
 		this.fCategory = fCategory;
@@ -91,10 +103,11 @@ public class FundDesc {
 		this.portDescs = portfolios;
 	}
 
-	public FundDesc(List<PortDesc> portfolios, String fId, String fGest, String fType, String fCategory,
+	public FundDesc(List<PortDesc> portfolios, String fId, String fName, String fGest, String fType, String fCategory,
 			String fCurrency, Double fSubComm, Double fCancelComm) {
 		super();
 		this.fId = fId;
+		this.fName = fName;
 		this.fGest = fGest;
 		this.fType = fType;
 		this.fCategory = fCategory;
@@ -184,11 +197,20 @@ public class FundDesc {
 		this.portDescs = portDescs;
 	}
 
+	public String getfName() {
+		return fName;
+	}
+
+	public void setfName(String fName) {
+		this.fName = fName;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((fCategory == null) ? 0 : fCategory.hashCode());
+		result = prime * result + ((fName == null) ? 0 : fName.hashCode());
 		result = prime * result + ((fCurrency == null) ? 0 : fCurrency.hashCode());
 		result = prime * result + ((fGest == null) ? 0 : fGest.hashCode());
 		result = prime * result + ((fId == null) ? 0 : fId.hashCode());
@@ -207,6 +229,11 @@ public class FundDesc {
 		if (getClass() != obj.getClass())
 			return false;
 		FundDesc other = (FundDesc) obj;
+		if (fName == null) {
+			if (other.fName != null)
+				return false;
+		} else if (!fName.equals(other.fName))
+			return false;
 		if (fCategory == null) {
 			if (other.fCategory != null)
 				return false;
@@ -257,7 +284,7 @@ public class FundDesc {
 
 	@Override
 	public String toString() {
-		return fId;
+		return fName;
 	}
 
 }

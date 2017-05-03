@@ -11,6 +11,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+/**
+ *  Clase que modela una operacion en una cartera sobre un fondo de inversión usando hibernate.
+ *
+ * 
+ */
 @Entity
 @IdClass(PortOpPK.class)
 @Table(name = "portop")
