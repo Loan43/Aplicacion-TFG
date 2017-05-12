@@ -1,6 +1,8 @@
 package tfg.app.controller;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
@@ -9,6 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
@@ -168,7 +171,24 @@ public class ui extends javax.swing.JFrame {
 		selFondoAcBoton = new javax.swing.JButton();
 		tablaVls = new javax.swing.JDialog();
 		jScrollPane3 = new javax.swing.JScrollPane();
-		vlTabla = new javax.swing.JTable();
+		vlTabla = new javax.swing.JTable() {
+			@Override
+			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+				Component comp = super.prepareRenderer(renderer, row, col);
+
+				if (getModel().getValueAt(row, col).getClass() == java.lang.Double.class) {
+					Double value = (Double) getModel().getValueAt(row, col);
+					if (value < 0) {
+						comp.setForeground(Color.red);
+					} else {
+						comp.setForeground(Color.green);
+					}
+				} else {
+					comp.setForeground(Color.black);
+				}
+				return comp;
+			}
+		};
 		tablaOps = new javax.swing.JDialog();
 		jScrollPane4 = new javax.swing.JScrollPane();
 		opTabla = new javax.swing.JTable();
@@ -1281,9 +1301,10 @@ public class ui extends javax.swing.JFrame {
 
 		vlTabla.setModel(new javax.swing.table.DefaultTableModel(new Object[][] {
 
-		}, new String[] { "ISIN", "Fecha", "Valor Liquidativo" }) {
+		}, new String[] { "ISIN", "Fecha", "Valor Liquidativo", "Diferencia" }) {
 
-			Class[] types = new Class[] { java.lang.String.class, FundVl.class, java.lang.String.class };
+			Class[] types = new Class[] { java.lang.String.class, FundVl.class, java.lang.String.class,
+					java.lang.Double.class };
 
 			public Class getColumnClass(int columnIndex) {
 				return types[columnIndex];
@@ -2451,8 +2472,16 @@ public class ui extends javax.swing.JFrame {
 		for (int x = 0; x < fundDesc.getFundVls().size(); x++) {
 
 			FundVl fundVl = fundDesc.getFundVls().get(x);
-			model.addRow(
-					new Object[] { fundDesc.getfId(), fundVl, fundVl.getVl() + " " + fundDesc.getfCurrency() + "s" });
+
+			if (x != 0) {
+				model.addRow(
+						new Object[] { fundDesc.getfId(), fundVl, fundVl.getVl() + " " + fundDesc.getfCurrency() + "s",
+								fundVl.getVl() - fundDesc.getFundVls().get(x - 1).getVl() });
+
+			} else {
+				model.addRow(new Object[] { fundDesc.getfId(), fundVl,
+						fundVl.getVl() + " " + fundDesc.getfCurrency() + "s", 0.0 });
+			}
 		}
 
 		tablaVls.setVisible(true);
