@@ -12,6 +12,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.text.Document;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
@@ -171,6 +172,7 @@ public class ui extends javax.swing.JFrame {
 		selFondoAcBoton = new javax.swing.JButton();
 		tablaVls = new javax.swing.JDialog();
 		jScrollPane3 = new javax.swing.JScrollPane();
+		jScrollPane6 = new javax.swing.JScrollPane();
 		vlTabla = new javax.swing.JTable() {
 			@Override
 			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
@@ -221,6 +223,18 @@ public class ui extends javax.swing.JFrame {
 		graficasBox = new javax.swing.JComboBox<>();
 		nombreLabel = new javax.swing.JLabel();
 		nombreText = new javax.swing.JTextField();
+		nombreDesc = new javax.swing.JLabel();
+		isinDesc = new javax.swing.JLabel();
+		gestoraDesc = new javax.swing.JLabel();
+		catDesc = new javax.swing.JLabel();
+		divisaDesc = new javax.swing.JLabel();
+		apComDesc = new javax.swing.JLabel();
+		canComDesc = new javax.swing.JLabel();
+		alphaDesc = new javax.swing.JLabel();
+		betaDesc = new javax.swing.JLabel();
+		varDesc = new javax.swing.JLabel();
+		drawDesc = new javax.swing.JLabel();
+		descripcionTex = new javax.swing.JEditorPane();
 
 		///////////////////////////////////////////
 		opIsinLabel = new javax.swing.JLabel();
@@ -1503,18 +1517,22 @@ public class ui extends javax.swing.JFrame {
 		});
 		jScrollPane2.setViewportView(arbolFondos);
 
+		panelGraficas.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 		panelGraficas.setPreferredSize(new java.awt.Dimension(756, 635));
 		panelGraficas.setRequestFocusEnabled(false);
 
 		javax.swing.GroupLayout panelGraficasLayout = new javax.swing.GroupLayout(panelGraficas);
 		panelGraficas.setLayout(panelGraficasLayout);
 		panelGraficasLayout.setHorizontalGroup(panelGraficasLayout
-				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(0, 743, Short.MAX_VALUE));
+				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(0, 759, Short.MAX_VALUE));
 		panelGraficasLayout.setVerticalGroup(panelGraficasLayout
-				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(0, 626, Short.MAX_VALUE));
+				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(0, 566, Short.MAX_VALUE));
+
+		descripcionTex.setEditable(false);
+		jScrollPane6.setViewportView(descripcionTex);
 
 		graficasBox.setModel(new javax.swing.DefaultComboBoxModel<>(
-				new String[] { "Historial Vl", "Grafica 2", "Grafica 3", "Grafica 4" }));
+				new String[] { "Descripción", "Historial Vl", "Grafica 3", "Grafica 4" }));
 		graficasBox.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				graficasBoxActionPerformed(evt);
@@ -1553,6 +1571,7 @@ public class ui extends javax.swing.JFrame {
 
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
 		getContentPane().setLayout(layout);
+
 		layout.setHorizontalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 				.addGroup(layout.createSequentialGroup().addContainerGap()
 						.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -1563,12 +1582,13 @@ public class ui extends javax.swing.JFrame {
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
 												.addComponent(buscarLabel)))
 						.addGap(18, 18, 18)
-						.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-								.addComponent(panelGraficas, javax.swing.GroupLayout.PREFERRED_SIZE, 743,
-										javax.swing.GroupLayout.PREFERRED_SIZE)
+						.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+								.addComponent(jScrollPane6)
+								.addComponent(panelGraficas, javax.swing.GroupLayout.DEFAULT_SIZE, 761, Short.MAX_VALUE)
 								.addComponent(graficasBox, javax.swing.GroupLayout.PREFERRED_SIZE, 100,
 										javax.swing.GroupLayout.PREFERRED_SIZE))
-						.addContainerGap(28, Short.MAX_VALUE)));
+						.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+
 		layout.setVerticalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 				.addGroup(layout.createSequentialGroup().addContainerGap().addGroup(layout
 						.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false).addComponent(buscarText)
@@ -1579,9 +1599,11 @@ public class ui extends javax.swing.JFrame {
 						.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 								.addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 670, Short.MAX_VALUE)
 								.addGroup(layout.createSequentialGroup()
-										.addComponent(panelGraficas, javax.swing.GroupLayout.PREFERRED_SIZE, 626,
-												javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addGap(0, 0, Short.MAX_VALUE)))
+										.addComponent(panelGraficas, javax.swing.GroupLayout.DEFAULT_SIZE, 568,
+												Short.MAX_VALUE)
+										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+										.addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 100,
+												javax.swing.GroupLayout.PREFERRED_SIZE)))
 						.addContainerGap()));
 
 		layout.linkSize(javax.swing.SwingConstants.VERTICAL,
@@ -1677,31 +1699,13 @@ public class ui extends javax.swing.JFrame {
 		if (nodeInfo.getClass() == tfg.app.model.entities.FundDesc.class) {
 
 			FundDesc fundDesc = (FundDesc) nodeInfo;
+			graficasBox.setSelectedItem("Descripción");
 			graficasBox.setVisible(true);
 
-			try {
-				fundDesc = fundService.findFund(fundDesc.getfId());
-			} catch (InstanceNotFoundException e) {
-				JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de borrado",
-						JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-
-			DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
-
-			for (int x = 0; x < fundDesc.getFundVls().size(); x++) {
-				line_chart_dataset.addValue(fundDesc.getFundVls().get(x).getVl(), "Valor liquidativo",
-						fundDesc.getFundVls().get(x).getDay().toString());
-			}
-
-			JFreeChart lineChartObject = ChartFactory.createLineChart("Historial del valor liquidativo", "Días",
-					"Valor", line_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
-
-			ChartPanel CP = new ChartPanel(lineChartObject);
 			panelGraficas.removeAll();
 			panelGraficas.updateUI();
-			panelGraficas.setLayout(new java.awt.BorderLayout());
-			panelGraficas.add(CP, BorderLayout.CENTER);
+
+			showFundDesc(fundDesc);
 
 		}
 		if (nodeInfo.getClass() == tfg.app.model.entities.FundPort.class) {
@@ -1738,6 +1742,7 @@ public class ui extends javax.swing.JFrame {
 			panelGraficas.setLayout(new java.awt.BorderLayout());
 			panelGraficas.add(CP, BorderLayout.CENTER);
 			panelGraficas.validate();
+			descripcionTex.setText("Gráfica de la distrubución del capital de la cartera " + fundPort.getpName());
 		}
 
 	}
@@ -2509,21 +2514,21 @@ public class ui extends javax.swing.JFrame {
 
 	// Seleccionar una grafica en el scroll de la ventana principal
 	private void graficasBoxActionPerformed(java.awt.event.ActionEvent evt) {
-		System.out.println(graficasBox.getSelectedItem());
 
-		if (graficasBox.getSelectedItem().equals("Historial Vl")) {
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
 
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		FundDesc fundDesc = null;
 
-			if (node == null) {
-				return;
-			}
-			Object nodeInfo = node.getUserObject();
+		if (node == null) {
+			return;
+		}
+		Object nodeInfo = node.getUserObject();
 
-			if (nodeInfo.getClass() == tfg.app.model.entities.FundDesc.class) {
+		if (nodeInfo.getClass() == tfg.app.model.entities.FundDesc.class) {
 
-				FundDesc fundDesc = (FundDesc) nodeInfo;
-				graficasBox.setVisible(true);
+			fundDesc = (FundDesc) nodeInfo;
+
+			if (graficasBox.getSelectedItem().equals("Historial Vl")) {
 
 				try {
 					fundDesc = fundService.findFund(fundDesc.getfId());
@@ -2549,10 +2554,81 @@ public class ui extends javax.swing.JFrame {
 				panelGraficas.setLayout(new java.awt.BorderLayout());
 				panelGraficas.add(CP, BorderLayout.CENTER);
 
+				if (fundDesc.getFundVls().size() == 0) {
+					descripcionTex.setText("El fondo seleccionado: " + fundDesc.getfName() + " con ISIN: "
+							+ fundDesc.getfId() + " no tiene ningún Vl.");
+				} else {
+					descripcionTex.setText("Gáfica con el historial de los Vl del fondo: " + fundDesc.getfName()
+							+ " con ISIN: " + fundDesc.getfId() + " entre los días: "
+							+ fundDesc.getFundVls().get(0).getDay() + " y "
+							+ fundDesc.getFundVls().get(fundDesc.getFundVls().size() - 1).getDay() + ".");
+				}
+
 			}
 
 		}
 
+		if (graficasBox.getSelectedItem().equals("Descripción")) {
+
+			panelGraficas.removeAll();
+			panelGraficas.updateUI();
+			descripcionTex
+					.setText("Descripción del fondo " + fundDesc.getfName() + " y métricas simples de rendimiento.");
+			showFundDesc(fundDesc);
+
+		}
+
+	}
+
+	private void showFundDesc(FundDesc fundDesc) {
+
+		nombreDesc.setText("Nombre: " + fundDesc.getfName());
+
+		isinDesc.setText("ISIN: " + fundDesc.getfId());
+
+		gestoraDesc.setText("Gestora: " + fundDesc.getfGest());
+
+		catDesc.setText("Categoría: " + fundDesc.getfCategory());
+
+		divisaDesc.setText("Divisa: " + fundDesc.getfCurrency());
+
+		apComDesc.setText("Comisión de apertura: " + fundDesc.getfSubComm() * 100 + "%");
+
+		canComDesc.setText("Comisión de cancelación: " + fundDesc.getfCancelComm() * 100 + "%");
+
+		alphaDesc.setText("Alpha: ");
+
+		betaDesc.setText("Beta: ");
+
+		varDesc.setText("Varianza: ");
+
+		drawDesc.setText("Máximo Drawout: ");
+
+		javax.swing.GroupLayout panelGraficasLayout = new javax.swing.GroupLayout(panelGraficas);
+		panelGraficas.setLayout(panelGraficasLayout);
+		panelGraficasLayout.setHorizontalGroup(panelGraficasLayout
+				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(panelGraficasLayout.createSequentialGroup().addContainerGap()
+						.addGroup(panelGraficasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+								.addComponent(nombreDesc).addComponent(isinDesc).addComponent(gestoraDesc)
+								.addComponent(catDesc).addComponent(divisaDesc).addComponent(apComDesc)
+								.addComponent(canComDesc).addComponent(alphaDesc).addComponent(betaDesc)
+								.addComponent(varDesc).addComponent(drawDesc))
+						.addContainerGap(614, Short.MAX_VALUE)));
+		panelGraficasLayout.setVerticalGroup(panelGraficasLayout
+				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(panelGraficasLayout.createSequentialGroup().addContainerGap().addComponent(nombreDesc)
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED).addComponent(isinDesc)
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED).addComponent(gestoraDesc)
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED).addComponent(catDesc)
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED).addComponent(divisaDesc)
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED).addComponent(apComDesc)
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED).addComponent(canComDesc)
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED).addComponent(alphaDesc)
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED).addComponent(betaDesc)
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED).addComponent(varDesc)
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED).addComponent(drawDesc)
+						.addContainerGap(401, Short.MAX_VALUE)));
 	}
 
 	// Main de la app
@@ -2577,7 +2653,7 @@ public class ui extends javax.swing.JFrame {
 
 		LocalDate date = LocalDate.parse("2017-01-27");
 
-		for (int x = 0; x < 250; x++) {
+		for (int x = 0; x < 25; x++) {
 			date = date.plusDays(1);
 			fundDesc1.getFundVls().add(new FundVl(date, ThreadLocalRandom.current().nextDouble(20, 30), fundDesc1));
 		}
@@ -2795,5 +2871,18 @@ public class ui extends javax.swing.JFrame {
 	private javax.swing.JRadioButton ventaBoton;
 	private javax.swing.JRadioButton compraBoton;
 	private javax.swing.ButtonGroup buttonGroup1;
+	private javax.swing.JLabel nombreDesc;
+	private javax.swing.JLabel isinDesc;
+	private javax.swing.JLabel gestoraDesc;
+	private javax.swing.JLabel catDesc;
+	private javax.swing.JLabel divisaDesc;
+	private javax.swing.JLabel apComDesc;
+	private javax.swing.JLabel canComDesc;
+	private javax.swing.JLabel alphaDesc;
+	private javax.swing.JLabel betaDesc;
+	private javax.swing.JLabel varDesc;
+	private javax.swing.JLabel drawDesc;
+	private javax.swing.JScrollPane jScrollPane6;
+	private javax.swing.JEditorPane descripcionTex;
 	// End of variables declaration
 }
