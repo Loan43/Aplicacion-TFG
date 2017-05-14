@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -32,6 +33,7 @@ import tfg.app.model.entities.FundVl;
 import tfg.app.model.entities.PortOp;
 import tfg.app.model.service.FundService;
 import tfg.app.model.service.FundServiceImpl;
+import tfg.app.util.comparator.compVl;
 import tfg.app.util.exceptions.InputValidationException;
 import tfg.app.util.exceptions.InstanceNotFoundException;
 
@@ -1552,8 +1554,6 @@ public class ui extends javax.swing.JFrame {
 		descripcionTex.setEditable(false);
 		jScrollPane6.setViewportView(descripcionTex);
 
-		graficasBox.setModel(new javax.swing.DefaultComboBoxModel<>(
-				new String[] { "Descripción", "Historial Vl", "Grafica 3", "Grafica 4" }));
 		graficasBox.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				graficasBoxActionPerformed(evt);
@@ -1690,6 +1690,7 @@ public class ui extends javax.swing.JFrame {
 		apComText.setValue(0);
 		divisaText.setText("");
 
+		anadirFondo.setLocationRelativeTo(this);
 		anadirFondo.setVisible(true);
 
 	}
@@ -1724,6 +1725,7 @@ public class ui extends javax.swing.JFrame {
 
 		descCarteraText.setText("");
 		nomCarteraText.setText("");
+		anadirCartera.setLocationRelativeTo(this);
 		anadirCartera.setVisible(true);
 
 	}
@@ -1770,6 +1772,10 @@ public class ui extends javax.swing.JFrame {
 		if (nodeInfo.getClass() == tfg.app.model.entities.FundDesc.class) {
 
 			FundDesc fundDesc = (FundDesc) nodeInfo;
+
+			graficasBox
+					.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Descripción", "Historial Vl" }));
+
 			graficasBox.setSelectedItem("Descripción");
 			graficasBox.setVisible(true);
 
@@ -1783,14 +1789,20 @@ public class ui extends javax.swing.JFrame {
 
 			FundPort fundPort = (FundPort) nodeInfo;
 			DefaultPieDataset dataset = new DefaultPieDataset();
-			graficasBox.setVisible(false);
+
+			graficasBox.setModel(new javax.swing.DefaultComboBoxModel<>(
+					new String[] { "Distribución", "Fondos Norm", "Rentabilidad" }));
+
+			graficasBox.setSelectedItem("Distribución");
+			graficasBox.setVisible(true);
 
 			List<FundDesc> fundDescs = null;
 			try {
 				fundDescs = fundService.findFundsOfPortfolio(fundPort);
-			} catch (InstanceNotFoundException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			} catch (InstanceNotFoundException e) {
+				JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de base de datos",
+						JOptionPane.ERROR_MESSAGE);
+				return;
 			}
 
 			for (int x = 0; x < fundDescs.size(); x++) {
@@ -1882,6 +1894,7 @@ public class ui extends javax.swing.JFrame {
 		vlFechaLabel1.setText("Fecha: " + fundVl.getDay());
 		vlVlText1.setText(fundVl.getVl().toString());
 
+		actuaVl.setLocationRelativeTo(this);
 		actuaVl.setVisible(true);
 	}
 
@@ -1918,6 +1931,7 @@ public class ui extends javax.swing.JFrame {
 		vlIsinIdLabel.setText(fundDesc.getfId());
 		vlVlText.setValue(0);
 
+		anadirVl.setLocationRelativeTo(this);
 		anadirVl.setVisible(true);
 
 	}
@@ -1937,6 +1951,7 @@ public class ui extends javax.swing.JFrame {
 		apComText1.setValue(fundDesc.getfSubComm());
 		divisaText1.setText(fundDesc.getfCurrency());
 
+		actuaFondo.setLocationRelativeTo(this);
 		actuaFondo.setVisible(true);
 	}
 
@@ -1985,7 +2000,7 @@ public class ui extends javax.swing.JFrame {
 		for (int x = 0; x < allFunds.size(); x++) {
 			fondoDesplegable.addItem(allFunds.get(x));
 		}
-
+		anadirFondoCartera.setLocationRelativeTo(this);
 		anadirFondoCartera.setVisible(true);
 	}
 
@@ -1999,6 +2014,7 @@ public class ui extends javax.swing.JFrame {
 		nomCarteraText1.setText(fundPort.getpName());
 		descCarteraText1.setText(fundPort.getpDesc());
 
+		actuaCartera.setLocationRelativeTo(this);
 		actuaCartera.setVisible(true);
 
 	}
@@ -2109,6 +2125,7 @@ public class ui extends javax.swing.JFrame {
 			fondoDesplegable1.addItem(fundsOfPortfolio.get(x));
 		}
 
+		borrarFondoCartera.setLocationRelativeTo(this);
 		borrarFondoCartera.setVisible(true);
 
 	}
@@ -2139,6 +2156,7 @@ public class ui extends javax.swing.JFrame {
 		}
 
 		opOperacionText.setValue(0);
+		anadirOp.setLocationRelativeTo(this);
 		anadirOp.setVisible(true);
 
 	}
@@ -2165,6 +2183,7 @@ public class ui extends javax.swing.JFrame {
 			selFondoDespl.addItem(fundsOfPortfolio.get(x));
 		}
 
+		verOp.setLocationRelativeTo(this);
 		verOp.setVisible(true);
 
 	}
@@ -2193,6 +2212,7 @@ public class ui extends javax.swing.JFrame {
 		opIsinLabel1.setText(portOp.getPortDesc().getFundDesc().getfId());
 		opFechaLabel1.setText(portOp.getDay().toString());
 
+		actuaOp.setLocationRelativeTo(this);
 		actuaOp.setVisible(true);
 	}
 
@@ -2516,6 +2536,7 @@ public class ui extends javax.swing.JFrame {
 			model.addRow(new Object[] { portOp, string, partOp, portOp.getfPrice(), portOp.getfPartfin() });
 		}
 
+		tablaOps.setLocationRelativeTo(this);
 		tablaOps.setVisible(true);
 
 	}
@@ -2559,7 +2580,7 @@ public class ui extends javax.swing.JFrame {
 						fundVl.getVl() + " " + fundDesc.getfCurrency() + "s", 0.0 });
 			}
 		}
-
+		tablaVls.setLocationRelativeTo(this);
 		tablaVls.setVisible(true);
 	}
 
@@ -2726,6 +2747,7 @@ public class ui extends javax.swing.JFrame {
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
 
 		FundDesc fundDesc = null;
+		FundPort fundPort = null;
 
 		if (node == null) {
 			return;
@@ -2786,23 +2808,108 @@ public class ui extends javax.swing.JFrame {
 
 			}
 
-		}
+			if (graficasBox.getSelectedItem().equals("Descripción")) {
 
-		if (graficasBox.getSelectedItem().equals("Descripción")) {
+				panelGraficas.removeAll();
+				panelGraficas.updateUI();
 
-			panelGraficas.removeAll();
-			panelGraficas.updateUI();
+				desdeDate.setVisible(false);
+				hastaDate.setVisible(false);
 
-			desdeDate.setVisible(false);
-			hastaDate.setVisible(false);
+				desdeLabel.setVisible(false);
+				hastaLabel.setVisible(false);
 
-			desdeLabel.setVisible(false);
-			hastaLabel.setVisible(false);
+				descripcionTex.setText(
+						"Descripción del fondo " + fundDesc.getfName() + " y métricas simples de rendimiento.");
+				showFundDesc(fundDesc);
 
-			descripcionTex
-					.setText("Descripción del fondo " + fundDesc.getfName() + " y métricas simples de rendimiento.");
-			showFundDesc(fundDesc);
+			}
+		} else {
+			if (nodeInfo.getClass() == tfg.app.model.entities.FundPort.class) {
 
+				fundPort = (FundPort) nodeInfo;
+
+				if (graficasBox.getSelectedItem().equals("Distribución")) {
+					List<FundDesc> fundDescs = null;
+					DefaultPieDataset dataset = new DefaultPieDataset();
+					try {
+						fundDescs = fundService.findFundsOfPortfolio(fundPort);
+					} catch (InstanceNotFoundException e) {
+						JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de base de datos",
+								JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+
+					for (int x = 0; x < fundDescs.size(); x++) {
+						try {
+							dataset.setValue(fundDescs.get(x).toString(), fundService
+									.findLatestPortOp(fundPort, fundDescs.get(x), LocalDate.now()).getfPartfin());
+						} catch (InstanceNotFoundException e) {
+							continue;
+						}
+					}
+
+					JFreeChart chart = ChartFactory.createPieChart(
+							"Participaciones de la cartera " + fundPort.getpName(), // chart
+							// title
+							dataset, // data
+							true, // include legend
+							true, false);
+					ChartPanel CP = new ChartPanel(chart);
+					panelGraficas.removeAll();
+					panelGraficas.updateUI();
+					panelGraficas.setLayout(new java.awt.BorderLayout());
+					panelGraficas.add(CP, BorderLayout.CENTER);
+					panelGraficas.validate();
+					descripcionTex
+							.setText("Gráfica de la distrubución del capital de la cartera " + fundPort.getpName());
+				}
+				if (graficasBox.getSelectedItem().equals("Fondos Norm")) {
+
+					List<FundDesc> fundDescs = null;
+					DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
+
+					try {
+						fundDescs = fundService.findFundsOfPortfolio(fundPort);
+					} catch (InstanceNotFoundException e) {
+						JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de base de datos",
+								JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+					for (int x = 0; x < fundDescs.size(); x++) {
+
+						for (int y = 0; y < fundDescs.get(x).getFundVls().size(); y++) {
+
+							Double max = Collections.max(fundDescs.get(x).getFundVls(), new compVl()).getVl();
+							Double min = Collections.min(fundDescs.get(x).getFundVls(), new compVl()).getVl();
+							Double z = fundDescs.get(x).getFundVls().get(y).getVl();
+
+							line_chart_dataset.addValue((z - min) / (max - min), fundDescs.get(x).getfName(),
+									fundDescs.get(x).getFundVls().get(y).getDay().toString());
+						}
+
+					}
+
+					JFreeChart lineChartObject = ChartFactory.createLineChart("Historial del valor liquidativo", "Días",
+							"Valor", line_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
+
+					ChartPanel CP = new ChartPanel(lineChartObject);
+					panelGraficas.removeAll();
+					panelGraficas.updateUI();
+					panelGraficas.setLayout(new java.awt.BorderLayout());
+					panelGraficas.add(CP, BorderLayout.CENTER);
+
+					if (fundDescs.size() == 0) {
+						descripcionTex.setText(
+								"La cartera seleccionada: " + fundPort.getpName() + " no tiene ningún fondo asignado.");
+					} else {
+
+						descripcionTex.setText(
+								"Gráfica de los valores de la cartera: " + fundPort.getpName() + " normalizados.");
+
+					}
+				}
+			}
 		}
 
 	}
@@ -2882,14 +2989,14 @@ public class ui extends javax.swing.JFrame {
 
 		for (int x = 0; x < 25; x++) {
 			date = date.plusDays(1);
-			fundDesc1.getFundVls().add(new FundVl(date, ThreadLocalRandom.current().nextDouble(20, 30), fundDesc1));
+			fundDesc1.getFundVls().add(new FundVl(date, ThreadLocalRandom.current().nextDouble(10, 20), fundDesc1));
 		}
 
 		date = LocalDate.parse("2017-01-27");
 
-		for (int x = 0; x < 250; x++) {
+		for (int x = 0; x < 25; x++) {
 			date = date.plusDays(1);
-			fundDesc2.getFundVls().add(new FundVl(date, ThreadLocalRandom.current().nextDouble(20, 30), fundDesc2));
+			fundDesc2.getFundVls().add(new FundVl(date, ThreadLocalRandom.current().nextDouble(50, 70), fundDesc2));
 		}
 
 		PortOp portOp = new PortOp(LocalDate.parse("2017-04-27"), fundPort1, fundDesc1, 100);
