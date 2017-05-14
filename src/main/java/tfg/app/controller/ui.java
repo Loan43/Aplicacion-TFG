@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.*;
@@ -15,6 +16,9 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
+import org.jdatepicker.impl.JDatePanelImpl;
+import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdatepicker.impl.UtilDateModel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -234,6 +238,8 @@ public class ui extends javax.swing.JFrame {
 		varDesc = new javax.swing.JLabel();
 		drawDesc = new javax.swing.JLabel();
 		descripcionTex = new javax.swing.JEditorPane();
+		desdeLabel = new javax.swing.JLabel();
+		hastaLabel = new javax.swing.JLabel();
 
 		///////////////////////////////////////////
 		opIsinLabel = new javax.swing.JLabel();
@@ -241,6 +247,22 @@ public class ui extends javax.swing.JFrame {
 		createNodes(top);
 		arbolFondos = new javax.swing.JTree(top);
 		arbolFondosModel = (DefaultTreeModel) arbolFondos.getModel();
+
+		model1 = new UtilDateModel();
+		model2 = new UtilDateModel();
+
+		model1.setSelected(true);
+		model2.setSelected(true);
+
+		Properties p = new Properties();
+		p.put("text.today", "Hoy");
+		p.put("text.month", "Mes");
+		p.put("text.year", "Año");
+		JDatePanelImpl datePanel1 = new JDatePanelImpl(model1, p);
+		JDatePanelImpl datePanel2 = new JDatePanelImpl(model2, p);
+
+		desdeDate = new JDatePickerImpl(datePanel1, new DateLabelFormatter());
+		hastaDate = new JDatePickerImpl(datePanel2, new DateLabelFormatter());
 		///////////////////////////////////////////
 
 		anadirFondo.setTitle("Añadir Fondo");
@@ -1543,6 +1565,28 @@ public class ui extends javax.swing.JFrame {
 
 		jMenu1.setText("Añadir");
 
+		desdeLabel.setText("Desde: ");
+
+		hastaLabel.setText("Hasta: ");
+
+		desdeDate.setVisible(false);
+		hastaDate.setVisible(false);
+
+		desdeLabel.setVisible(false);
+		hastaLabel.setVisible(false);
+
+		desdeDate.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				desdeDateActionPerformed(evt);
+			}
+		});
+
+		hastaDate.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				hastaDateActionPerformed(evt);
+			}
+		});
+
 		botonAnadirFondo.setText("Fondo");
 		botonAnadirFondo.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1570,43 +1614,65 @@ public class ui extends javax.swing.JFrame {
 
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
 		getContentPane().setLayout(layout);
-
 		layout.setHorizontalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 				.addGroup(layout.createSequentialGroup().addContainerGap()
 						.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-								.addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 220,
-										javax.swing.GroupLayout.PREFERRED_SIZE)
+								.addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE,
+										220, javax.swing.GroupLayout.PREFERRED_SIZE)
 								.addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
 										layout.createSequentialGroup().addComponent(buscarText)
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
 												.addComponent(buscarLabel)))
 						.addGap(18, 18, 18)
-						.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-								.addComponent(jScrollPane6)
-								.addComponent(panelGraficas, javax.swing.GroupLayout.DEFAULT_SIZE, 761, Short.MAX_VALUE)
-								.addComponent(graficasBox, javax.swing.GroupLayout.PREFERRED_SIZE, 100,
-										javax.swing.GroupLayout.PREFERRED_SIZE))
-						.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
-
-		layout.setVerticalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(layout.createSequentialGroup().addContainerGap().addGroup(layout
-						.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false).addComponent(buscarText)
-						.addComponent(buscarLabel, javax.swing.GroupLayout.DEFAULT_SIZE,
-								javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addComponent(graficasBox))
-						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-						.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-								.addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 670, Short.MAX_VALUE)
-								.addGroup(layout.createSequentialGroup()
-										.addComponent(panelGraficas, javax.swing.GroupLayout.DEFAULT_SIZE, 568,
+						.addGroup(
+								layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+										.addComponent(
+												panelGraficas, javax.swing.GroupLayout.DEFAULT_SIZE, 751,
 												Short.MAX_VALUE)
-										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 100,
-												javax.swing.GroupLayout.PREFERRED_SIZE)))
-						.addContainerGap()));
+										.addComponent(jScrollPane6)
+										.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout
+												.createSequentialGroup()
+												.addComponent(graficasBox, javax.swing.GroupLayout.PREFERRED_SIZE, 100,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+														javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+												.addComponent(desdeLabel)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(desdeDate, javax.swing.GroupLayout.PREFERRED_SIZE, 120,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addGap(12, 12, 12).addComponent(hastaLabel)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+												.addComponent(hastaDate, javax.swing.GroupLayout.PREFERRED_SIZE, 120,
+														javax.swing.GroupLayout.PREFERRED_SIZE)))
+						.addGap(20, 20, 20)));
+		layout.setVerticalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(layout
+				.createSequentialGroup().addContainerGap()
+				.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+						.addComponent(buscarText, javax.swing.GroupLayout.PREFERRED_SIZE,
+								javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+						.addComponent(buscarLabel)
+						.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+								.addComponent(hastaDate, javax.swing.GroupLayout.PREFERRED_SIZE,
+										javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+								.addComponent(desdeDate, javax.swing.GroupLayout.PREFERRED_SIZE,
+										javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+								.addComponent(desdeLabel).addComponent(hastaLabel).addComponent(graficasBox,
+										javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
+										javax.swing.GroupLayout.PREFERRED_SIZE)))
+				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+				.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+						.addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 670, Short.MAX_VALUE)
+						.addGroup(layout.createSequentialGroup()
+								.addComponent(panelGraficas, javax.swing.GroupLayout.DEFAULT_SIZE, 568, Short.MAX_VALUE)
+								.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+								.addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 96,
+										javax.swing.GroupLayout.PREFERRED_SIZE)))
+				.addContainerGap()));
+
+		layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] { buscarLabel, buscarText });
 
 		layout.linkSize(javax.swing.SwingConstants.VERTICAL,
-				new java.awt.Component[] { buscarLabel, buscarText, graficasBox });
+				new java.awt.Component[] { desdeDate, desdeLabel, hastaDate, hastaLabel });
 
 		pack();
 	}// </editor-fold>
@@ -1694,6 +1760,12 @@ public class ui extends javax.swing.JFrame {
 			return;
 		}
 		Object nodeInfo = node.getUserObject();
+
+		desdeDate.setVisible(false);
+		hastaDate.setVisible(false);
+
+		desdeLabel.setVisible(false);
+		hastaLabel.setVisible(false);
 
 		if (nodeInfo.getClass() == tfg.app.model.entities.FundDesc.class) {
 
@@ -2511,6 +2583,143 @@ public class ui extends javax.swing.JFrame {
 
 	}
 
+	// Seleccion de una fecha en el calendario desde
+	private void desdeDateActionPerformed(java.awt.event.ActionEvent evt) {
+
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+
+		FundDesc fundDesc = null;
+
+		if (node == null) {
+			return;
+		}
+		Object nodeInfo = node.getUserObject();
+
+		if (nodeInfo.getClass() == tfg.app.model.entities.FundDesc.class) {
+
+			fundDesc = (FundDesc) nodeInfo;
+			Date input = (Date) model1.getValue();
+			LocalDate date1 = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+			input = (Date) model2.getValue();
+			LocalDate date2 = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+			if (date1.compareTo(date2) >= 0) {
+
+				JOptionPane.showMessageDialog(ventanaError,
+						"La fecha de inicio no puede ser superior a la fecha final.", "Error de entrada",
+						JOptionPane.ERROR_MESSAGE);
+
+				date1 = date2.minusDays(1);
+
+			}
+
+			if (graficasBox.getSelectedItem().equals("Historial Vl")) {
+
+				List<FundVl> fundVlList = fundService.findFundVlbyRange(fundDesc, date1, date2);
+
+				DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
+
+				for (int x = 0; x < fundVlList.size(); x++) {
+					line_chart_dataset.addValue(fundVlList.get(x).getVl(), "Valor liquidativo",
+							fundVlList.get(x).getDay().toString());
+				}
+
+				JFreeChart lineChartObject = ChartFactory.createLineChart("Historial del valor liquidativo", "Días",
+						"Valor", line_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
+
+				ChartPanel CP = new ChartPanel(lineChartObject);
+				panelGraficas.removeAll();
+				panelGraficas.updateUI();
+				panelGraficas.setLayout(new java.awt.BorderLayout());
+				panelGraficas.add(CP, BorderLayout.CENTER);
+
+				if (fundVlList.size() == 0) {
+					descripcionTex.setText("El fondo seleccionado: " + fundDesc.getfName() + " con ISIN: "
+							+ fundDesc.getfId() + " no tiene ningún Vl entre los días: " + date1 + " y " + date2 + ".");
+				} else {
+
+					model1.setDate(date1.getYear(), date1.getMonthValue() - 1, date1.getDayOfMonth());
+					model2.setDate(date2.getYear(), date2.getMonthValue() - 1, date2.getDayOfMonth());
+
+					descripcionTex.setText("Gáfica con el historial de los Vl del fondo: " + fundDesc.getfName()
+							+ " con ISIN: " + fundDesc.getfId() + " entre los días: " + date1 + " y " + date2 + ".");
+
+				}
+
+			}
+		}
+
+	}
+
+	// Seleccion de una fecha en el calendario hasta
+	private void hastaDateActionPerformed(java.awt.event.ActionEvent evt) {
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+
+		FundDesc fundDesc = null;
+
+		if (node == null) {
+			return;
+		}
+		Object nodeInfo = node.getUserObject();
+
+		if (nodeInfo.getClass() == tfg.app.model.entities.FundDesc.class) {
+
+			fundDesc = (FundDesc) nodeInfo;
+			Date input = (Date) model1.getValue();
+			LocalDate date1 = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+			input = (Date) model2.getValue();
+			LocalDate date2 = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+			if (date2.compareTo(date1) <= 0) {
+
+				JOptionPane.showMessageDialog(ventanaError,
+						"La fecha de inicio no puede ser superior a la fecha final.", "Error de entrada",
+						JOptionPane.ERROR_MESSAGE);
+
+				date2 = date1.plusDays(1);
+
+			}
+
+			if (graficasBox.getSelectedItem().equals("Historial Vl")) {
+
+				List<FundVl> fundVlList = fundService.findFundVlbyRange(fundDesc, date1, date2);
+
+				DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
+
+				for (int x = 0; x < fundVlList.size(); x++) {
+					line_chart_dataset.addValue(fundVlList.get(x).getVl(), "Valor liquidativo",
+							fundVlList.get(x).getDay().toString());
+				}
+
+				JFreeChart lineChartObject = ChartFactory.createLineChart("Historial del valor liquidativo", "Días",
+						"Valor", line_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
+
+				ChartPanel CP = new ChartPanel(lineChartObject);
+				panelGraficas.removeAll();
+				panelGraficas.updateUI();
+				panelGraficas.setLayout(new java.awt.BorderLayout());
+				panelGraficas.add(CP, BorderLayout.CENTER);
+
+				if (fundVlList.size() == 0) {
+					descripcionTex.setText("El fondo seleccionado: " + fundDesc.getfName() + " con ISIN: "
+							+ fundDesc.getfId() + " no tiene ningún Vl entre los días: " + date1 + " y " + date2 + ".");
+				} else {
+
+					model1.setDate(date1.getYear(), date1.getMonthValue() - 1, date1.getDayOfMonth());
+					model2.setDate(date2.getYear(), date2.getMonthValue() - 1, date2.getDayOfMonth());
+
+					descripcionTex.setText("Gáfica con el historial de los Vl del fondo: " + fundDesc.getfName()
+							+ " con ISIN: " + fundDesc.getfId() + " entre los días: " + date1 + " y " + date2 + ".");
+
+				}
+
+			}
+		}
+
+	}
+
 	// Seleccionar una grafica en el scroll de la ventana principal
 	private void graficasBoxActionPerformed(java.awt.event.ActionEvent evt) {
 
@@ -2532,7 +2741,7 @@ public class ui extends javax.swing.JFrame {
 				try {
 					fundDesc = fundService.findFund(fundDesc.getfId());
 				} catch (InstanceNotFoundException e) {
-					JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de borrado",
+					JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error en el fondo",
 							JOptionPane.ERROR_MESSAGE);
 					return;
 				}
@@ -2553,14 +2762,26 @@ public class ui extends javax.swing.JFrame {
 				panelGraficas.setLayout(new java.awt.BorderLayout());
 				panelGraficas.add(CP, BorderLayout.CENTER);
 
+				desdeDate.setVisible(true);
+				hastaDate.setVisible(true);
+
+				desdeLabel.setVisible(true);
+				hastaLabel.setVisible(true);
+
 				if (fundDesc.getFundVls().size() == 0) {
 					descripcionTex.setText("El fondo seleccionado: " + fundDesc.getfName() + " con ISIN: "
 							+ fundDesc.getfId() + " no tiene ningún Vl.");
 				} else {
+
+					LocalDate date1 = fundDesc.getFundVls().get(0).getDay();
+					LocalDate date2 = fundDesc.getFundVls().get(fundDesc.getFundVls().size() - 1).getDay();
+
+					model1.setDate(date1.getYear(), date1.getMonthValue() - 1, date1.getDayOfMonth());
+					model2.setDate(date2.getYear(), date2.getMonthValue() - 1, date2.getDayOfMonth());
+
 					descripcionTex.setText("Gáfica con el historial de los Vl del fondo: " + fundDesc.getfName()
-							+ " con ISIN: " + fundDesc.getfId() + " entre los días: "
-							+ fundDesc.getFundVls().get(0).getDay() + " y "
-							+ fundDesc.getFundVls().get(fundDesc.getFundVls().size() - 1).getDay() + ".");
+							+ " con ISIN: " + fundDesc.getfId() + " entre los días: " + date1 + " y " + date2 + ".");
+
 				}
 
 			}
@@ -2571,6 +2792,13 @@ public class ui extends javax.swing.JFrame {
 
 			panelGraficas.removeAll();
 			panelGraficas.updateUI();
+
+			desdeDate.setVisible(false);
+			hastaDate.setVisible(false);
+
+			desdeLabel.setVisible(false);
+			hastaLabel.setVisible(false);
+
 			descripcionTex
 					.setText("Descripción del fondo " + fundDesc.getfName() + " y métricas simples de rendimiento.");
 			showFundDesc(fundDesc);
@@ -2643,10 +2871,10 @@ public class ui extends javax.swing.JFrame {
 		 */
 		fundService = new FundServiceImpl();
 
-		FundDesc fundDesc1 = new FundDesc("DE0008490962", "Fondazo 1", "Pinball Wizards", "Alto riesgo", "Monetario",
-				"Euro", 0.01, 0.02);
-		FundDesc fundDesc2 = new FundDesc("ES0173394034", "Fondazo 2", "Pinball Wizards", "Alto riesgo", "Monetario",
-				"Euro", 0.01, 0.02);
+		FundDesc fundDesc1 = new FundDesc("DE0008490962", "Renta 4 Bolsa FI", "Pinball Wizards", "Alto riesgo",
+				"Monetario", "Euro", 0.01, 0.02);
+		FundDesc fundDesc2 = new FundDesc("ES0173394034", "Global Trends, FI", "Pinball Wizards", "Alto riesgo",
+				"Monetario", "Euro", 0.01, 0.02);
 		FundPort fundPort1 = new FundPort("Cartera Test 1", "Esto es una cartera de prueba");
 		FundPort fundPort2 = new FundPort("Cartera Test 2", "Esto es una cartera de prueba");
 
@@ -2883,5 +3111,11 @@ public class ui extends javax.swing.JFrame {
 	private javax.swing.JLabel drawDesc;
 	private javax.swing.JScrollPane jScrollPane6;
 	private javax.swing.JEditorPane descripcionTex;
+	private JDatePickerImpl desdeDate;
+	private JDatePickerImpl hastaDate;
+	private javax.swing.JLabel desdeLabel;
+	private javax.swing.JLabel hastaLabel;
+	private UtilDateModel model1;
+	private UtilDateModel model2;
 	// End of variables declaration
 }
