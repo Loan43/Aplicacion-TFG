@@ -33,6 +33,7 @@ import tfg.app.model.entities.FundVl;
 import tfg.app.model.entities.PortOp;
 import tfg.app.model.service.FundService;
 import tfg.app.model.service.FundServiceImpl;
+import tfg.app.util.comparator.compFundProfit;
 import tfg.app.util.comparator.compVl;
 import tfg.app.util.exceptions.InputValidationException;
 import tfg.app.util.exceptions.InstanceNotFoundException;
@@ -2909,8 +2910,121 @@ public class ui extends javax.swing.JFrame {
 
 					}
 				}
+
+				if (graficasBox.getSelectedItem().equals("Rentabilidad")) {
+
+					List<FundDesc> fundDescs = null;
+					try {
+						fundDescs = getProfitOfFundsOfPortfolio(fundPort);
+					} catch (InstanceNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+					DefaultCategoryDataset bar_chart_dataset = new DefaultCategoryDataset();
+
+					for (int x = 0; x < fundDescs.size() && x < 5; x++) {
+
+						if (fundDescs.get(x).getProfit() > 0) {
+							bar_chart_dataset.addValue(fundDescs.get(x).getProfit(), fundDescs.get(x).getfName(),
+									"Más rentables");
+						}
+
+					}
+
+					for (int x = fundDescs.size() - 1; x >= 0 && x >= fundDescs.size() - 5; x--) {
+						if (fundDescs.get(x).getProfit() <= 0) {
+
+							bar_chart_dataset.addValue(fundDescs.get(x).getProfit(), fundDescs.get(x).getfName(),
+									"Menos rentables");
+						}
+
+					}
+
+					JFreeChart barChart = ChartFactory.createBarChart("Rentabilidades", "Fondo", "Rentabilidad",
+							bar_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
+
+					ChartPanel CP = new ChartPanel(barChart);
+					panelGraficas.removeAll();
+					panelGraficas.updateUI();
+					panelGraficas.setLayout(new java.awt.BorderLayout());
+					panelGraficas.add(CP, BorderLayout.CENTER);
+
+					if (fundDescs.size() == 0) {
+						descripcionTex.setText(
+								"La cartera seleccionada: " + fundPort.getpName() + " no tiene ningún fondo asignado.");
+					} else {
+
+						descripcionTex.setText(
+								"Gráfica de los fondos más y menos rentables de la cartera: " + fundPort.getpName());
+
+					}
+
+				}
+
 			}
 		}
+
+	}
+
+	private static List<FundDesc> getProfitOfFundsOfPortfolio(FundPort fundPort) throws InstanceNotFoundException {
+
+		List<FundDesc> fundDescs = fundService.findFundsOfPortfolio(fundPort);
+		List<PortOp> portOps = null;
+
+		for (int x = 0; x < fundDescs.size(); x++) {
+
+			portOps = fundService.findAllPortOp(fundPort, fundDescs.get(x));
+
+			Double compra = 0.0;
+			Double venta = -0.0;
+
+			int y = 0;
+
+			if (portOps.size() != 0) {
+
+				for (y = 0; y < portOps.size(); y++) {
+
+					if (portOps.get(y).getfPartOp() < 0) {
+
+						venta += portOps.get(y).getfPrice();
+
+					} else {
+
+						compra += portOps.get(y).getfPrice();
+
+					}
+
+				}
+				y--;
+				venta = venta * -1;
+				if (portOps.get(y).getfPartfin() != 0) {
+
+					FundVl fundVl = fundService.findLatestFundVl(portOps.get(y).getPortDesc().getFundDesc(),
+							LocalDate.now());
+
+					venta += ((portOps.get(y).getfPartfin() * fundVl.getVl())
+							- (portOps.get(y).getfPartfin() * fundVl.getVl())
+									* portOps.get(y).getPortDesc().getFundDesc().getfCancelComm());
+
+				}
+
+				fundDescs.get(x).setProfit(((venta - compra) / compra) * 100);
+				System.out.println(fundDescs.get(x).getfName());
+				System.out.println(compra);
+				System.out.println(venta);
+				System.out.println(fundDescs.get(x).getProfit());
+				System.out.println("------------------------");
+
+			} else {
+
+				fundDescs.get(x).setProfit(0.0);
+
+			}
+
+		}
+		Collections.sort(fundDescs, new compFundProfit());
+		return fundDescs;
 
 	}
 
@@ -2982,39 +3096,92 @@ public class ui extends javax.swing.JFrame {
 				"Monetario", "Euro", 0.01, 0.02);
 		FundDesc fundDesc2 = new FundDesc("ES0173394034", "Global Trends, FI", "Pinball Wizards", "Alto riesgo",
 				"Monetario", "Euro", 0.01, 0.02);
+		FundDesc fundDesc3 = new FundDesc("ES0180792006", "True Value Fi", "Pinball Wizards", "Alto riesgo",
+				"Monetario", "Euro", 0.01, 0.02);
+		FundDesc fundDesc4 = new FundDesc("ES0168812032", "Patrisa Fi", "Pinball Wizards", "Alto riesgo", "Monetario",
+				"Euro", 0.01, 0.02);
+		FundDesc fundDesc5 = new FundDesc("ES0167198003", "Ohana Europe Fi", "Pinball Wizards", "Alto riesgo",
+				"Monetario", "Euro", 0.01, 0.02);
+		FundDesc fundDesc6 = new FundDesc("ES0112231008", "Avantage Fund, Fi", "Pinball Wizards", "Alto riesgo",
+				"Monetario", "Euro", 0.01, 0.02);
+		FundDesc fundDesc7 = new FundDesc("ES0140963002", "Algar Global Fund Fi", "Pinball Wizards", "Alto riesgo",
+				"Monetario", "Euro", 0.01, 0.02);
+
 		FundPort fundPort1 = new FundPort("Cartera Test 1", "Esto es una cartera de prueba");
 		FundPort fundPort2 = new FundPort("Cartera Test 2", "Esto es una cartera de prueba");
 
 		LocalDate date = LocalDate.parse("2017-01-27");
+		double start = 50.0;
 
 		for (int x = 0; x < 25; x++) {
 			date = date.plusDays(1);
-			fundDesc1.getFundVls().add(new FundVl(date, ThreadLocalRandom.current().nextDouble(10, 20), fundDesc1));
+			fundDesc1.getFundVls()
+					.add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1, 1), fundDesc1));
+			fundDesc3.getFundVls()
+					.add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1, 1), fundDesc3));
+			fundDesc5.getFundVls()
+					.add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1, 1), fundDesc5));
+			fundDesc7.getFundVls()
+					.add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1, 1), fundDesc7));
 		}
 
 		date = LocalDate.parse("2017-01-27");
+		start = 30.0;
 
 		for (int x = 0; x < 25; x++) {
 			date = date.plusDays(1);
-			fundDesc2.getFundVls().add(new FundVl(date, ThreadLocalRandom.current().nextDouble(50, 70), fundDesc2));
+			fundDesc2.getFundVls()
+					.add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1, 1), fundDesc2));
+			fundDesc4.getFundVls()
+					.add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1, 1), fundDesc4));
+			fundDesc6.getFundVls()
+					.add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1, 1), fundDesc6));
 		}
 
-		PortOp portOp = new PortOp(LocalDate.parse("2017-04-27"), fundPort1, fundDesc1, 100);
-		PortOp portOp1 = new PortOp(LocalDate.parse("2017-04-28"), fundPort1, fundDesc2, 100);
-		PortOp portOp2 = new PortOp(LocalDate.parse("2017-04-29"), fundPort2, fundDesc2, 100);
+		PortOp portOp = new PortOp(LocalDate.parse("2017-01-28"), fundPort1, fundDesc1, 100);
+		PortOp portOp1 = new PortOp(LocalDate.parse("2017-01-28"), fundPort1, fundDesc2, 100);
+
+		PortOp portOp2 = new PortOp(LocalDate.parse("2017-01-28"), fundPort2, fundDesc1, 100);
+		PortOp portOp3 = new PortOp(LocalDate.parse("2017-01-28"), fundPort2, fundDesc2, 100);
+		PortOp portOp4 = new PortOp(LocalDate.parse("2017-01-28"), fundPort2, fundDesc3, 100);
+		PortOp portOp5 = new PortOp(LocalDate.parse("2017-01-28"), fundPort2, fundDesc4, 100);
+		PortOp portOp6 = new PortOp(LocalDate.parse("2017-01-28"), fundPort2, fundDesc5, 100);
+		PortOp portOp7 = new PortOp(LocalDate.parse("2017-01-28"), fundPort2, fundDesc6, 100);
+		PortOp portOp8 = new PortOp(LocalDate.parse("2017-01-28"), fundPort2, fundDesc7, 100);
 
 		try {
 
 			fundService.addFund(fundDesc1);
 			fundService.addFund(fundDesc2);
+			fundService.addFund(fundDesc3);
+			fundService.addFund(fundDesc4);
+			fundService.addFund(fundDesc5);
+			fundService.addFund(fundDesc6);
+			fundService.addFund(fundDesc7);
+
 			fundService.addFundPortfolio(fundPort1);
 			fundService.addFundPortfolio(fundPort2);
+
 			fundService.addPortDesc(fundPort1, fundDesc1);
 			fundService.addPortDesc(fundPort1, fundDesc2);
+
+			fundService.addPortDesc(fundPort2, fundDesc1);
 			fundService.addPortDesc(fundPort2, fundDesc2);
+			fundService.addPortDesc(fundPort2, fundDesc3);
+			fundService.addPortDesc(fundPort2, fundDesc4);
+			fundService.addPortDesc(fundPort2, fundDesc5);
+			fundService.addPortDesc(fundPort2, fundDesc6);
+			fundService.addPortDesc(fundPort2, fundDesc7);
+
 			fundService.addPortOp(portOp);
 			fundService.addPortOp(portOp1);
 			fundService.addPortOp(portOp2);
+			fundService.addPortOp(portOp3);
+			fundService.addPortOp(portOp4);
+			fundService.addPortOp(portOp5);
+			fundService.addPortOp(portOp6);
+			fundService.addPortOp(portOp7);
+			fundService.addPortOp(portOp8);
 
 		} catch (InputValidationException e) {
 			//

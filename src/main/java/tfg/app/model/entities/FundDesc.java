@@ -12,10 +12,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
+import javax.persistence.Transient;
 
 /**
- *  Clase que modela un fondo de inversión usando hibernate.
+ * Clase que modela un fondo de inversión usando hibernate.
  *
  * 
  */
@@ -57,6 +57,9 @@ public class FundDesc {
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "fundDescId", cascade = CascadeType.REMOVE)
 	private List<PortDesc> portDescs = new ArrayList<PortDesc>();
+
+	@Transient
+	private Double profit = 0.0;
 
 	public FundDesc() {
 	};
@@ -203,6 +206,14 @@ public class FundDesc {
 
 	public void setfName(String fName) {
 		this.fName = fName;
+	}
+
+	public Double getProfit() {
+		return profit;
+	}
+
+	public void setProfit(Double profit) {
+		this.profit = profit;
 	}
 
 	@Override
