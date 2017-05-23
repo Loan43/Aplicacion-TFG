@@ -1774,8 +1774,8 @@ public class ui extends javax.swing.JFrame {
 
 			FundDesc fundDesc = (FundDesc) nodeInfo;
 
-			graficasBox
-					.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Descripción", "Historial Vl" }));
+			graficasBox.setModel(new javax.swing.DefaultComboBoxModel<>(
+					new String[] { "Descripción", "Historial Vl", "Hist Renta" }));
 
 			graficasBox.setSelectedItem("Descripción");
 			graficasBox.setVisible(true);
@@ -2825,6 +2825,89 @@ public class ui extends javax.swing.JFrame {
 				showFundDesc(fundDesc);
 
 			}
+
+			if (graficasBox.getSelectedItem().equals("Hist Renta")) {
+
+				// final-inicial/inicial x 100
+				desdeDate.setVisible(false);
+				hastaDate.setVisible(false);
+
+				desdeLabel.setVisible(false);
+				hastaLabel.setVisible(false);
+
+				DefaultCategoryDataset bar_chart_dataset = new DefaultCategoryDataset();
+				Double profit = 0.0;
+
+				String string = "Gráfica que muestra las rentabilidades históricas del fondo " + fundDesc.getfName()
+						+ ", para los siguientes períodos de tiempo:\n"
+						+ "Último año fiscal, último semestre, último trimestre y último mes.\n";
+
+				LocalDate today = LocalDate.now();
+
+				// Año
+
+				List<FundVl> fundVls = fundService.findFundVlbyRange(fundDesc,
+						LocalDate.parse(today.minusYears(1).getYear() + "-01-01"),
+						LocalDate.parse(today.minusYears(1).getYear() + "-12-31"));
+
+				if (fundVls.size() >= 300) {
+
+					profit = (fundVls.get(fundVls.size() - 1).getVl() - fundVls.get(0).getVl())
+							/ fundVls.get(0).getVl();
+					bar_chart_dataset.addValue(profit, "Año", "Último año fiscal");
+				} else {
+					string += "\nNo existen suficentes datos para calcular la rentabilidad del último año fiscal ("
+							+ today.minusYears(1).getYear() + "). ";
+				}
+
+				// Semestre
+
+				fundVls = fundService.findFundVlbyRange(fundDesc, today.minusMonths(6), today);
+
+				if (fundVls.size() >= 180) {
+					profit = (fundVls.get(fundVls.size() - 1).getVl() - fundVls.get(0).getVl())
+							/ fundVls.get(0).getVl();
+					bar_chart_dataset.addValue(profit, "Semestre", "Último semestre");
+				} else {
+					string += "\nNo existen suficentes datos para calcular la rentabilidad del último semestre. ";
+				}
+
+				// Trimestre
+
+				fundVls = fundService.findFundVlbyRange(fundDesc, today.minusMonths(3), today);
+
+				if (fundVls.size() >= 90) {
+					profit = (fundVls.get(fundVls.size() - 1).getVl() - fundVls.get(0).getVl())
+							/ fundVls.get(0).getVl();
+					bar_chart_dataset.addValue(profit, "Trimestre", "Último trimestre");
+				} else {
+					string += "\nNo existen suficentes datos para calcular la rentabilidad del último trimestre. ";
+				}
+
+				// Mes
+
+				fundVls = fundService.findFundVlbyRange(fundDesc, today.minusMonths(1), today);
+
+				if (fundVls.size() >= 30) {
+					profit = (fundVls.get(fundVls.size() - 1).getVl() - fundVls.get(0).getVl())
+							/ fundVls.get(0).getVl();
+					bar_chart_dataset.addValue(profit, "Mes", "Último mes");
+				} else {
+					string += "\nNo existen suficentes datos para calcular la rentabilidad del último mes. ";
+				}
+
+				JFreeChart barChart = ChartFactory.createBarChart("Rentabilidades", "Fondo", "Rentabilidad",
+						bar_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
+
+				ChartPanel CP = new ChartPanel(barChart);
+				panelGraficas.removeAll();
+				panelGraficas.updateUI();
+				panelGraficas.setLayout(new java.awt.BorderLayout());
+				panelGraficas.add(CP, BorderLayout.CENTER);
+
+				descripcionTex.setText(string);
+
+			}
 		} else {
 			if (nodeInfo.getClass() == tfg.app.model.entities.FundPort.class) {
 
@@ -2917,8 +3000,9 @@ public class ui extends javax.swing.JFrame {
 					try {
 						fundDescs = getProfitOfFundsOfPortfolio(fundPort);
 					} catch (InstanceNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de base de datos",
+								JOptionPane.ERROR_MESSAGE);
+						return;
 					}
 
 					DefaultCategoryDataset bar_chart_dataset = new DefaultCategoryDataset();
@@ -2959,12 +3043,9 @@ public class ui extends javax.swing.JFrame {
 								"Gráfica de los fondos más y menos rentables de la cartera: " + fundPort.getpName());
 
 					}
-
 				}
-
 			}
 		}
-
 	}
 
 	private static List<FundDesc> getProfitOfFundsOfPortfolio(FundPort fundPort) throws InstanceNotFoundException {
@@ -3010,11 +3091,11 @@ public class ui extends javax.swing.JFrame {
 				}
 
 				fundDescs.get(x).setProfit(((venta - compra) / compra) * 100);
-				System.out.println(fundDescs.get(x).getfName());
-				System.out.println(compra);
-				System.out.println(venta);
-				System.out.println(fundDescs.get(x).getProfit());
-				System.out.println("------------------------");
+				// System.out.println(fundDescs.get(x).getfName());
+				// System.out.println(compra);
+				// System.out.println(venta);
+				// System.out.println(fundDescs.get(x).getProfit());
+				// System.out.println("------------------------");
 
 			} else {
 
@@ -3063,6 +3144,7 @@ public class ui extends javax.swing.JFrame {
 								.addComponent(canComDesc).addComponent(alphaDesc).addComponent(betaDesc)
 								.addComponent(varDesc).addComponent(drawDesc))
 						.addContainerGap(614, Short.MAX_VALUE)));
+
 		panelGraficasLayout.setVerticalGroup(panelGraficasLayout
 				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 				.addGroup(panelGraficasLayout.createSequentialGroup().addContainerGap().addComponent(nombreDesc)
@@ -3079,18 +3161,7 @@ public class ui extends javax.swing.JFrame {
 						.addContainerGap(401, Short.MAX_VALUE)));
 	}
 
-	// Main de la app
-	public static void main(String args[]) {
-		/* Set the Nimbus look and feel */
-		// <editor-fold defaultstate="collapsed" desc=" Look and feel setting
-		// code (optional) ">
-		/*
-		 * If Nimbus (introduced in Java SE 6) is not available, stay with the
-		 * default look and feel. For details see
-		 * http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.
-		 * html
-		 */
-		fundService = new FundServiceImpl();
+	private static void createDbExample() {
 
 		FundDesc fundDesc1 = new FundDesc("DE0008490962", "Renta 4 Bolsa FI", "Pinball Wizards", "Alto riesgo",
 				"Monetario", "Euro", 0.01, 0.02);
@@ -3110,10 +3181,10 @@ public class ui extends javax.swing.JFrame {
 		FundPort fundPort1 = new FundPort("Cartera Test 1", "Esto es una cartera de prueba");
 		FundPort fundPort2 = new FundPort("Cartera Test 2", "Esto es una cartera de prueba");
 
-		LocalDate date = LocalDate.parse("2017-01-27");
-		double start = 50.0;
+		LocalDate date = LocalDate.parse("2015-05-30");
+		double start = 100.0;
 
-		for (int x = 0; x < 25; x++) {
+		for (int x = 0; x < 1000; x++) {
 			date = date.plusDays(1);
 			fundDesc1.getFundVls()
 					.add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1, 1), fundDesc1));
@@ -3125,10 +3196,10 @@ public class ui extends javax.swing.JFrame {
 					.add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1, 1), fundDesc7));
 		}
 
-		date = LocalDate.parse("2017-01-27");
-		start = 30.0;
+		date = LocalDate.parse("2016-05-30");
+		start = 70.0;
 
-		for (int x = 0; x < 25; x++) {
+		for (int x = 0; x < 400; x++) {
 			date = date.plusDays(1);
 			fundDesc2.getFundVls()
 					.add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1, 1), fundDesc2));
@@ -3190,6 +3261,21 @@ public class ui extends javax.swing.JFrame {
 			//
 			e.printStackTrace();
 		}
+	}
+
+	// Main de la app
+	public static void main(String args[]) {
+		/* Set the Nimbus look and feel */
+		// <editor-fold defaultstate="collapsed" desc=" Look and feel setting
+		// code (optional) ">
+		/*
+		 * If Nimbus (introduced in Java SE 6) is not available, stay with the
+		 * default look and feel. For details see
+		 * http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.
+		 * html
+		 */
+		fundService = new FundServiceImpl();
+		createDbExample();
 
 		try {
 			for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
