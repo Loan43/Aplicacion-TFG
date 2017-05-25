@@ -1,8 +1,18 @@
 package tfg.app.model.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import tfg.app.util.validator.PropertyValidator;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -12,6 +22,11 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.query.Query;
 
+import jxl.Cell;
+import jxl.CellType;
+import jxl.Sheet;
+import jxl.Workbook;
+import jxl.read.biff.BiffException;
 import tfg.app.model.entities.FundDesc;
 import tfg.app.model.entities.FundPort;
 import tfg.app.model.entities.FundVl;
@@ -666,7 +681,7 @@ public class FundServiceImpl implements FundService {
 	public void UpdatePortOp(PortOp portOp) throws InputValidationException {
 
 		validatePortOp(portOp, 0);
-		
+
 		try {
 			Session session = sessionFactory.openSession();
 			try {
@@ -859,6 +874,48 @@ public class FundServiceImpl implements FundService {
 
 		return portOp;
 
+	}
+
+	public List<FundVl> importVlsFromExcel(String inputFile, FundDesc fundDesc) throws IOException, ParseException {
+		File inputWorkbook = new File(inputFile);
+		Workbook w;
+		List<FundVl> fundVls = new ArrayList<FundVl>();
+		DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+		LocalDate date = null;
+		double vl = 0;
+		try {
+			w = Workbook.getWorkbook(inputWorkbook);
+			Sheet sheet = w.getSheet(0);
+
+			for (int i = 0; i < sheet.getRows(); i++) {
+				Cell cell1 = sheet.getCell(0, i);
+				Cell cell2 = sheet.getCell(1, i);
+
+				CellType type1 = cell1.getType();
+				CellType type2 = cell2.getType();
+
+				if (type1 == CellType.LABEL) {
+
+					Date input = df.parse(cell1.getContents());
+					date = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+				}
+
+				if (type2 == CellType.LABEL) {
+					Pattern patron = Pattern.compile(",");
+					Matcher encaja = patron.matcher(cell2.getContents());
+					String resultado = encaja.replaceAll(".");
+					vl = Double.parseDouble(resultado);
+				}
+
+			}
+
+			fundVls.add(new FundVl(date, vl, fundDesc));
+
+		} catch (BiffException e) {
+			e.printStackTrace();
+		}
+		return fundVls;
 	}
 
 }
