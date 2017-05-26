@@ -3,6 +3,7 @@ package tfg.app.controller;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.io.File;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Collections;
@@ -179,6 +180,7 @@ public class ui extends javax.swing.JFrame {
 		tablaVls = new javax.swing.JDialog();
 		jScrollPane3 = new javax.swing.JScrollPane();
 		jScrollPane6 = new javax.swing.JScrollPane();
+		anadirVlExcel = new javax.swing.JMenuItem();
 		vlTabla = new javax.swing.JTable() {
 			@Override
 			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
@@ -243,6 +245,7 @@ public class ui extends javax.swing.JFrame {
 		descripcionTex = new javax.swing.JEditorPane();
 		desdeLabel = new javax.swing.JLabel();
 		hastaLabel = new javax.swing.JLabel();
+		selectorDeFichero = new javax.swing.JFileChooser();
 
 		///////////////////////////////////////////
 		opIsinLabel = new javax.swing.JLabel();
@@ -1458,6 +1461,14 @@ public class ui extends javax.swing.JFrame {
 				anFondoAcarteraActionPerformed(evt);
 			}
 		});
+		anadirVlExcel.setText("Importar desde excel");
+		anadirVlExcel.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				anadirVlExcelActionPerformed(evt);
+			}
+		});
+		fondoMenu.add(anadirVlExcel);
+
 		carteraMenu.add(anFondoAcartera);
 
 		elFondoCartera.setText("Eliminar Fondo");
@@ -1515,6 +1526,9 @@ public class ui extends javax.swing.JFrame {
 			}
 		});
 		opMenu.add(borrarOp);
+
+		selectorDeFichero.setDialogTitle("Seleccionar Fichero");
+		selectorDeFichero.setName("Seleccionar Fichero");
 
 		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 		setTitle("Aplicación");
@@ -2742,6 +2756,59 @@ public class ui extends javax.swing.JFrame {
 
 	}
 
+	// Boton importar desde excel del popupmenu de fondo
+	private void anadirVlExcelActionPerformed(java.awt.event.ActionEvent evt) {
+
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+
+		FundDesc fundDesc = null;
+
+		if (node == null) {
+			return;
+		}
+		Object nodeInfo = node.getUserObject();
+
+		if (nodeInfo.getClass() == tfg.app.model.entities.FundDesc.class) {
+
+			fundDesc = (FundDesc) nodeInfo;
+
+			int returnVal = selectorDeFichero.showOpenDialog(this);
+
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				File file = selectorDeFichero.getSelectedFile();
+
+				try {
+
+					List<FundVl> fundVls = fundService.importVlsFromExcel(file, fundDesc);
+
+					for (int x = 0; x < fundVls.size(); x++) {
+
+						try {
+
+							fundService.addFundVl(fundVls.get(x));
+
+						} catch (InputValidationException e) {
+
+							try {
+								fundService.updateFundVl(fundVls.get(x));
+							} catch (InstanceNotFoundException e1) {
+								JOptionPane.showMessageDialog(ventanaError, "Ha ocurrido un error en la BD",
+										"Error interno", JOptionPane.ERROR_MESSAGE);
+							}
+							continue;
+						}
+					}
+				} catch (InputValidationException e) {
+					JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de entrada",
+							JOptionPane.ERROR_MESSAGE);
+				}
+			} else {
+				System.out.println("Open command cancelled by user.");
+			}
+		}
+
+	}
+
 	// Seleccionar una grafica en el scroll de la ventana principal
 	private void graficasBoxActionPerformed(java.awt.event.ActionEvent evt) {
 
@@ -3385,6 +3452,7 @@ public class ui extends javax.swing.JFrame {
 	private javax.swing.JLabel fondoLabel;
 	private javax.swing.JLabel fondoLabel1;
 	private javax.swing.JPopupMenu fondoMenu;
+	private javax.swing.JMenuItem anadirVlExcel;
 	private javax.swing.JLabel gestoraLabel;
 	private javax.swing.JLabel gestoraLabel1;
 	private javax.swing.JTextField gestoraText;
@@ -3475,6 +3543,7 @@ public class ui extends javax.swing.JFrame {
 	private JDatePickerImpl hastaDate;
 	private javax.swing.JLabel desdeLabel;
 	private javax.swing.JLabel hastaLabel;
+	private javax.swing.JFileChooser selectorDeFichero;
 	private UtilDateModel model1;
 	private UtilDateModel model2;
 	// End of variables declaration

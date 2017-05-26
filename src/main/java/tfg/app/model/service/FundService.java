@@ -1,7 +1,6 @@
 package tfg.app.model.service;
 
-import java.io.IOException;
-import java.text.ParseException;
+import java.io.File;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -114,16 +113,17 @@ public interface FundService {
 
 	/**
 	 * Devuelve una lista de FundVls asociadas a un FundDesc importadas partir
-	 * de un fichero Excel (.xls)
+	 * de un fichero Excel (.xls), el fichero debe constar únicamente de dos
+	 * columnas con el fomato | fecha | Vl |.
 	 * <p>
 	 * 
 	 * El formato de la fecha ha de ser el siguiente : "dd/MM/yyyy"
 	 * <p>
 	 * El formato de los Vls ha de ser uno de los siguientes: xx.xx o xx,xx
 	 * <p>
-	 * Es importante tener en cuenta que esta función devuelve los vls
-	 * asociados al fondo indicado, por tanto no se pueden asignar a otro fondo
-	 * distinto posteriormente.
+	 * Es importante tener en cuenta que esta función devuelve los vls asociados
+	 * al fondo indicado, por tanto no se pueden asignar a otro fondo distinto
+	 * posteriormente.
 	 * <p>
 	 * 
 	 * Si se utiliza esta función de forma posterior a la inserción inicial del
@@ -135,8 +135,9 @@ public interface FundService {
 	 * existente.
 	 * 
 	 * @param
+	 * @throws InputValidationException
 	 */
-	public List<FundVl> importVlsFromExcel(String inputFile, FundDesc fundDesc) throws IOException, ParseException;
+	public List<FundVl> importVlsFromExcel(File inputFile, FundDesc fundDesc) throws InputValidationException;
 
 	// ################################################################
 	// #
