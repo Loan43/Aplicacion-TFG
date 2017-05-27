@@ -10,6 +10,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,7 +27,12 @@ import jxl.Cell;
 import jxl.CellType;
 import jxl.Sheet;
 import jxl.Workbook;
+import jxl.WorkbookSettings;
 import jxl.read.biff.BiffException;
+import jxl.write.Label;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
+import jxl.write.WriteException;
 import tfg.app.model.entities.FundDesc;
 import tfg.app.model.entities.FundPort;
 import tfg.app.model.entities.FundVl;
@@ -912,6 +918,93 @@ public class FundServiceImpl implements FundService {
 			throw new InputValidationException("Error: El fichero seleccionado no tiene el formato correcto.");
 		}
 		return fundVls;
+	}
+
+	@Override
+	public void exportFundDescToExcel(FundDesc fundDesc, File file) throws InputValidationException {
+
+		WorkbookSettings wbSettings = new WorkbookSettings();
+
+		wbSettings.setLocale(new Locale("es", "ES"));
+
+		WritableWorkbook workbook = null;
+
+		try {
+			workbook = Workbook.createWorkbook(file, wbSettings);
+
+			workbook.createSheet("Report", 0);
+			WritableSheet excelSheet = workbook.getSheet(0);
+
+			Label label;
+			int x = 0;
+
+			label = new Label(0, x, "Nombre:");
+			excelSheet.addCell(label);
+			label = new Label(1, x, fundDesc.getfName());
+			excelSheet.addCell(label);
+			x++;
+
+			label = new Label(0, x, "ISIN:");
+			excelSheet.addCell(label);
+			label = new Label(1, x, fundDesc.getfId());
+			excelSheet.addCell(label);
+			x++;
+
+			label = new Label(0, x, "Gestora:");
+			excelSheet.addCell(label);
+			label = new Label(1, x, fundDesc.getfGest());
+			excelSheet.addCell(label);
+			x++;
+
+			label = new Label(0, x, "Tipo:");
+			excelSheet.addCell(label);
+			label = new Label(1, x, fundDesc.getfType());
+			excelSheet.addCell(label);
+			x++;
+
+			label = new Label(0, x, "Divisa:");
+			excelSheet.addCell(label);
+			label = new Label(1, x, fundDesc.getfCurrency());
+			excelSheet.addCell(label);
+			x++;
+
+			label = new Label(0, x, "Comisión de cancelación:");
+			excelSheet.addCell(label);
+			label = new Label(1, x, fundDesc.getfCancelComm().toString());
+			excelSheet.addCell(label);
+			x++;
+
+			label = new Label(0, x, "Comisión de suscripción:");
+			excelSheet.addCell(label);
+			label = new Label(1, x, fundDesc.getfSubComm().toString());
+			excelSheet.addCell(label);
+			x += 2;
+
+			label = new Label(0, x, "Fecha");
+			excelSheet.addCell(label);
+			label = new Label(1, x, "Valor liquidativo");
+			excelSheet.addCell(label);
+			x++;
+
+			Label date;
+			Label vl;
+
+			for (int y = x; y < fundDesc.getFundVls().size(); y++) {
+
+				date = new Label(0, y, fundDesc.getFundVls().get(y).getDay().toString());
+				vl = new Label(1, y, fundDesc.getFundVls().get(y).getVl().toString());
+
+				excelSheet.addCell(date);
+				excelSheet.addCell(vl);
+
+			}
+
+			workbook.write();
+			workbook.close();
+
+		} catch (IOException | WriteException e1) {
+			throw new InputValidationException("Ha ocurrido un error al exportar el fondo.");
+		}
 	}
 
 }

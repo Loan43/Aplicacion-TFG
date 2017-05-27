@@ -62,6 +62,13 @@ public interface FundService {
 	 */
 	public List<FundDesc> findFundsByKeywords(String keywords);
 
+	/**
+	 * Exporta un fondo y sus vls a un fichero Excel (.xls)
+	 *
+	 * @param
+	 */
+	public void exportFundDescToExcel(FundDesc fundDesc, File file) throws InputValidationException;
+
 	// ################################################################
 	// #
 	// # Métodos de objetos FundVl

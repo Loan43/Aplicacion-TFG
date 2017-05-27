@@ -181,6 +181,8 @@ public class ui extends javax.swing.JFrame {
 		jScrollPane3 = new javax.swing.JScrollPane();
 		jScrollPane6 = new javax.swing.JScrollPane();
 		anadirVlExcel = new javax.swing.JMenuItem();
+		exportarExcel = new javax.swing.JMenuItem();
+
 		vlTabla = new javax.swing.JTable() {
 			@Override
 			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
@@ -1469,6 +1471,14 @@ public class ui extends javax.swing.JFrame {
 		});
 		fondoMenu.add(anadirVlExcel);
 
+		exportarExcel.setText("Exportar Fondo");
+		exportarExcel.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				exportarExcelActionPerformed(evt);
+			}
+		});
+		fondoMenu.add(exportarExcel);
+
 		carteraMenu.add(anFondoAcartera);
 
 		elFondoCartera.setText("Eliminar Fondo");
@@ -1537,7 +1547,12 @@ public class ui extends javax.swing.JFrame {
 
 		buscarText.setText("Buscar");
 
-		buscarLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("../util/images/buscar.png"))); // NOI18N
+		try {
+			buscarLabel.setIcon(new javax.swing.ImageIcon(
+					getClass().getResource("/Aplicacion-TFG/src/main/java/tfg/app/util/images/buscar.png")));
+		} catch (java.lang.NullPointerException e) {
+
+		}
 
 		arbolFondos.addMouseListener(new java.awt.event.MouseAdapter() {
 			public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -2756,6 +2771,42 @@ public class ui extends javax.swing.JFrame {
 
 	}
 
+	// Boton exportar a excel del popupmenu de fondo
+	private void exportarExcelActionPerformed(java.awt.event.ActionEvent evt) {
+
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+
+		FundDesc fundDesc = null;
+
+		if (node == null) {
+			return;
+		}
+		Object nodeInfo = node.getUserObject();
+
+		if (nodeInfo.getClass() == tfg.app.model.entities.FundDesc.class) {
+
+			fundDesc = (FundDesc) nodeInfo;
+
+			int returnVal = selectorDeFichero.showSaveDialog(this);
+			File file = null;
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+
+				file = selectorDeFichero.getSelectedFile();
+
+				try {
+					fundService.exportFundDescToExcel(fundDesc, file);
+				} catch (InputValidationException e) {
+					JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error al exportar",
+							JOptionPane.ERROR_MESSAGE);
+				}
+
+			} else {
+
+			}
+
+		}
+	}
+
 	// Boton importar desde excel del popupmenu de fondo
 	private void anadirVlExcelActionPerformed(java.awt.event.ActionEvent evt) {
 
@@ -3544,6 +3595,7 @@ public class ui extends javax.swing.JFrame {
 	private javax.swing.JLabel desdeLabel;
 	private javax.swing.JLabel hastaLabel;
 	private javax.swing.JFileChooser selectorDeFichero;
+	private javax.swing.JMenuItem exportarExcel;
 	private UtilDateModel model1;
 	private UtilDateModel model2;
 	// End of variables declaration
