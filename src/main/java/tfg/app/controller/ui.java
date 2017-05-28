@@ -13,11 +13,13 @@ import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
+import org.apache.commons.io.FilenameUtils;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
@@ -182,6 +184,7 @@ public class ui extends javax.swing.JFrame {
 		jScrollPane6 = new javax.swing.JScrollPane();
 		anadirVlExcel = new javax.swing.JMenuItem();
 		exportarExcel = new javax.swing.JMenuItem();
+		importarFondo = new javax.swing.JMenuItem();
 
 		vlTabla = new javax.swing.JTable() {
 			@Override
@@ -247,7 +250,11 @@ public class ui extends javax.swing.JFrame {
 		descripcionTex = new javax.swing.JEditorPane();
 		desdeLabel = new javax.swing.JLabel();
 		hastaLabel = new javax.swing.JLabel();
+
 		selectorDeFichero = new javax.swing.JFileChooser();
+		FileNameExtensionFilter xlsFilter = new FileNameExtensionFilter(" Archivos Excel (*.xls)", "xls");
+		selectorDeFichero.addChoosableFileFilter(xlsFilter);
+		selectorDeFichero.setFileFilter(xlsFilter);
 
 		///////////////////////////////////////////
 		opIsinLabel = new javax.swing.JLabel();
@@ -1463,7 +1470,7 @@ public class ui extends javax.swing.JFrame {
 				anFondoAcarteraActionPerformed(evt);
 			}
 		});
-		anadirVlExcel.setText("Importar desde excel");
+		anadirVlExcel.setText("Importar Vls");
 		anadirVlExcel.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				anadirVlExcelActionPerformed(evt);
@@ -1634,6 +1641,14 @@ public class ui extends javax.swing.JFrame {
 		jMenu1.add(botonAnadirCartera);
 
 		jMenu3.add(jMenu1);
+
+		importarFondo.setText("Importar fondo");
+		importarFondo.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				importarFondoActionPerformed(evt);
+			}
+		});
+		jMenu3.add(importarFondo);
 
 		barraMenu.add(jMenu3);
 
@@ -2771,6 +2786,27 @@ public class ui extends javax.swing.JFrame {
 
 	}
 
+	// Boton importar fondo del menu de archivo
+	private void importarFondoActionPerformed(java.awt.event.ActionEvent evt) {
+
+		selectorDeFichero.setSelectedFile(new File(""));
+		int returnVal = selectorDeFichero.showOpenDialog(this);
+
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = selectorDeFichero.getSelectedFile();
+
+			try {
+				FundDesc fundDesc = fundService.importFundDescFromExcel(file);
+				fundService.addFund(fundDesc);
+			} catch (InputValidationException e) {
+				JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error al importar",
+						JOptionPane.ERROR_MESSAGE);
+			}
+
+		}
+
+	}
+
 	// Boton exportar a excel del popupmenu de fondo
 	private void exportarExcelActionPerformed(java.awt.event.ActionEvent evt) {
 
@@ -2787,11 +2823,19 @@ public class ui extends javax.swing.JFrame {
 
 			fundDesc = (FundDesc) nodeInfo;
 
+			selectorDeFichero.setSelectedFile(new File(fundDesc.getfName() + ".xls"));
 			int returnVal = selectorDeFichero.showSaveDialog(this);
 			File file = null;
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 
 				file = selectorDeFichero.getSelectedFile();
+
+				if (FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("xls")) {
+					// filename is OK as-is
+				} else {
+					file = new File(file.toString() + ".xls"); // append .xls
+					file = new File(file.getParentFile(), FilenameUtils.getBaseName(file.getName()) + ".xls");
+				}
 
 				try {
 					fundService.exportFundDescToExcel(fundDesc, file);
@@ -2807,7 +2851,7 @@ public class ui extends javax.swing.JFrame {
 		}
 	}
 
-	// Boton importar desde excel del popupmenu de fondo
+	// Boton importar vls desde excel del popupmenu de fondo
 	private void anadirVlExcelActionPerformed(java.awt.event.ActionEvent evt) {
 
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
@@ -2823,6 +2867,7 @@ public class ui extends javax.swing.JFrame {
 
 			fundDesc = (FundDesc) nodeInfo;
 
+			selectorDeFichero.setSelectedFile(new File(""));
 			int returnVal = selectorDeFichero.showOpenDialog(this);
 
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -2830,7 +2875,7 @@ public class ui extends javax.swing.JFrame {
 
 				try {
 
-					List<FundVl> fundVls = fundService.importVlsFromExcel(file, fundDesc);
+					List<FundVl> fundVls = fundService.importVlsFromExcel(file, fundDesc, 0);
 
 					for (int x = 0; x < fundVls.size(); x++) {
 
@@ -2854,7 +2899,7 @@ public class ui extends javax.swing.JFrame {
 							JOptionPane.ERROR_MESSAGE);
 				}
 			} else {
-				System.out.println("Open command cancelled by user.");
+
 			}
 		}
 
@@ -3598,5 +3643,6 @@ public class ui extends javax.swing.JFrame {
 	private javax.swing.JMenuItem exportarExcel;
 	private UtilDateModel model1;
 	private UtilDateModel model2;
+	private javax.swing.JMenuItem importarFondo;
 	// End of variables declaration
 }

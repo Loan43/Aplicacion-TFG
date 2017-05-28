@@ -69,6 +69,18 @@ public interface FundService {
 	 */
 	public void exportFundDescToExcel(FundDesc fundDesc, File file) throws InputValidationException;
 
+	/**
+	 * Importa un fondo y sus vls de un fichero Excel (.xls)
+	 * <p>
+	 * 
+	 * El formato debe ser exactamente igual a como se exporta con la función
+	 * exportFundDescToExcel
+	 * 
+	 *
+	 * @param
+	 */
+	public FundDesc importFundDescFromExcel(File file) throws InputValidationException;
+
 	// ################################################################
 	// #
 	// # Métodos de objetos FundVl
@@ -124,7 +136,7 @@ public interface FundService {
 	 * columnas con el fomato | fecha | Vl |.
 	 * <p>
 	 * 
-	 * El formato de la fecha ha de ser el siguiente : "dd/MM/yyyy"
+	 * El formato de la fecha ha de ser uno de los siguientes : "dd/MM/yyyy" o bien "yyyy-MM-dd"
 	 * <p>
 	 * El formato de los Vls ha de ser uno de los siguientes: xx.xx o xx,xx
 	 * <p>
@@ -144,7 +156,7 @@ public interface FundService {
 	 * @param
 	 * @throws InputValidationException
 	 */
-	public List<FundVl> importVlsFromExcel(File inputFile, FundDesc fundDesc) throws InputValidationException;
+	public List<FundVl> importVlsFromExcel(File file, FundDesc fundDesc, int start) throws InputValidationException;
 
 	// ################################################################
 	// #

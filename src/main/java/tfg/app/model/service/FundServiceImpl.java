@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -882,18 +883,27 @@ public class FundServiceImpl implements FundService {
 
 	}
 
-	public List<FundVl> importVlsFromExcel(File inputFile, FundDesc fundDesc) throws InputValidationException {
+	public List<FundVl> importVlsFromExcel(File file, FundDesc fundDesc, int start) throws InputValidationException {
 		// File inputWorkbook = new File(inputFile);
 		Workbook w;
 		List<FundVl> fundVls = new ArrayList<FundVl>();
 		DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 		LocalDate date = null;
+		int switchDateParser = 0;
 		double vl = 0;
 		try {
-			w = Workbook.getWorkbook(inputFile);
+			w = Workbook.getWorkbook(file);
 			Sheet sheet = w.getSheet(0);
 
-			for (int i = 0; i < sheet.getRows(); i++) {
+			Cell cell = sheet.getCell(0, 0);
+			CellType type = cell.getType();
+			if (type == CellType.LABEL) {
+				if (cell.getContents().equals("Nombre:")) {
+					start = 10;
+				}
+			}
+
+			for (int i = start; i < sheet.getRows(); i++) {
 				Cell cell1 = sheet.getCell(0, i);
 				Cell cell2 = sheet.getCell(1, i);
 
@@ -902,19 +912,53 @@ public class FundServiceImpl implements FundService {
 
 				if (type1 == CellType.LABEL) {
 
-					Date input = df.parse(cell1.getContents());
-					date = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
 					if (type2 == CellType.LABEL) {
+
 						Pattern patron = Pattern.compile(",");
 						Matcher encaja = patron.matcher(cell2.getContents());
 						String resultado = encaja.replaceAll(".");
 						vl = Double.parseDouble(resultado);
-						fundVls.add(new FundVl(date, vl, fundDesc));
 					}
+
+					if (switchDateParser == 0) {
+
+						try {
+
+							Date input = df.parse(cell1.getContents());
+							date = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+							fundVls.add(new FundVl(date, vl, fundDesc));
+
+						} catch (ParseException e) {
+
+							try {
+								date = LocalDate.parse(cell1.getContents());
+								fundVls.add(new FundVl(date, vl, fundDesc));
+								switchDateParser = 1;
+								continue;
+
+							} catch (DateTimeParseException e1) {
+								throw new InputValidationException(
+										"Error: El fichero seleccionado no tiene el formato correcto.");
+							}
+						}
+
+					} else {
+
+						try {
+							date = LocalDate.parse(cell1.getContents());
+							fundVls.add(new FundVl(date, vl, fundDesc));
+							continue;
+
+						} catch (DateTimeParseException e1) {
+							throw new InputValidationException(
+									"Error: El fichero seleccionado no tiene el formato correcto.");
+						}
+
+					}
+
 				}
 			}
-		} catch (BiffException | IOException | ParseException e) {
+		} catch (BiffException | IOException | NumberFormatException e) {
 			throw new InputValidationException("Error: El fichero seleccionado no tiene el formato correcto.");
 		}
 		return fundVls;
@@ -962,6 +1006,12 @@ public class FundServiceImpl implements FundService {
 			excelSheet.addCell(label);
 			x++;
 
+			label = new Label(0, x, "Categoría:");
+			excelSheet.addCell(label);
+			label = new Label(1, x, fundDesc.getfCategory());
+			excelSheet.addCell(label);
+			x++;
+
 			label = new Label(0, x, "Divisa:");
 			excelSheet.addCell(label);
 			label = new Label(1, x, fundDesc.getfCurrency());
@@ -989,10 +1039,10 @@ public class FundServiceImpl implements FundService {
 			Label date;
 			Label vl;
 
-			for (int y = x; y < fundDesc.getFundVls().size(); y++) {
+			for (int y = 0; y < fundDesc.getFundVls().size(); y++) {
 
-				date = new Label(0, y, fundDesc.getFundVls().get(y).getDay().toString());
-				vl = new Label(1, y, fundDesc.getFundVls().get(y).getVl().toString());
+				date = new Label(0, y + x, fundDesc.getFundVls().get(y).getDay().toString());
+				vl = new Label(1, y + x, fundDesc.getFundVls().get(y).getVl().toString());
 
 				excelSheet.addCell(date);
 				excelSheet.addCell(vl);
@@ -1005,6 +1055,70 @@ public class FundServiceImpl implements FundService {
 		} catch (IOException | WriteException e1) {
 			throw new InputValidationException("Ha ocurrido un error al exportar el fondo.");
 		}
+	}
+
+	@Override
+	public FundDesc importFundDescFromExcel(File file) throws InputValidationException {
+
+		FundDesc fundDesc = new FundDesc();
+		Workbook w = null;
+		try {
+			w = Workbook.getWorkbook(file);
+
+			Sheet sheet = w.getSheet(0);
+
+			int x = 0;
+
+			Cell cell = sheet.getCell(0, x);
+			if (!cell.getContents().equals("Nombre:")) {
+				throw new InputValidationException("Error: El fichero seleccionado no tiene el formato correcto.");
+			}
+
+			cell = sheet.getCell(1, x);
+			fundDesc.setfName(cell.getContents());
+			x++;
+
+			cell = sheet.getCell(1, x);
+			fundDesc.setfId(cell.getContents());
+			x++;
+
+			cell = sheet.getCell(1, x);
+			fundDesc.setfGest(cell.getContents());
+			x++;
+
+			cell = sheet.getCell(1, x);
+			fundDesc.setfType(cell.getContents());
+			x++;
+
+			cell = sheet.getCell(1, x);
+			fundDesc.setfCategory(cell.getContents());
+			x++;
+
+			cell = sheet.getCell(1, x);
+			fundDesc.setfCurrency(cell.getContents());
+			x++;
+
+			cell = sheet.getCell(1, x);
+			Pattern patron = Pattern.compile(",");
+			Matcher encaja = patron.matcher(cell.getContents());
+			String resultado = encaja.replaceAll(".");
+			fundDesc.setfCancelComm(Double.parseDouble(resultado));
+			x++;
+
+			cell = sheet.getCell(1, x);
+			patron = Pattern.compile(",");
+			encaja = patron.matcher(cell.getContents());
+			resultado = encaja.replaceAll(".");
+			fundDesc.setfSubComm(Double.parseDouble(resultado));
+			x += 3;
+
+			fundDesc.setFundVls(importVlsFromExcel(file, fundDesc, x));
+
+		} catch (BiffException | IOException | NumberFormatException e) {
+			throw new InputValidationException("Error: El fichero seleccionado no tiene el formato correcto.");
+		}
+		return fundDesc;
+
 	}
 
 }
