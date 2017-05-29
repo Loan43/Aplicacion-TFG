@@ -22,7 +22,19 @@ import tfg.app.model.service.FundService;
 import tfg.app.util.comparator.compVl;
 import tfg.app.util.exceptions.InstanceNotFoundException;
 
+/**
+ * Clase que se encarga de crear la gráfica solicitada, insertarla en un JPanel
+ * y añadir una descripcción acorde en un JEditorPane.
+ */
+
 public class ChartMaker {
+
+	/**
+	 * Crea una gráfica en forma de tarta con la distribución del capital en una
+	 * cartera.
+	 * 
+	 * @param
+	 */
 
 	public void createPortfolioDistributionChart(FundService fundService, JPanel panel, JEditorPane description,
 			FundPort fundPort) throws InstanceNotFoundException {
@@ -52,6 +64,15 @@ public class ChartMaker {
 
 		description.setText("Gráfica de la distrubución del capital de la cartera " + fundPort.getpName());
 	}
+
+	/**
+	 * Crea una gráfica de lineas con los valores liquidativos de un fondo.
+	 * <p>
+	 * Si las fechas son nulas se toman todos los vls asociados al fondo, en
+	 * caso contrario se toman los vls acotados entre ambas fechas.
+	 * 
+	 * @param
+	 */
 
 	public void createFundVlLineChart(FundService fundService, JPanel panel, JEditorPane description, FundDesc fundDesc,
 			LocalDate start, LocalDate end) {
@@ -111,6 +132,12 @@ public class ChartMaker {
 
 	}
 
+	/**
+	 * Crea una gráfica de lineas con los valores liquidativos normalizados de
+	 * todos los fondos de una cartera.
+	 * 
+	 * @param
+	 */
 	public void createFundDescsOfPortfolioNormalizedLineChart(FundService fundService, JPanel panel,
 			JEditorPane description, FundPort fundPort) throws InstanceNotFoundException {
 
@@ -151,6 +178,15 @@ public class ChartMaker {
 		}
 
 	}
+
+	/**
+	 * Crea una gráfica de barras que muestra las rentabilidades históricas de
+	 * un fondo para los siguientes períodos de tiempo:
+	 * <p>
+	 * Último año fiscal, último semestre, último trimestre y último mes
+	 * 
+	 * @param
+	 */
 
 	public void createFundDescProfitBarChart(FundService fundService, JPanel panel, JEditorPane description,
 			FundDesc fundDesc) {
@@ -225,6 +261,12 @@ public class ChartMaker {
 
 	}
 
+	/**
+	 * Crea una gráfica de barras que muestra los cinco fondos más y menos
+	 * rentables de la cartera.
+	 * 
+	 * @param
+	 */
 	public void createPortfolioProfitBarChart(FundService fundService, JPanel panel, JEditorPane description,
 			FundPort fundPort) throws InstanceNotFoundException {
 
