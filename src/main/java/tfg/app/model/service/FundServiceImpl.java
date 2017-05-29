@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -42,6 +43,7 @@ import tfg.app.model.entities.PortDesc;
 import tfg.app.model.entities.PortDescPK;
 import tfg.app.model.entities.PortOp;
 import tfg.app.model.entities.PortOpPK;
+import tfg.app.util.comparator.compFundProfit;
 import tfg.app.util.exceptions.InputValidationException;
 import tfg.app.util.exceptions.InstanceNotFoundException;
 
@@ -1118,6 +1120,61 @@ public class FundServiceImpl implements FundService {
 			throw new InputValidationException("Error: El fichero seleccionado no tiene el formato correcto.");
 		}
 		return fundDesc;
+
+	}
+
+	@Override
+	public List<FundDesc> getProfitOfFundsOfPortfolio(FundPort fundPort) throws InstanceNotFoundException {
+
+		List<FundDesc> fundDescs = findFundsOfPortfolio(fundPort);
+		List<PortOp> portOps = null;
+
+		for (int x = 0; x < fundDescs.size(); x++) {
+
+			portOps = findAllPortOp(fundPort, fundDescs.get(x));
+
+			Double compra = 0.0;
+			Double venta = -0.0;
+
+			int y = 0;
+
+			if (portOps.size() != 0) {
+
+				for (y = 0; y < portOps.size(); y++) {
+
+					if (portOps.get(y).getfPartOp() < 0) {
+
+						venta += portOps.get(y).getfPrice();
+
+					} else {
+
+						compra += portOps.get(y).getfPrice();
+
+					}
+				}
+				y--;
+				venta = venta * -1;
+				if (portOps.get(y).getfPartfin() != 0) {
+
+					FundVl fundVl = findLatestFundVl(portOps.get(y).getPortDesc().getFundDesc(), LocalDate.now());
+
+					venta += ((portOps.get(y).getfPartfin() * fundVl.getVl())
+							- (portOps.get(y).getfPartfin() * fundVl.getVl())
+									* portOps.get(y).getPortDesc().getFundDesc().getfCancelComm());
+
+				}
+
+				fundDescs.get(x).setProfit(((venta - compra) / compra) * 100);
+
+			} else {
+
+				fundDescs.get(x).setProfit(0.0);
+
+			}
+
+		}
+		Collections.sort(fundDescs, new compFundProfit());
+		return fundDescs;
 
 	}
 

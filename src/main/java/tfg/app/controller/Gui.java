@@ -1,12 +1,10 @@
 package tfg.app.controller;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -23,21 +21,12 @@ import org.apache.commons.io.FilenameUtils;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.general.DefaultPieDataset;
-
 import tfg.app.model.entities.FundDesc;
 import tfg.app.model.entities.FundPort;
 import tfg.app.model.entities.FundVl;
 import tfg.app.model.entities.PortOp;
 import tfg.app.model.service.FundService;
 import tfg.app.model.service.FundServiceImpl;
-import tfg.app.util.comparator.compFundProfit;
-import tfg.app.util.comparator.compVl;
 import tfg.app.util.exceptions.InputValidationException;
 import tfg.app.util.exceptions.InstanceNotFoundException;
 
@@ -52,12 +41,12 @@ import tfg.app.util.exceptions.InstanceNotFoundException;
  * @author angel
  */
 @SuppressWarnings({ "unchecked", "rawtypes", "serial" })
-public class ui extends javax.swing.JFrame {
+public class Gui extends javax.swing.JFrame {
 
 	/**
 	 * Creates new form Pruebas
 	 */
-	public ui() {
+	public Gui() {
 		initComponents();
 	}
 
@@ -1827,13 +1816,12 @@ public class ui extends javax.swing.JFrame {
 			panelGraficas.removeAll();
 			panelGraficas.updateUI();
 
-			showFundDesc(fundDesc);
+			showFundDesc(fundDesc, panelGraficas);
 
 		}
 		if (nodeInfo.getClass() == tfg.app.model.entities.FundPort.class) {
 
 			FundPort fundPort = (FundPort) nodeInfo;
-			DefaultPieDataset dataset = new DefaultPieDataset();
 
 			graficasBox.setModel(new javax.swing.DefaultComboBoxModel<>(
 					new String[] { "Distribución", "Fondos Norm", "Rentabilidad" }));
@@ -1841,36 +1829,14 @@ public class ui extends javax.swing.JFrame {
 			graficasBox.setSelectedItem("Distribución");
 			graficasBox.setVisible(true);
 
-			List<FundDesc> fundDescs = null;
 			try {
-				fundDescs = fundService.findFundsOfPortfolio(fundPort);
+				chartMaker.createPortfolioDistributionChart(fundService, panelGraficas, descripcionTex, fundPort);
 			} catch (InstanceNotFoundException e) {
-				JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de base de datos",
+				JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de base de datos.",
 						JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 
-			for (int x = 0; x < fundDescs.size(); x++) {
-				try {
-					dataset.setValue(fundDescs.get(x).toString(),
-							fundService.findLatestPortOp(fundPort, fundDescs.get(x), LocalDate.now()).getfPartfin());
-				} catch (InstanceNotFoundException e) {
-					continue;
-				}
-			}
-
-			JFreeChart chart = ChartFactory.createPieChart("Participaciones de la cartera " + fundPort.getpName(), // chart
-					// title
-					dataset, // data
-					true, // include legend
-					true, false);
-			ChartPanel CP = new ChartPanel(chart);
-			panelGraficas.removeAll();
-			panelGraficas.updateUI();
-			panelGraficas.setLayout(new java.awt.BorderLayout());
-			panelGraficas.add(CP, BorderLayout.CENTER);
-			panelGraficas.validate();
-			descripcionTex.setText("Gráfica de la distrubución del capital de la cartera " + fundPort.getpName());
 		}
 
 	}
@@ -2431,11 +2397,6 @@ public class ui extends javax.swing.JFrame {
 		//
 	}
 
-	/**
-	 * @param args
-	 *            the command line arguments
-	 */
-
 	private static void createNodes(DefaultMutableTreeNode top) {
 
 		DefaultMutableTreeNode found = null;
@@ -2664,6 +2625,7 @@ public class ui extends javax.swing.JFrame {
 		if (nodeInfo.getClass() == tfg.app.model.entities.FundDesc.class) {
 
 			fundDesc = (FundDesc) nodeInfo;
+
 			Date input = (Date) model1.getValue();
 			LocalDate date1 = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
@@ -2678,40 +2640,13 @@ public class ui extends javax.swing.JFrame {
 
 				date1 = date2.minusDays(1);
 
+				model1.setDate(date1.getYear(), date1.getMonthValue() - 1, date1.getDayOfMonth());
+
 			}
 
 			if (graficasBox.getSelectedItem().equals("Historial Vl")) {
 
-				List<FundVl> fundVlList = fundService.findFundVlbyRange(fundDesc, date1, date2);
-
-				DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
-
-				for (int x = 0; x < fundVlList.size(); x++) {
-					line_chart_dataset.addValue(fundVlList.get(x).getVl(), "Valor liquidativo",
-							fundVlList.get(x).getDay().toString());
-				}
-
-				JFreeChart lineChartObject = ChartFactory.createLineChart("Historial del valor liquidativo", "Días",
-						"Valor", line_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
-
-				ChartPanel CP = new ChartPanel(lineChartObject);
-				panelGraficas.removeAll();
-				panelGraficas.updateUI();
-				panelGraficas.setLayout(new java.awt.BorderLayout());
-				panelGraficas.add(CP, BorderLayout.CENTER);
-
-				if (fundVlList.size() == 0) {
-					descripcionTex.setText("El fondo seleccionado: " + fundDesc.getfName() + " con ISIN: "
-							+ fundDesc.getfId() + " no tiene ningún Vl entre los días: " + date1 + " y " + date2 + ".");
-				} else {
-
-					model1.setDate(date1.getYear(), date1.getMonthValue() - 1, date1.getDayOfMonth());
-					model2.setDate(date2.getYear(), date2.getMonthValue() - 1, date2.getDayOfMonth());
-
-					descripcionTex.setText("Gáfica con el historial de los Vl del fondo: " + fundDesc.getfName()
-							+ " con ISIN: " + fundDesc.getfId() + " entre los días: " + date1 + " y " + date2 + ".");
-
-				}
+				chartMaker.createFundVlLineChart(fundService, panelGraficas, descripcionTex, fundDesc, date1, date2);
 
 			}
 		}
@@ -2732,6 +2667,7 @@ public class ui extends javax.swing.JFrame {
 		if (nodeInfo.getClass() == tfg.app.model.entities.FundDesc.class) {
 
 			fundDesc = (FundDesc) nodeInfo;
+
 			Date input = (Date) model1.getValue();
 			LocalDate date1 = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
@@ -2745,42 +2681,13 @@ public class ui extends javax.swing.JFrame {
 						JOptionPane.ERROR_MESSAGE);
 
 				date2 = date1.plusDays(1);
+				model2.setDate(date2.getYear(), date2.getMonthValue() - 1, date2.getDayOfMonth());
 
 			}
 
 			if (graficasBox.getSelectedItem().equals("Historial Vl")) {
 
-				List<FundVl> fundVlList = fundService.findFundVlbyRange(fundDesc, date1, date2);
-
-				DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
-
-				for (int x = 0; x < fundVlList.size(); x++) {
-					line_chart_dataset.addValue(fundVlList.get(x).getVl(), "Valor liquidativo",
-							fundVlList.get(x).getDay().toString());
-				}
-
-				JFreeChart lineChartObject = ChartFactory.createLineChart("Historial del valor liquidativo", "Días",
-						"Valor", line_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
-
-				ChartPanel CP = new ChartPanel(lineChartObject);
-				panelGraficas.removeAll();
-				panelGraficas.updateUI();
-				panelGraficas.setLayout(new java.awt.BorderLayout());
-				panelGraficas.add(CP, BorderLayout.CENTER);
-
-				if (fundVlList.size() == 0) {
-					descripcionTex.setText("El fondo seleccionado: " + fundDesc.getfName() + " con ISIN: "
-							+ fundDesc.getfId() + " no tiene ningún Vl entre los días: " + date1 + " y " + date2 + ".");
-				} else {
-
-					model1.setDate(date1.getYear(), date1.getMonthValue() - 1, date1.getDayOfMonth());
-					model2.setDate(date2.getYear(), date2.getMonthValue() - 1, date2.getDayOfMonth());
-
-					descripcionTex.setText("Gáfica con el historial de los Vl del fondo: " + fundDesc.getfName()
-							+ " con ISIN: " + fundDesc.getfId() + " entre los días: " + date1 + " y " + date2 + ".");
-
-				}
-
+				chartMaker.createFundVlLineChart(fundService, panelGraficas, descripcionTex, fundDesc, date1, date2);
 			}
 		}
 
@@ -2924,49 +2831,21 @@ public class ui extends javax.swing.JFrame {
 
 			if (graficasBox.getSelectedItem().equals("Historial Vl")) {
 
-				try {
-					fundDesc = fundService.findFund(fundDesc.getfId());
-				} catch (InstanceNotFoundException e) {
-					JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error en el fondo",
-							JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-
-				DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
-
-				for (int x = 0; x < fundDesc.getFundVls().size(); x++) {
-					line_chart_dataset.addValue(fundDesc.getFundVls().get(x).getVl(), "Valor liquidativo",
-							fundDesc.getFundVls().get(x).getDay().toString());
-				}
-
-				JFreeChart lineChartObject = ChartFactory.createLineChart("Historial del valor liquidativo", "Días",
-						"Valor", line_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
-
-				ChartPanel CP = new ChartPanel(lineChartObject);
-				panelGraficas.removeAll();
-				panelGraficas.updateUI();
-				panelGraficas.setLayout(new java.awt.BorderLayout());
-				panelGraficas.add(CP, BorderLayout.CENTER);
-
 				desdeDate.setVisible(true);
 				hastaDate.setVisible(true);
 
 				desdeLabel.setVisible(true);
 				hastaLabel.setVisible(true);
 
-				if (fundDesc.getFundVls().size() == 0) {
-					descripcionTex.setText("El fondo seleccionado: " + fundDesc.getfName() + " con ISIN: "
-							+ fundDesc.getfId() + " no tiene ningún Vl.");
-				} else {
+				chartMaker.createFundVlLineChart(fundService, panelGraficas, descripcionTex, fundDesc, null, null);
+
+				if (fundDesc.getFundVls().size() != 0) {
 
 					LocalDate date1 = fundDesc.getFundVls().get(0).getDay();
 					LocalDate date2 = fundDesc.getFundVls().get(fundDesc.getFundVls().size() - 1).getDay();
 
 					model1.setDate(date1.getYear(), date1.getMonthValue() - 1, date1.getDayOfMonth());
 					model2.setDate(date2.getYear(), date2.getMonthValue() - 1, date2.getDayOfMonth());
-
-					descripcionTex.setText("Gáfica con el historial de los Vl del fondo: " + fundDesc.getfName()
-							+ " con ISIN: " + fundDesc.getfId() + " entre los días: " + date1 + " y " + date2 + ".");
 
 				}
 
@@ -2985,7 +2864,7 @@ public class ui extends javax.swing.JFrame {
 
 				descripcionTex.setText(
 						"Descripción del fondo " + fundDesc.getfName() + " y métricas simples de rendimiento.");
-				showFundDesc(fundDesc);
+				showFundDesc(fundDesc, panelGraficas);
 
 			}
 
@@ -2998,281 +2877,56 @@ public class ui extends javax.swing.JFrame {
 				desdeLabel.setVisible(false);
 				hastaLabel.setVisible(false);
 
-				DefaultCategoryDataset bar_chart_dataset = new DefaultCategoryDataset();
-				Double profit = 0.0;
-
-				String string = "Gráfica que muestra las rentabilidades históricas del fondo " + fundDesc.getfName()
-						+ ", para los siguientes períodos de tiempo:\n"
-						+ "Último año fiscal, último semestre, último trimestre y último mes.\n";
-
-				LocalDate today = LocalDate.now();
-
-				// Año
-
-				List<FundVl> fundVls = fundService.findFundVlbyRange(fundDesc,
-						LocalDate.parse(today.minusYears(1).getYear() + "-01-01"),
-						LocalDate.parse(today.minusYears(1).getYear() + "-12-31"));
-
-				if (fundVls.size() >= 300) {
-
-					profit = (fundVls.get(fundVls.size() - 1).getVl() - fundVls.get(0).getVl())
-							/ fundVls.get(0).getVl();
-					bar_chart_dataset.addValue(profit, "Año", "Último año fiscal");
-				} else {
-					string += "\nNo existen suficentes datos para calcular la rentabilidad del último año fiscal ("
-							+ today.minusYears(1).getYear() + "). ";
-				}
-
-				// Semestre
-
-				fundVls = fundService.findFundVlbyRange(fundDesc, today.minusMonths(6), today);
-
-				if (fundVls.size() >= 180) {
-					profit = (fundVls.get(fundVls.size() - 1).getVl() - fundVls.get(0).getVl())
-							/ fundVls.get(0).getVl();
-					bar_chart_dataset.addValue(profit, "Semestre", "Último semestre");
-				} else {
-					string += "\nNo existen suficentes datos para calcular la rentabilidad del último semestre. ";
-				}
-
-				// Trimestre
-
-				fundVls = fundService.findFundVlbyRange(fundDesc, today.minusMonths(3), today);
-
-				if (fundVls.size() >= 90) {
-					profit = (fundVls.get(fundVls.size() - 1).getVl() - fundVls.get(0).getVl())
-							/ fundVls.get(0).getVl();
-					bar_chart_dataset.addValue(profit, "Trimestre", "Último trimestre");
-				} else {
-					string += "\nNo existen suficentes datos para calcular la rentabilidad del último trimestre. ";
-				}
-
-				// Mes
-
-				fundVls = fundService.findFundVlbyRange(fundDesc, today.minusMonths(1), today);
-
-				if (fundVls.size() >= 30) {
-					profit = (fundVls.get(fundVls.size() - 1).getVl() - fundVls.get(0).getVl())
-							/ fundVls.get(0).getVl();
-					bar_chart_dataset.addValue(profit, "Mes", "Último mes");
-				} else {
-					string += "\nNo existen suficentes datos para calcular la rentabilidad del último mes. ";
-				}
-
-				JFreeChart barChart = ChartFactory.createBarChart("Rentabilidades", "Fondo", "Rentabilidad",
-						bar_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
-
-				ChartPanel CP = new ChartPanel(barChart);
-				panelGraficas.removeAll();
-				panelGraficas.updateUI();
-				panelGraficas.setLayout(new java.awt.BorderLayout());
-				panelGraficas.add(CP, BorderLayout.CENTER);
-
-				descripcionTex.setText(string);
+				chartMaker.createFundDescProfitBarChart(fundService, panelGraficas, descripcionTex, fundDesc);
 
 			}
 		} else {
+
 			if (nodeInfo.getClass() == tfg.app.model.entities.FundPort.class) {
 
 				fundPort = (FundPort) nodeInfo;
 
 				if (graficasBox.getSelectedItem().equals("Distribución")) {
-					List<FundDesc> fundDescs = null;
-					DefaultPieDataset dataset = new DefaultPieDataset();
+
 					try {
-						fundDescs = fundService.findFundsOfPortfolio(fundPort);
+						chartMaker.createPortfolioDistributionChart(fundService, panelGraficas, descripcionTex,
+								fundPort);
 					} catch (InstanceNotFoundException e) {
 						JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de base de datos",
 								JOptionPane.ERROR_MESSAGE);
 						return;
 					}
 
-					for (int x = 0; x < fundDescs.size(); x++) {
-						try {
-							dataset.setValue(fundDescs.get(x).toString(), fundService
-									.findLatestPortOp(fundPort, fundDescs.get(x), LocalDate.now()).getfPartfin());
-						} catch (InstanceNotFoundException e) {
-							continue;
-						}
-					}
-
-					JFreeChart chart = ChartFactory.createPieChart(
-							"Participaciones de la cartera " + fundPort.getpName(), // chart
-							// title
-							dataset, // data
-							true, // include legend
-							true, false);
-					ChartPanel CP = new ChartPanel(chart);
-					panelGraficas.removeAll();
-					panelGraficas.updateUI();
-					panelGraficas.setLayout(new java.awt.BorderLayout());
-					panelGraficas.add(CP, BorderLayout.CENTER);
-					panelGraficas.validate();
-					descripcionTex
-							.setText("Gráfica de la distrubución del capital de la cartera " + fundPort.getpName());
 				}
+
 				if (graficasBox.getSelectedItem().equals("Fondos Norm")) {
 
-					List<FundDesc> fundDescs = null;
-					DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
-
 					try {
-						fundDescs = fundService.findFundsOfPortfolio(fundPort);
+						chartMaker.createFundDescsOfPortfolioNormalizedLineChart(fundService, panelGraficas,
+								descripcionTex, fundPort);
 					} catch (InstanceNotFoundException e) {
 						JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de base de datos",
 								JOptionPane.ERROR_MESSAGE);
 						return;
-					}
-					for (int x = 0; x < fundDescs.size(); x++) {
-
-						for (int y = 0; y < fundDescs.get(x).getFundVls().size(); y++) {
-
-							Double max = Collections.max(fundDescs.get(x).getFundVls(), new compVl()).getVl();
-							Double min = Collections.min(fundDescs.get(x).getFundVls(), new compVl()).getVl();
-							Double z = fundDescs.get(x).getFundVls().get(y).getVl();
-
-							line_chart_dataset.addValue((z - min) / (max - min), fundDescs.get(x).getfName(),
-									fundDescs.get(x).getFundVls().get(y).getDay().toString());
-						}
-
-					}
-
-					JFreeChart lineChartObject = ChartFactory.createLineChart("Historial del valor liquidativo", "Días",
-							"Valor", line_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
-
-					ChartPanel CP = new ChartPanel(lineChartObject);
-					panelGraficas.removeAll();
-					panelGraficas.updateUI();
-					panelGraficas.setLayout(new java.awt.BorderLayout());
-					panelGraficas.add(CP, BorderLayout.CENTER);
-
-					if (fundDescs.size() == 0) {
-						descripcionTex.setText(
-								"La cartera seleccionada: " + fundPort.getpName() + " no tiene ningún fondo asignado.");
-					} else {
-
-						descripcionTex.setText(
-								"Gráfica de los valores de la cartera: " + fundPort.getpName() + " normalizados.");
-
 					}
 				}
 
 				if (graficasBox.getSelectedItem().equals("Rentabilidad")) {
 
-					List<FundDesc> fundDescs = null;
 					try {
-						fundDescs = getProfitOfFundsOfPortfolio(fundPort);
+						chartMaker.createPortfolioProfitBarChart(fundService, panelGraficas, descripcionTex, fundPort);
 					} catch (InstanceNotFoundException e) {
 						JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de base de datos",
 								JOptionPane.ERROR_MESSAGE);
 						return;
 					}
 
-					DefaultCategoryDataset bar_chart_dataset = new DefaultCategoryDataset();
-
-					for (int x = 0; x < fundDescs.size() && x < 5; x++) {
-
-						if (fundDescs.get(x).getProfit() > 0) {
-							bar_chart_dataset.addValue(fundDescs.get(x).getProfit(), fundDescs.get(x).getfName(),
-									"Más rentables");
-						}
-
-					}
-
-					for (int x = fundDescs.size() - 1; x >= 0 && x >= fundDescs.size() - 5; x--) {
-						if (fundDescs.get(x).getProfit() <= 0) {
-
-							bar_chart_dataset.addValue(fundDescs.get(x).getProfit(), fundDescs.get(x).getfName(),
-									"Menos rentables");
-						}
-
-					}
-
-					JFreeChart barChart = ChartFactory.createBarChart("Rentabilidades", "Fondo", "Rentabilidad",
-							bar_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
-
-					ChartPanel CP = new ChartPanel(barChart);
-					panelGraficas.removeAll();
-					panelGraficas.updateUI();
-					panelGraficas.setLayout(new java.awt.BorderLayout());
-					panelGraficas.add(CP, BorderLayout.CENTER);
-
-					if (fundDescs.size() == 0) {
-						descripcionTex.setText(
-								"La cartera seleccionada: " + fundPort.getpName() + " no tiene ningún fondo asignado.");
-					} else {
-
-						descripcionTex.setText(
-								"Gráfica de los fondos más y menos rentables de la cartera: " + fundPort.getpName());
-
-					}
 				}
 			}
 		}
 	}
 
-	private static List<FundDesc> getProfitOfFundsOfPortfolio(FundPort fundPort) throws InstanceNotFoundException {
-
-		List<FundDesc> fundDescs = fundService.findFundsOfPortfolio(fundPort);
-		List<PortOp> portOps = null;
-
-		for (int x = 0; x < fundDescs.size(); x++) {
-
-			portOps = fundService.findAllPortOp(fundPort, fundDescs.get(x));
-
-			Double compra = 0.0;
-			Double venta = -0.0;
-
-			int y = 0;
-
-			if (portOps.size() != 0) {
-
-				for (y = 0; y < portOps.size(); y++) {
-
-					if (portOps.get(y).getfPartOp() < 0) {
-
-						venta += portOps.get(y).getfPrice();
-
-					} else {
-
-						compra += portOps.get(y).getfPrice();
-
-					}
-
-				}
-				y--;
-				venta = venta * -1;
-				if (portOps.get(y).getfPartfin() != 0) {
-
-					FundVl fundVl = fundService.findLatestFundVl(portOps.get(y).getPortDesc().getFundDesc(),
-							LocalDate.now());
-
-					venta += ((portOps.get(y).getfPartfin() * fundVl.getVl())
-							- (portOps.get(y).getfPartfin() * fundVl.getVl())
-									* portOps.get(y).getPortDesc().getFundDesc().getfCancelComm());
-
-				}
-
-				fundDescs.get(x).setProfit(((venta - compra) / compra) * 100);
-				// System.out.println(fundDescs.get(x).getfName());
-				// System.out.println(compra);
-				// System.out.println(venta);
-				// System.out.println(fundDescs.get(x).getProfit());
-				// System.out.println("------------------------");
-
-			} else {
-
-				fundDescs.get(x).setProfit(0.0);
-
-			}
-
-		}
-		Collections.sort(fundDescs, new compFundProfit());
-		return fundDescs;
-
-	}
-
-	private void showFundDesc(FundDesc fundDesc) {
+	private void showFundDesc(FundDesc fundDesc, JPanel panel) {
 
 		nombreDesc.setText("Nombre: " + fundDesc.getfName());
 
@@ -3296,21 +2950,19 @@ public class ui extends javax.swing.JFrame {
 
 		drawDesc.setText("Máximo Drawout: ");
 
-		javax.swing.GroupLayout panelGraficasLayout = new javax.swing.GroupLayout(panelGraficas);
-		panelGraficas.setLayout(panelGraficasLayout);
-		panelGraficasLayout.setHorizontalGroup(panelGraficasLayout
-				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(panelGraficasLayout.createSequentialGroup().addContainerGap()
-						.addGroup(panelGraficasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+		javax.swing.GroupLayout panelLayout = new javax.swing.GroupLayout(panel);
+		panel.setLayout(panelLayout);
+		panelLayout.setHorizontalGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(panelLayout.createSequentialGroup().addContainerGap()
+						.addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 								.addComponent(nombreDesc).addComponent(isinDesc).addComponent(gestoraDesc)
 								.addComponent(catDesc).addComponent(divisaDesc).addComponent(apComDesc)
 								.addComponent(canComDesc).addComponent(alphaDesc).addComponent(betaDesc)
 								.addComponent(varDesc).addComponent(drawDesc))
 						.addContainerGap(614, Short.MAX_VALUE)));
 
-		panelGraficasLayout.setVerticalGroup(panelGraficasLayout
-				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(panelGraficasLayout.createSequentialGroup().addContainerGap().addComponent(nombreDesc)
+		panelLayout.setVerticalGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(panelLayout.createSequentialGroup().addContainerGap().addComponent(nombreDesc)
 						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED).addComponent(isinDesc)
 						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED).addComponent(gestoraDesc)
 						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED).addComponent(catDesc)
@@ -3438,6 +3090,7 @@ public class ui extends javax.swing.JFrame {
 		 * html
 		 */
 		fundService = new FundServiceImpl();
+		chartMaker = new ChartMaker();
 		createDbExample();
 
 		try {
@@ -3448,20 +3101,20 @@ public class ui extends javax.swing.JFrame {
 				}
 			}
 		} catch (ClassNotFoundException ex) {
-			java.util.logging.Logger.getLogger(ui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+			java.util.logging.Logger.getLogger(Gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 		} catch (InstantiationException ex) {
-			java.util.logging.Logger.getLogger(ui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+			java.util.logging.Logger.getLogger(Gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 		} catch (IllegalAccessException ex) {
-			java.util.logging.Logger.getLogger(ui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+			java.util.logging.Logger.getLogger(Gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 		} catch (javax.swing.UnsupportedLookAndFeelException ex) {
-			java.util.logging.Logger.getLogger(ui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+			java.util.logging.Logger.getLogger(Gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 		}
 		// </editor-fold>
 
 		/* Create and display the form */
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				new ui().setVisible(true);
+				new Gui().setVisible(true);
 			}
 		});
 	}
@@ -3472,6 +3125,7 @@ public class ui extends javax.swing.JFrame {
 	private DefaultMutableTreeNode top;
 	private DefaultTreeModel arbolFondosModel;
 	private static FundService fundService = null;
+	private static ChartMaker chartMaker = null;
 	private javax.swing.JComboBox<FundDesc> fondoDesplegable;
 	private javax.swing.JComboBox<FundDesc> fondoDesplegable1;
 	private javax.swing.JComboBox<FundDesc> fondoDesplegable2;

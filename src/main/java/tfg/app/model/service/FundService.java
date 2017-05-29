@@ -136,7 +136,8 @@ public interface FundService {
 	 * columnas con el fomato | fecha | Vl |.
 	 * <p>
 	 * 
-	 * El formato de la fecha ha de ser uno de los siguientes : "dd/MM/yyyy" o bien "yyyy-MM-dd"
+	 * El formato de la fecha ha de ser uno de los siguientes : "dd/MM/yyyy" o
+	 * bien "yyyy-MM-dd"
 	 * <p>
 	 * El formato de los Vls ha de ser uno de los siguientes: xx.xx o xx,xx
 	 * <p>
@@ -205,6 +206,13 @@ public interface FundService {
 	 * @param
 	 */
 	public List<FundDesc> findFundsOfPortfolio(FundPort fundPortfolio) throws InstanceNotFoundException;
+
+	/**
+	 * Obtiene las rentababilidades de los fondos de una cartera
+	 *
+	 * @param
+	 */
+	public List<FundDesc> getProfitOfFundsOfPortfolio(FundPort fundPort) throws InstanceNotFoundException;
 
 	// ################################################################
 	// #
