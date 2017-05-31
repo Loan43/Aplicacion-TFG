@@ -2,11 +2,9 @@ package tfg.app.model.service;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,6 +25,7 @@ import org.hibernate.query.Query;
 
 import jxl.Cell;
 import jxl.CellType;
+import jxl.DateCell;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.WorkbookSettings;
@@ -885,13 +884,41 @@ public class FundServiceImpl implements FundService {
 
 	}
 
-	public List<FundVl> importVlsFromExcel(File file, FundDesc fundDesc, int start) throws InputValidationException {
+	private String getContents(Cell cell, String format) throws ParseException {
+
+		DateCell dCell = null;
+		SimpleDateFormat localDateformat = new SimpleDateFormat("yyyy-MM-dd");
+
+		if (cell.getType() == CellType.DATE) {
+
+			dCell = (DateCell) cell;
+			return localDateformat.format(dCell.getDate());
+
+		}
+
+		if (cell.getType() == CellType.LABEL) {
+
+			SimpleDateFormat sdf = new SimpleDateFormat(format);
+
+			Date input = sdf.parse(cell.getContents());
+
+			return localDateformat.format(input);
+
+		}
+		// possibly manage other types of cell in here if needed for your goals
+		// read more:
+		// http://www.quicklyjava.com/reading-excel-file-in-java-datatypes/#ixzz2fYIkHdZP
+		return cell.getContents();
+	}
+
+	public List<FundVl> importVlsFromExcel(File file, FundDesc fundDesc, int start, String format)
+			throws InputValidationException {
 		// File inputWorkbook = new File(inputFile);
 		Workbook w;
 		List<FundVl> fundVls = new ArrayList<FundVl>();
-		DateFormat df = new SimpleDateFormat("dd/MM/yy");
+		// DateFormat df = new SimpleDateFormat("dd/MM/yy");
 		LocalDate date = null;
-		int switchDateParser = 0;
+		// int switchDateParser = 0;
 		double vl = 0;
 		try {
 			w = Workbook.getWorkbook(file);
@@ -899,7 +926,8 @@ public class FundServiceImpl implements FundService {
 
 			Cell cell = sheet.getCell(0, 0);
 			CellType type = cell.getType();
-			if (type == CellType.EMPTY) {
+
+			if (type != CellType.EMPTY) {
 				if (cell.getContents().equals("Nombre:")) {
 					start = 10;
 				}
@@ -922,39 +950,14 @@ public class FundServiceImpl implements FundService {
 						vl = Double.parseDouble(resultado);
 					}
 
-					if (switchDateParser == 0) {
+					try {
 
-						try {
+						date = LocalDate.parse(getContents(cell1, format));
+						fundVls.add(new FundVl(date, vl, fundDesc));
 
-							Date input = df.parse(cell1.getContents());
-							date = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-							fundVls.add(new FundVl(date, vl, fundDesc));
-
-						} catch (ParseException e) {
-
-							try {
-								date = LocalDate.parse(cell1.getContents());
-								fundVls.add(new FundVl(date, vl, fundDesc));
-								switchDateParser = 1;
-								continue;
-
-							} catch (DateTimeParseException e1) {
-								throw new InputValidationException(
-										"Error: El fichero seleccionado no tiene el formato correcto.");
-							}
-						}
-
-					} else {
-
-						try {
-							date = LocalDate.parse(cell1.getContents());
-							fundVls.add(new FundVl(date, vl, fundDesc));
-							continue;
-
-						} catch (DateTimeParseException e1) {
-							throw new InputValidationException(
-									"Error: El fichero seleccionado no tiene el formato correcto.");
-						}
+					} catch (DateTimeParseException | ParseException e1) {
+						throw new InputValidationException(
+								"Error: El fichero seleccionado no tiene el formato correcto.");
 
 					}
 
@@ -1116,7 +1119,7 @@ public class FundServiceImpl implements FundService {
 			fundDesc.setfSubComm(Double.parseDouble(resultado));
 			x += 3;
 
-			fundDesc.setFundVls(importVlsFromExcel(file, fundDesc, x));
+			fundDesc.setFundVls(importVlsFromExcel(file, fundDesc, x, "yyyy-MM-dd"));
 
 		} catch (BiffException | IOException | NumberFormatException e) {
 			throw new InputValidationException("Error: El fichero seleccionado no tiene el formato correcto.");

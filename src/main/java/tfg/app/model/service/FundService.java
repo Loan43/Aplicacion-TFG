@@ -157,7 +157,8 @@ public interface FundService {
 	 * @param
 	 * @throws InputValidationException
 	 */
-	public List<FundVl> importVlsFromExcel(File file, FundDesc fundDesc, int start) throws InputValidationException;
+	public List<FundVl> importVlsFromExcel(File file, FundDesc fundDesc, int start, String format)
+			throws InputValidationException;
 
 	// ################################################################
 	// #

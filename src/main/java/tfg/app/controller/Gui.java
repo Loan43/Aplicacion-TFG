@@ -2783,7 +2783,7 @@ public class Gui extends javax.swing.JFrame {
 
 				try {
 
-					List<FundVl> fundVls = fundService.importVlsFromExcel(file, fundDesc, 0);
+					List<FundVl> fundVls = fundService.importVlsFromExcel(file, fundDesc, 0, "dd/MM/yyyy");
 
 					for (int x = 0; x < fundVls.size(); x++) {
 
