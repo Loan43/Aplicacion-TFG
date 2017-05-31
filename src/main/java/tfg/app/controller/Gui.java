@@ -1808,7 +1808,7 @@ public class Gui extends javax.swing.JFrame {
 			FundDesc fundDesc = (FundDesc) nodeInfo;
 
 			graficasBox.setModel(new javax.swing.DefaultComboBoxModel<>(
-					new String[] { "Descripción", "Historial Vl", "Hist Renta" }));
+					new String[] { "Descripción", "Historial Vl", "Hist Renta", "Renta Esperada" }));
 
 			graficasBox.setSelectedItem("Descripción");
 			graficasBox.setVisible(true);
@@ -2709,7 +2709,8 @@ public class Gui extends javax.swing.JFrame {
 				JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error al importar",
 						JOptionPane.ERROR_MESSAGE);
 			}
-
+			createNodes(top);
+			arbolFondosModel.reload(top);
 		}
 
 	}
@@ -2805,6 +2806,10 @@ public class Gui extends javax.swing.JFrame {
 					JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de entrada",
 							JOptionPane.ERROR_MESSAGE);
 				}
+
+				createNodes(top);
+				arbolFondosModel.reload(top);
+
 			} else {
 
 			}
@@ -2878,6 +2883,20 @@ public class Gui extends javax.swing.JFrame {
 				hastaLabel.setVisible(false);
 
 				chartMaker.createFundDescProfitBarChart(fundService, panelGraficas, descripcionTex, fundDesc);
+
+			}
+
+			if (graficasBox.getSelectedItem().equals("Renta Esperada")) {
+
+				// final-inicial/inicial x 100
+				desdeDate.setVisible(false);
+				hastaDate.setVisible(false);
+
+				desdeLabel.setVisible(false);
+				hastaLabel.setVisible(false);
+
+				chartMaker.createEstimateProfitOfFundDescLineChart(fundService, panelGraficas, descripcionTex,
+						fundDesc);
 
 			}
 		} else {

@@ -4,7 +4,7 @@ import java.awt.BorderLayout;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-
+import java.time.temporal.ChronoUnit;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 
@@ -34,6 +34,7 @@ public class ChartMaker {
 	 * cartera.
 	 * 
 	 * @param
+	 * @throws InstanceNotFoundException
 	 */
 
 	public void createPortfolioDistributionChart(FundService fundService, JPanel panel, JEditorPane description,
@@ -46,8 +47,12 @@ public class ChartMaker {
 
 		for (int x = 0; x < fundDescs.size(); x++) {
 
-			dataset.setValue(fundDescs.get(x).toString(),
-					fundService.findLatestPortOp(fundPort, fundDescs.get(x), LocalDate.now()).getfPartfin());
+			try {
+				dataset.setValue(fundDescs.get(x).toString(),
+						fundService.findLatestPortOp(fundPort, fundDescs.get(x), LocalDate.now()).getfPartfin());
+			} catch (InstanceNotFoundException e) {
+				continue;
+			}
 
 		}
 
@@ -176,6 +181,55 @@ public class ChartMaker {
 			description.setText("Gráfica de los valores de la cartera: " + fundPort.getpName() + " normalizados.");
 
 		}
+
+	}
+
+	/**
+	 * Crea una gráfica de lineas que muestra la rentabilidad por dia y compara
+	 * los Vls reales con los esperados en función de la rentabilidad por día.
+	 * 
+	 * @param
+	 */
+	public void createEstimateProfitOfFundDescLineChart(FundService fundService, JPanel panel, JEditorPane description,
+			FundDesc fundDesc) {
+
+		FundVl vlInicial = fundDesc.getFundVls().get(0);
+
+		FundVl vlFinal = fundDesc.getFundVls().get(fundDesc.getFundVls().size() - 1);
+
+		double d = vlInicial.getDay().until(vlFinal.getDay(), ChronoUnit.DAYS);
+
+		double resultado = (Math.pow(vlFinal.getVl() / vlInicial.getVl(), (1 / d))) - 1;
+
+		DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
+
+		List<FundVl> fundVls = fundService.findFundVlbyRange(fundDesc, LocalDate.parse("2017-01-02"), LocalDate.now());
+
+		double primero = (fundVls.get(0).getVl());
+
+		double siguiente = primero / (1 + resultado);
+
+		for (int y = 0; y < fundVls.size(); y++) {
+
+			siguiente = siguiente * (1 + resultado);
+
+			line_chart_dataset.addValue(siguiente, "Vl Esperado", fundVls.get(y).getDay().toString());
+			line_chart_dataset.addValue(fundVls.get(y).getVl(), "Vl real del fondo",
+					fundVls.get(y).getDay().toString());
+
+		}
+
+		JFreeChart lineChartObject = ChartFactory.createLineChart("Rentabilidad Esperada", "Días", "Valor",
+				line_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
+
+		ChartPanel CP = new ChartPanel(lineChartObject);
+		panel.removeAll();
+		panel.updateUI();
+		panel.setLayout(new java.awt.BorderLayout());
+		panel.add(CP, BorderLayout.CENTER);
+
+		description.setText(" Gráfica que muestra la rentabilidad por dia del fondo " + fundDesc.getfName()
+				+ " y comparala los " + "Vls reales con los esperados en función de la rentabilidad por día");
 
 	}
 

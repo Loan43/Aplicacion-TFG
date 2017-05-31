@@ -889,7 +889,7 @@ public class FundServiceImpl implements FundService {
 		// File inputWorkbook = new File(inputFile);
 		Workbook w;
 		List<FundVl> fundVls = new ArrayList<FundVl>();
-		DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+		DateFormat df = new SimpleDateFormat("dd/MM/yy");
 		LocalDate date = null;
 		int switchDateParser = 0;
 		double vl = 0;
@@ -899,7 +899,7 @@ public class FundServiceImpl implements FundService {
 
 			Cell cell = sheet.getCell(0, 0);
 			CellType type = cell.getType();
-			if (type == CellType.LABEL) {
+			if (type == CellType.EMPTY) {
 				if (cell.getContents().equals("Nombre:")) {
 					start = 10;
 				}
@@ -912,9 +912,9 @@ public class FundServiceImpl implements FundService {
 				CellType type1 = cell1.getType();
 				CellType type2 = cell2.getType();
 
-				if (type1 == CellType.LABEL) {
+				if (type1 != CellType.EMPTY) {
 
-					if (type2 == CellType.LABEL) {
+					if (type2 != CellType.EMPTY) {
 
 						Pattern patron = Pattern.compile(",");
 						Matcher encaja = patron.matcher(cell2.getContents());
@@ -962,6 +962,8 @@ public class FundServiceImpl implements FundService {
 			}
 		} catch (BiffException | IOException | NumberFormatException e) {
 			throw new InputValidationException("Error: El fichero seleccionado no tiene el formato correcto.");
+		} catch (StringIndexOutOfBoundsException e) {
+			throw new InputValidationException("Error: Se esta usando un fichero de Excel95 que no esta soportado.");
 		}
 		return fundVls;
 	}
@@ -1118,6 +1120,8 @@ public class FundServiceImpl implements FundService {
 
 		} catch (BiffException | IOException | NumberFormatException e) {
 			throw new InputValidationException("Error: El fichero seleccionado no tiene el formato correcto.");
+		} catch (StringIndexOutOfBoundsException e) {
+			throw new InputValidationException("Error: Se esta usando un fichero de Excel95 que no esta soportado.");
 		}
 		return fundDesc;
 
