@@ -884,7 +884,7 @@ public class FundServiceImpl implements FundService {
 
 	}
 
-	private String getContents(Cell cell, String format) throws ParseException {
+	private String getCellDate(Cell cell, String format) throws ParseException {
 
 		DateCell dCell = null;
 		SimpleDateFormat localDateformat = new SimpleDateFormat("yyyy-MM-dd");
@@ -952,12 +952,12 @@ public class FundServiceImpl implements FundService {
 
 					try {
 
-						date = LocalDate.parse(getContents(cell1, format));
+						date = LocalDate.parse(getCellDate(cell1, format));
 						fundVls.add(new FundVl(date, vl, fundDesc));
 
 					} catch (DateTimeParseException | ParseException e1) {
 						throw new InputValidationException(
-								"Error: El fichero seleccionado no tiene el formato correcto.");
+								"Error: El formato de la fecha es incorrecto.");
 
 					}
 

@@ -1805,37 +1805,20 @@ public class Gui extends javax.swing.JFrame {
 
 		if (nodeInfo.getClass() == tfg.app.model.entities.FundDesc.class) {
 
-			FundDesc fundDesc = (FundDesc) nodeInfo;
-
 			graficasBox.setModel(new javax.swing.DefaultComboBoxModel<>(
 					new String[] { "Descripción", "Historial Vl", "Hist Renta", "Renta Esperada" }));
 
 			graficasBox.setSelectedItem("Descripción");
 			graficasBox.setVisible(true);
 
-			panelGraficas.removeAll();
-			panelGraficas.updateUI();
-
-			showFundDesc(fundDesc, panelGraficas);
-
 		}
 		if (nodeInfo.getClass() == tfg.app.model.entities.FundPort.class) {
-
-			FundPort fundPort = (FundPort) nodeInfo;
 
 			graficasBox.setModel(new javax.swing.DefaultComboBoxModel<>(
 					new String[] { "Distribución", "Fondos Norm", "Rentabilidad" }));
 
 			graficasBox.setSelectedItem("Distribución");
 			graficasBox.setVisible(true);
-
-			try {
-				chartMaker.createPortfolioDistributionChart(fundService, panelGraficas, descripcionTex, fundPort);
-			} catch (InstanceNotFoundException e) {
-				JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de base de datos.",
-						JOptionPane.ERROR_MESSAGE);
-				return;
-			}
 
 		}
 
@@ -2961,13 +2944,69 @@ public class Gui extends javax.swing.JFrame {
 
 		canComDesc.setText("Comisión de cancelación: " + fundDesc.getfCancelComm() * 100 + "%");
 
-		alphaDesc.setText("Alpha: ");
+		alphaDesc.setText("Alfa: ");
 
 		betaDesc.setText("Beta: ");
 
 		varDesc.setText("Varianza: ");
 
-		drawDesc.setText("Máximo Drawout: ");
+		int maxRelativo = 0;
+		int minRelativo = 0;
+		int maxFinal = 0;
+		int minFinal = 0;
+
+		for (int x = 0; x < fundDesc.getFundVls().size(); x++) {
+
+			if (fundDesc.getFundVls().get(x).getVl() >= fundDesc.getFundVls().get(maxRelativo).getVl()) {
+
+				maxRelativo = x;
+				minRelativo = x;
+
+			} else {
+				// mientras
+				int y = 0;
+				for (y = x; ((y < fundDesc.getFundVls().size()) && (fundDesc.getFundVls().get(maxRelativo)
+						.getVl() >= fundDesc.getFundVls().get(y).getVl())); y++) {
+
+					if (fundDesc.getFundVls().get(y).getVl() <= fundDesc.getFundVls().get(minRelativo).getVl()) {
+
+						minRelativo = y;
+
+					}
+
+				}
+
+				if (y != fundDesc.getFundVls().size()) {
+
+					if ((fundDesc.getFundVls().get(maxRelativo).getVl() - fundDesc.getFundVls().get(minRelativo)
+							.getVl()) > (fundDesc.getFundVls().get(maxFinal).getVl()
+									- fundDesc.getFundVls().get(minFinal).getVl())) {
+
+						maxFinal = maxRelativo;
+						minFinal = minRelativo;
+
+					}
+				}
+
+				maxRelativo = y;
+				minRelativo = y;
+				x = y;
+
+			}
+
+		}
+
+		if (maxFinal == 0) {
+
+			drawDesc.setText("Máximo Drawdown: No se ha podido calcular para este fondo.");
+
+		} else {
+			drawDesc.setText("Máximo Drawdown: "
+					+ ((fundDesc.getFundVls().get(minFinal).getVl() - fundDesc.getFundVls().get(maxFinal).getVl())
+							/ fundDesc.getFundVls().get(maxFinal).getVl()) * 100
+					+ " entre los días: " + fundDesc.getFundVls().get(maxFinal).getDay() + " y "
+					+ fundDesc.getFundVls().get(minFinal).getDay());
+		}
 
 		javax.swing.GroupLayout panelLayout = new javax.swing.GroupLayout(panel);
 		panel.setLayout(panelLayout);
@@ -3110,6 +3149,50 @@ public class Gui extends javax.swing.JFrame {
 		 */
 		fundService = new FundServiceImpl();
 		chartMaker = new ChartMaker();
+
+		// FundDesc fundDesc1 = new FundDesc("DE0008490962", "Renta 4 Bolsa FI",
+		// "Pinball Wizards", "Alto riesgo",
+		// "Monetario", "Euro", 0.01, 0.02);
+		//
+		// LocalDate date = LocalDate.parse("2015-05-30");
+		// fundDesc1.getFundVls().add(new FundVl(date, 25.0, fundDesc1));
+		// date = date.plusDays(1);
+		// fundDesc1.getFundVls().add(new FundVl(date, 26.0, fundDesc1));
+		// date = date.plusDays(1);
+		// fundDesc1.getFundVls().add(new FundVl(date, 27.0, fundDesc1));
+		// date = date.plusDays(1);
+		// fundDesc1.getFundVls().add(new FundVl(date, 28.0, fundDesc1));
+		// date = date.plusDays(1);
+		// fundDesc1.getFundVls().add(new FundVl(date, 27.0, fundDesc1));
+		// date = date.plusDays(1);
+		// fundDesc1.getFundVls().add(new FundVl(date, 25.0, fundDesc1));
+		// date = date.plusDays(1);
+		// fundDesc1.getFundVls().add(new FundVl(date, 24.0, fundDesc1));
+		// date = date.plusDays(1);
+		// fundDesc1.getFundVls().add(new FundVl(date, 30.0, fundDesc1));
+		// date = date.plusDays(1);
+		// fundDesc1.getFundVls().add(new FundVl(date, 29.0, fundDesc1));
+		// date = date.plusDays(1);
+		// fundDesc1.getFundVls().add(new FundVl(date, 28.0, fundDesc1));
+		// date = date.plusDays(1);
+		// fundDesc1.getFundVls().add(new FundVl(date, 27.0, fundDesc1));
+		// date = date.plusDays(1);
+		// fundDesc1.getFundVls().add(new FundVl(date, 0.0, fundDesc1));
+		// date = date.plusDays(1);
+		// fundDesc1.getFundVls().add(new FundVl(date, 31.0, fundDesc1));
+		//
+		// FundPort fundPort1 = new FundPort("Cartera Test 1", "Esto es una
+		// cartera de prueba");
+		//
+		// try {
+		// fundService.addFund(fundDesc1);
+		// fundService.addFundPortfolio(fundPort1);
+		// fundService.addPortDesc(fundPort1, fundDesc1);
+		// } catch (InputValidationException | InstanceNotFoundException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+
 		createDbExample();
 
 		try {
