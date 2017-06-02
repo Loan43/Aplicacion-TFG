@@ -29,8 +29,10 @@ import jxl.DateCell;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.WorkbookSettings;
+import jxl.format.Alignment;
 import jxl.read.biff.BiffException;
 import jxl.write.Label;
+import jxl.write.WritableCellFormat;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
@@ -956,8 +958,7 @@ public class FundServiceImpl implements FundService {
 						fundVls.add(new FundVl(date, vl, fundDesc));
 
 					} catch (DateTimeParseException | ParseException e1) {
-						throw new InputValidationException(
-								"Error: El formato de la fecha es incorrecto.");
+						throw new InputValidationException("Error: El formato de la fecha es incorrecto.");
 
 					}
 
@@ -981,65 +982,71 @@ public class FundServiceImpl implements FundService {
 		WritableWorkbook workbook = null;
 
 		try {
+
+			WritableCellFormat cellFormat = new WritableCellFormat();
+			cellFormat.setAlignment(Alignment.CENTRE);
+
 			workbook = Workbook.createWorkbook(file, wbSettings);
 
 			workbook.createSheet("Report", 0);
 			WritableSheet excelSheet = workbook.getSheet(0);
+			excelSheet.setColumnView(0, 25);
+			excelSheet.setColumnView(1, 20);
 
 			Label label;
 			int x = 0;
 
-			label = new Label(0, x, "Nombre:");
+			label = new Label(0, x, "Nombre:", cellFormat);
 			excelSheet.addCell(label);
-			label = new Label(1, x, fundDesc.getfName());
-			excelSheet.addCell(label);
-			x++;
-
-			label = new Label(0, x, "ISIN:");
-			excelSheet.addCell(label);
-			label = new Label(1, x, fundDesc.getfId());
+			label = new Label(1, x, fundDesc.getfName(), cellFormat);
 			excelSheet.addCell(label);
 			x++;
 
-			label = new Label(0, x, "Gestora:");
+			label = new Label(0, x, "ISIN:", cellFormat);
 			excelSheet.addCell(label);
-			label = new Label(1, x, fundDesc.getfGest());
-			excelSheet.addCell(label);
-			x++;
-
-			label = new Label(0, x, "Tipo:");
-			excelSheet.addCell(label);
-			label = new Label(1, x, fundDesc.getfType());
+			label = new Label(1, x, fundDesc.getfId(), cellFormat);
 			excelSheet.addCell(label);
 			x++;
 
-			label = new Label(0, x, "Categoría:");
+			label = new Label(0, x, "Gestora:", cellFormat);
 			excelSheet.addCell(label);
-			label = new Label(1, x, fundDesc.getfCategory());
-			excelSheet.addCell(label);
-			x++;
-
-			label = new Label(0, x, "Divisa:");
-			excelSheet.addCell(label);
-			label = new Label(1, x, fundDesc.getfCurrency());
+			label = new Label(1, x, fundDesc.getfGest(), cellFormat);
 			excelSheet.addCell(label);
 			x++;
 
-			label = new Label(0, x, "Comisión de cancelación:");
+			label = new Label(0, x, "Tipo:", cellFormat);
 			excelSheet.addCell(label);
-			label = new Label(1, x, fundDesc.getfCancelComm().toString());
+			label = new Label(1, x, fundDesc.getfType(), cellFormat);
 			excelSheet.addCell(label);
 			x++;
 
-			label = new Label(0, x, "Comisión de suscripción:");
+			label = new Label(0, x, "Categoría:", cellFormat);
 			excelSheet.addCell(label);
-			label = new Label(1, x, fundDesc.getfSubComm().toString());
+			label = new Label(1, x, fundDesc.getfCategory(), cellFormat);
+			excelSheet.addCell(label);
+			x++;
+
+			label = new Label(0, x, "Divisa:", cellFormat);
+			excelSheet.addCell(label);
+			label = new Label(1, x, fundDesc.getfCurrency(), cellFormat);
+			excelSheet.addCell(label);
+			x++;
+
+			label = new Label(0, x, "Comisión de cancelación:", cellFormat);
+			excelSheet.addCell(label);
+			label = new Label(1, x, fundDesc.getfCancelComm().toString(), cellFormat);
+			excelSheet.addCell(label);
+			x++;
+
+			label = new Label(0, x, "Comisión de suscripción:", cellFormat);
+			excelSheet.addCell(label);
+			label = new Label(1, x, fundDesc.getfSubComm().toString(), cellFormat);
 			excelSheet.addCell(label);
 			x += 2;
 
-			label = new Label(0, x, "Fecha");
+			label = new Label(0, x, "Fecha", cellFormat);
 			excelSheet.addCell(label);
-			label = new Label(1, x, "Valor liquidativo");
+			label = new Label(1, x, "Valor liquidativo", cellFormat);
 			excelSheet.addCell(label);
 			x++;
 
@@ -1048,8 +1055,8 @@ public class FundServiceImpl implements FundService {
 
 			for (int y = 0; y < fundDesc.getFundVls().size(); y++) {
 
-				date = new Label(0, y + x, fundDesc.getFundVls().get(y).getDay().toString());
-				vl = new Label(1, y + x, fundDesc.getFundVls().get(y).getVl().toString());
+				date = new Label(0, y + x, fundDesc.getFundVls().get(y).getDay().toString(), cellFormat);
+				vl = new Label(1, y + x, fundDesc.getFundVls().get(y).getVl().toString(), cellFormat);
 
 				excelSheet.addCell(date);
 				excelSheet.addCell(vl);
