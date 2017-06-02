@@ -2948,7 +2948,30 @@ public class Gui extends javax.swing.JFrame {
 
 		betaDesc.setText("Beta: ");
 
-		varDesc.setText("Varianza: ");
+		double sumatoria = 0;
+
+		int size = fundDesc.getFundVls().size();
+
+		for (int x = 0; x < size; x++) {
+
+			sumatoria = sumatoria + fundDesc.getFundVls().get(x).getVl();
+
+		}
+
+		double media = sumatoria / size;
+
+		double varianza = 0;
+		for (int i = 0; i < size; i++) {
+			double rango;
+			rango = Math.pow(fundDesc.getFundVls().get(i).getVl() - media, 2);
+			varianza = varianza + rango;
+		}
+
+		varianza = varianza / size;
+
+		double desviacion = Math.sqrt(varianza);
+
+		varDesc.setText("Desviación estandar: " + String.format("%.3f", desviacion));
 
 		int maxRelativo = 0;
 		int minRelativo = 0;
@@ -3001,11 +3024,14 @@ public class Gui extends javax.swing.JFrame {
 			drawDesc.setText("Máximo Drawdown: No se ha podido calcular para este fondo.");
 
 		} else {
-			drawDesc.setText("Máximo Drawdown: "
-					+ ((fundDesc.getFundVls().get(minFinal).getVl() - fundDesc.getFundVls().get(maxFinal).getVl())
-							/ fundDesc.getFundVls().get(maxFinal).getVl()) * 100
-					+ " entre los días: " + fundDesc.getFundVls().get(maxFinal).getDay() + " y "
-					+ fundDesc.getFundVls().get(minFinal).getDay());
+			drawDesc.setText(
+					"Máximo Drawdown: "
+							+ String.format("%.3f",
+									((fundDesc.getFundVls().get(minFinal).getVl()
+											- fundDesc.getFundVls().get(maxFinal).getVl())
+											/ fundDesc.getFundVls().get(maxFinal).getVl()) * 100)
+							+ " entre los días: " + fundDesc.getFundVls().get(maxFinal).getDay() + " y "
+							+ fundDesc.getFundVls().get(minFinal).getDay());
 		}
 
 		javax.swing.GroupLayout panelLayout = new javax.swing.GroupLayout(panel);
