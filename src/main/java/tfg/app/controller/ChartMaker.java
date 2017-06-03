@@ -49,7 +49,7 @@ public class ChartMaker {
 
 			try {
 				dataset.setValue(fundDescs.get(x).toString(),
-						fundService.findLatestPortOp(fundPort, fundDescs.get(x), LocalDate.now()).getfPartfin());
+						fundService.findLatestPortOp(fundPort, fundDescs.get(x), LocalDate.now()).getfPrice());
 			} catch (InstanceNotFoundException e) {
 				continue;
 			}
@@ -229,7 +229,75 @@ public class ChartMaker {
 		panel.add(CP, BorderLayout.CENTER);
 
 		description.setText(" Gráfica que muestra la rentabilidad por dia del fondo " + fundDesc.getfName()
-				+ " y comparala los " + "Vls reales con los esperados en función de la rentabilidad por día");
+				+ " y comparala los Vls reales con los esperados en función de la misma");
+
+	}
+
+	/**
+	 * Crea una gráfica de líneas que muestra los vls y sus medias móviles a 39,
+	 * 90 y 200 diass.
+	 * 
+	 * @param
+	 */
+
+	public void createFundDescMeanMobileLineChart(FundService fundService, JPanel panel, JEditorPane description,
+			FundDesc fundDesc, int days) {
+
+		DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
+		String string = "";
+
+		if (fundDesc.getFundVls().size() <= days) {
+
+			string = "El fondo " + fundDesc.getfName()
+					+ " no tiene suficientes valores para poder calcular su media móvil a " + days + " días.";
+
+		} else {
+
+			string = (" Gráfica que muestra la media móvil del fondo " + fundDesc.getfName()
+					+ " para un período de tiempo de " + days + " días.");
+
+			double sum = 0.0;
+			int i = 0;
+
+			for (i = 0; i < days; i++) {
+
+				line_chart_dataset.addValue(fundDesc.getFundVls().get(i).getVl(), "Valor liquidativo",
+						fundDesc.getFundVls().get(i).getDay().toString());
+
+				sum = sum + fundDesc.getFundVls().get(i).getVl();
+
+			}
+
+			double anterior = sum / days;
+
+			line_chart_dataset.addValue(anterior, "Media Móvil", fundDesc.getFundVls().get(i).getDay().toString());
+
+			double siguiente = 0;
+
+			for (int x = i; x < fundDesc.getFundVls().size(); x++) {
+
+				siguiente = ((days * anterior) + fundDesc.getFundVls().get(x).getVl()
+						- fundDesc.getFundVls().get(x - days).getVl()) / days;
+
+				line_chart_dataset.addValue(fundDesc.getFundVls().get(x).getVl(), "Valor liquidativo",
+						fundDesc.getFundVls().get(x).getDay().toString());
+
+				line_chart_dataset.addValue(siguiente, "Media Móvil", fundDesc.getFundVls().get(x).getDay().toString());
+
+				anterior = siguiente;
+			}
+		}
+
+		JFreeChart lineChartObject = ChartFactory.createLineChart("Media móvil a " + days + " días", "Días", "Valor",
+				line_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
+
+		ChartPanel CP = new ChartPanel(lineChartObject);
+		panel.removeAll();
+		panel.updateUI();
+		panel.setLayout(new java.awt.BorderLayout());
+		panel.add(CP, BorderLayout.CENTER);
+
+		description.setText(string);
 
 	}
 

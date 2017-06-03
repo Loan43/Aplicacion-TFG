@@ -1806,7 +1806,7 @@ public class Gui extends javax.swing.JFrame {
 		if (nodeInfo.getClass() == tfg.app.model.entities.FundDesc.class) {
 
 			graficasBox.setModel(new javax.swing.DefaultComboBoxModel<>(
-					new String[] { "Descripción", "Historial Vl", "Hist Renta", "Renta Esperada" }));
+					new String[] { "Descripción", "Historial Vl", "Hist Renta", "Renta Esperada", "Media Móvil" }));
 
 			graficasBox.setSelectedItem("Descripción");
 			graficasBox.setVisible(true);
@@ -2882,6 +2882,19 @@ public class Gui extends javax.swing.JFrame {
 						fundDesc);
 
 			}
+
+			if (graficasBox.getSelectedItem().equals("Media Móvil")) {
+
+				// final-inicial/inicial x 100
+				desdeDate.setVisible(false);
+				hastaDate.setVisible(false);
+
+				desdeLabel.setVisible(false);
+				hastaLabel.setVisible(false);
+
+				chartMaker.createFundDescMeanMobileLineChart(fundService, panelGraficas, descripcionTex, fundDesc, 30);
+
+			}
 		} else {
 
 			if (nodeInfo.getClass() == tfg.app.model.entities.FundPort.class) {
@@ -3019,7 +3032,7 @@ public class Gui extends javax.swing.JFrame {
 
 		}
 
-		if (maxFinal == 0) {
+		if (maxFinal == 0 && minFinal == 0) {
 
 			drawDesc.setText("Máximo Drawdown: No se ha podido calcular para este fondo.");
 
@@ -3030,7 +3043,7 @@ public class Gui extends javax.swing.JFrame {
 									((fundDesc.getFundVls().get(minFinal).getVl()
 											- fundDesc.getFundVls().get(maxFinal).getVl())
 											/ fundDesc.getFundVls().get(maxFinal).getVl()) * 100)
-							+ " entre los días: " + fundDesc.getFundVls().get(maxFinal).getDay() + " y "
+							+ "% entre los días: " + fundDesc.getFundVls().get(maxFinal).getDay() + " y "
 							+ fundDesc.getFundVls().get(minFinal).getDay());
 		}
 
