@@ -1,6 +1,8 @@
 package tfg.app.controller;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -11,10 +13,14 @@ import javax.swing.JPanel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
-
+import org.jfree.data.time.Day;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
 import tfg.app.model.entities.FundDesc;
 import tfg.app.model.entities.FundPort;
 import tfg.app.model.entities.FundVl;
@@ -59,6 +65,13 @@ public class ChartMaker {
 		JFreeChart chart = ChartFactory.createPieChart("Participaciones de la cartera " + fundPort.getpName(), dataset,
 				true, true, false);
 
+		PiePlot plot = (PiePlot) chart.getPlot();
+
+		plot.setOutlinePaint(Color.BLUE);
+		plot.setOutlineStroke(new BasicStroke(2.0f));
+
+		plot.setBackgroundPaint(Color.DARK_GRAY);
+
 		ChartPanel CP = new ChartPanel(chart);
 
 		panel.removeAll();
@@ -82,9 +95,10 @@ public class ChartMaker {
 	public void createFundVlLineChart(FundService fundService, JPanel panel, JEditorPane description, FundDesc fundDesc,
 			LocalDate start, LocalDate end) {
 
-		DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
 		List<FundVl> fundVlList = null;
 		String string = "";
+
+		TimeSeries series = new TimeSeries("Valor Liquidativo");
 
 		if (start == null || end == null) {
 
@@ -120,14 +134,33 @@ public class ChartMaker {
 		}
 
 		for (int x = 0; x < fundVlList.size(); x++) {
-			line_chart_dataset.addValue(fundVlList.get(x).getVl(), "Valor liquidativo",
-					fundVlList.get(x).getDay().toString());
+
+			LocalDate date = fundVlList.get(x).getDay();
+			Day day = new Day(date.getDayOfMonth(), date.getMonthValue(), date.getYear());
+			series.add(day, fundVlList.get(x).getVl());
 		}
 
-		JFreeChart lineChartObject = ChartFactory.createLineChart("Historial del valor liquidativo", "Días", "Valor",
-				line_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
+		final TimeSeriesCollection data = new TimeSeriesCollection(series);
 
-		ChartPanel CP = new ChartPanel(lineChartObject);
+		final JFreeChart chart = ChartFactory.createTimeSeriesChart("Historial del valor liquidativo", "Fecha", "Valor",
+				data, true, true, false);
+
+		XYPlot plot = (XYPlot) chart.getPlot();
+
+		plot.getRenderer().setSeriesPaint(0, Color.BLUE);
+
+		plot.setOutlinePaint(Color.BLUE);
+		plot.setOutlineStroke(new BasicStroke(2.0f));
+
+		plot.setBackgroundPaint(Color.DARK_GRAY);
+
+		plot.setRangeGridlinesVisible(true);
+		plot.setRangeGridlinePaint(Color.BLACK);
+
+		plot.setDomainGridlinesVisible(true);
+		plot.setDomainGridlinePaint(Color.BLACK);
+
+		ChartPanel CP = new ChartPanel(chart);
 		panel.removeAll();
 		panel.updateUI();
 		panel.setLayout(new java.awt.BorderLayout());
@@ -147,11 +180,14 @@ public class ChartMaker {
 			JEditorPane description, FundPort fundPort) throws InstanceNotFoundException {
 
 		List<FundDesc> fundDescs = null;
-		DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
 
 		fundDescs = fundService.findFundsOfPortfolio(fundPort);
 
+		final TimeSeriesCollection data = new TimeSeriesCollection();
+
 		for (int x = 0; x < fundDescs.size(); x++) {
+
+			TimeSeries series = new TimeSeries(fundDescs.get(x).getfName());
 
 			for (int y = 0; y < fundDescs.get(x).getFundVls().size(); y++) {
 
@@ -159,16 +195,31 @@ public class ChartMaker {
 				Double min = Collections.min(fundDescs.get(x).getFundVls(), new compVl()).getVl();
 				Double z = fundDescs.get(x).getFundVls().get(y).getVl();
 
-				line_chart_dataset.addValue((z - min) / (max - min), fundDescs.get(x).getfName(),
-						fundDescs.get(x).getFundVls().get(y).getDay().toString());
-			}
+				LocalDate date = fundDescs.get(x).getFundVls().get(y).getDay();
+				Day day = new Day(date.getDayOfMonth(), date.getMonthValue(), date.getYear());
+				series.add(day, (z - min) / (max - min));
 
+			}
+			data.addSeries(series);
 		}
 
-		JFreeChart lineChartObject = ChartFactory.createLineChart("Historial del valor liquidativo", "Días", "Valor",
-				line_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
+		final JFreeChart chart = ChartFactory.createTimeSeriesChart("Valor liquidativo normalizado", "Fecha", "Valor",
+				data, true, true, false);
 
-		ChartPanel CP = new ChartPanel(lineChartObject);
+		XYPlot plot = (XYPlot) chart.getPlot();
+
+		plot.setOutlinePaint(Color.BLUE);
+		plot.setOutlineStroke(new BasicStroke(2.0f));
+
+		plot.setBackgroundPaint(Color.DARK_GRAY);
+
+		plot.setRangeGridlinesVisible(true);
+		plot.setRangeGridlinePaint(Color.BLACK);
+
+		plot.setDomainGridlinesVisible(true);
+		plot.setDomainGridlinePaint(Color.BLACK);
+
+		ChartPanel CP = new ChartPanel(chart);
 		panel.removeAll();
 		panel.updateUI();
 		panel.setLayout(new java.awt.BorderLayout());
@@ -193,6 +244,12 @@ public class ChartMaker {
 	public void createEstimateProfitOfFundDescLineChart(FundService fundService, JPanel panel, JEditorPane description,
 			FundDesc fundDesc) {
 
+		final TimeSeriesCollection data = new TimeSeriesCollection();
+
+		TimeSeries real = new TimeSeries("Vl real del fondo");
+
+		TimeSeries esperado = new TimeSeries("Vl Esperado");
+
 		FundVl vlInicial = fundDesc.getFundVls().get(0);
 
 		FundVl vlFinal = fundDesc.getFundVls().get(fundDesc.getFundVls().size() - 1);
@@ -200,8 +257,6 @@ public class ChartMaker {
 		double d = vlInicial.getDay().until(vlFinal.getDay(), ChronoUnit.DAYS);
 
 		double resultado = (Math.pow(vlFinal.getVl() / vlInicial.getVl(), (1 / d))) - 1;
-
-		DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
 
 		List<FundVl> fundVls = fundService.findFundVlbyRange(fundDesc, LocalDate.parse("2017-01-02"), LocalDate.now());
 
@@ -213,16 +268,35 @@ public class ChartMaker {
 
 			siguiente = siguiente * (1 + resultado);
 
-			line_chart_dataset.addValue(siguiente, "Vl Esperado", fundVls.get(y).getDay().toString());
-			line_chart_dataset.addValue(fundVls.get(y).getVl(), "Vl real del fondo",
-					fundVls.get(y).getDay().toString());
+			LocalDate date = fundVls.get(y).getDay();
+			Day day = new Day(date.getDayOfMonth(), date.getMonthValue(), date.getYear());
+
+			esperado.add(day, siguiente);
+
+			real.add(day, fundVls.get(y).getVl());
 
 		}
 
-		JFreeChart lineChartObject = ChartFactory.createLineChart("Rentabilidad Esperada", "Días", "Valor",
-				line_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
+		data.addSeries(esperado);
+		data.addSeries(real);
 
-		ChartPanel CP = new ChartPanel(lineChartObject);
+		final JFreeChart chart = ChartFactory.createTimeSeriesChart("Rentabilidad Esperada", "Fecha", "Valor", data,
+				true, true, false);
+
+		XYPlot plot = (XYPlot) chart.getPlot();
+
+		plot.setOutlinePaint(Color.BLUE);
+		plot.setOutlineStroke(new BasicStroke(2.0f));
+
+		plot.setBackgroundPaint(Color.DARK_GRAY);
+
+		plot.setRangeGridlinesVisible(true);
+		plot.setRangeGridlinePaint(Color.BLACK);
+
+		plot.setDomainGridlinesVisible(true);
+		plot.setDomainGridlinePaint(Color.BLACK);
+
+		ChartPanel CP = new ChartPanel(chart);
 		panel.removeAll();
 		panel.updateUI();
 		panel.setLayout(new java.awt.BorderLayout());
@@ -243,7 +317,11 @@ public class ChartMaker {
 	public void createFundDescMeanMobileLineChart(FundService fundService, JPanel panel, JEditorPane description,
 			FundDesc fundDesc, int days) {
 
-		DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
+		final TimeSeriesCollection data = new TimeSeriesCollection();
+
+		TimeSeries vls = new TimeSeries("Valor Liquidativo");
+		TimeSeries mediaMovil = new TimeSeries("Media Móvil");
+
 		String string = "";
 
 		if (fundDesc.getFundVls().size() <= days) {
@@ -261,16 +339,16 @@ public class ChartMaker {
 
 			for (i = 0; i < days; i++) {
 
-				line_chart_dataset.addValue(fundDesc.getFundVls().get(i).getVl(), "Valor liquidativo",
-						fundDesc.getFundVls().get(i).getDay().toString());
+				LocalDate date = fundDesc.getFundVls().get(i).getDay();
+				Day day = new Day(date.getDayOfMonth(), date.getMonthValue(), date.getYear());
+
+				vls.add(day, fundDesc.getFundVls().get(i).getVl());
 
 				sum = sum + fundDesc.getFundVls().get(i).getVl();
 
 			}
 
 			double anterior = sum / days;
-
-			line_chart_dataset.addValue(anterior, "Media Móvil", fundDesc.getFundVls().get(i).getDay().toString());
 
 			double siguiente = 0;
 
@@ -279,19 +357,38 @@ public class ChartMaker {
 				siguiente = ((days * anterior) + fundDesc.getFundVls().get(x).getVl()
 						- fundDesc.getFundVls().get(x - days).getVl()) / days;
 
-				line_chart_dataset.addValue(fundDesc.getFundVls().get(x).getVl(), "Valor liquidativo",
-						fundDesc.getFundVls().get(x).getDay().toString());
+				LocalDate date = fundDesc.getFundVls().get(x).getDay();
+				Day day = new Day(date.getDayOfMonth(), date.getMonthValue(), date.getYear());
 
-				line_chart_dataset.addValue(siguiente, "Media Móvil", fundDesc.getFundVls().get(x).getDay().toString());
+				mediaMovil.add(day, siguiente);
+				vls.add(day, fundDesc.getFundVls().get(x).getVl());
 
 				anterior = siguiente;
 			}
 		}
 
-		JFreeChart lineChartObject = ChartFactory.createLineChart("Media móvil a " + days + " días", "Días", "Valor",
-				line_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
+		data.addSeries(vls);
+		data.addSeries(mediaMovil);
 
-		ChartPanel CP = new ChartPanel(lineChartObject);
+		final JFreeChart chart = ChartFactory.createTimeSeriesChart("Media móvil a " + days + " días", "Fecha", "Valor",
+				data, true, true, false);
+
+		XYPlot plot = (XYPlot) chart.getPlot();
+
+		plot.getRenderer().setSeriesPaint(0, Color.BLUE);
+
+		plot.setOutlinePaint(Color.BLUE);
+		plot.setOutlineStroke(new BasicStroke(2.0f));
+
+		plot.setBackgroundPaint(Color.DARK_GRAY);
+
+		plot.setRangeGridlinesVisible(true);
+		plot.setRangeGridlinePaint(Color.BLACK);
+
+		plot.setDomainGridlinesVisible(true);
+		plot.setDomainGridlinePaint(Color.BLACK);
+
+		ChartPanel CP = new ChartPanel(chart);
 		panel.removeAll();
 		panel.updateUI();
 		panel.setLayout(new java.awt.BorderLayout());
