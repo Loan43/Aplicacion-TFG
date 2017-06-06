@@ -1603,13 +1603,13 @@ public class Gui extends javax.swing.JFrame {
 
 		desdeDate.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				desdeDateActionPerformed(evt);
+				desdeHastaDateActionPerformed(evt);
 			}
 		});
 
 		hastaDate.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				hastaDateActionPerformed(evt);
+				desdeHastaDateActionPerformed(evt);
 			}
 		});
 
@@ -2593,12 +2593,13 @@ public class Gui extends javax.swing.JFrame {
 
 	}
 
-	// Seleccion de una fecha en el calendario desde
-	private void desdeDateActionPerformed(java.awt.event.ActionEvent evt) {
-
+	// Seleccion de una fecha en el calendario hasta o desde
+	private void desdeHastaDateActionPerformed(java.awt.event.ActionEvent evt) {
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
 
 		FundDesc fundDesc = null;
+		LocalDate date1 = null;
+		LocalDate date2 = null;
 
 		if (node == null) {
 			return;
@@ -2609,53 +2610,39 @@ public class Gui extends javax.swing.JFrame {
 
 			fundDesc = (FundDesc) nodeInfo;
 
-			Date input = (Date) model1.getValue();
-			LocalDate date1 = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			if (fundDesc.getFundVls().size() == 0) {
+				date1 = LocalDate.now();
+				date2 = LocalDate.now();
 
-			input = (Date) model2.getValue();
-			LocalDate date2 = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				model1.setDate(date1.getYear(), date1.getMonthValue() - 1, date1.getDayOfMonth());
+				model2.setDate(date2.getYear(), date2.getMonthValue() - 1, date2.getDayOfMonth());
 
-			if (date1.compareTo(date2) >= 0) {
+				chartMaker.createFundVlLineChart(fundService, panelGraficas, descripcionTex, fundDesc, null, null);
+				return;
+			}
 
-				JOptionPane.showMessageDialog(ventanaError,
-						"La fecha de inicio no puede ser superior a la fecha final.", "Error de entrada",
-						JOptionPane.ERROR_MESSAGE);
+			try {
 
-				date1 = date2.minusDays(1);
+				Date input = (Date) model1.getValue();
+				date1 = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
+			} catch (NullPointerException e) {
+
+				date1 = fundDesc.getFundVls().get(0).getDay();
 				model1.setDate(date1.getYear(), date1.getMonthValue() - 1, date1.getDayOfMonth());
 
 			}
+			try {
 
-			if (graficasBox.getSelectedItem().equals("Historial Vl")) {
+				Date input = (Date) model2.getValue();
+				date2 = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-				chartMaker.createFundVlLineChart(fundService, panelGraficas, descripcionTex, fundDesc, date1, date2);
+			} catch (NullPointerException e) {
+
+				date2 = fundDesc.getFundVls().get(fundDesc.getFundVls().size() - 1).getDay();
+				model2.setDate(date2.getYear(), date2.getMonthValue() - 1, date2.getDayOfMonth());
 
 			}
-		}
-
-	}
-
-	// Seleccion de una fecha en el calendario hasta
-	private void hastaDateActionPerformed(java.awt.event.ActionEvent evt) {
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
-
-		FundDesc fundDesc = null;
-
-		if (node == null) {
-			return;
-		}
-		Object nodeInfo = node.getUserObject();
-
-		if (nodeInfo.getClass() == tfg.app.model.entities.FundDesc.class) {
-
-			fundDesc = (FundDesc) nodeInfo;
-
-			Date input = (Date) model1.getValue();
-			LocalDate date1 = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-			input = (Date) model2.getValue();
-			LocalDate date2 = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
 			if (date2.compareTo(date1) <= 0) {
 
@@ -2672,6 +2659,7 @@ public class Gui extends javax.swing.JFrame {
 
 				chartMaker.createFundVlLineChart(fundService, panelGraficas, descripcionTex, fundDesc, date1, date2);
 			}
+
 		}
 
 	}
@@ -2831,6 +2819,14 @@ public class Gui extends javax.swing.JFrame {
 
 					LocalDate date1 = fundDesc.getFundVls().get(0).getDay();
 					LocalDate date2 = fundDesc.getFundVls().get(fundDesc.getFundVls().size() - 1).getDay();
+
+					model1.setDate(date1.getYear(), date1.getMonthValue() - 1, date1.getDayOfMonth());
+					model2.setDate(date2.getYear(), date2.getMonthValue() - 1, date2.getDayOfMonth());
+
+				} else {
+
+					LocalDate date1 = LocalDate.now();
+					LocalDate date2 = LocalDate.now();
 
 					model1.setDate(date1.getYear(), date1.getMonthValue() - 1, date1.getDayOfMonth());
 					model2.setDate(date2.getYear(), date2.getMonthValue() - 1, date2.getDayOfMonth());
@@ -3089,6 +3085,8 @@ public class Gui extends javax.swing.JFrame {
 				"Monetario", "Euro", 0.01, 0.02);
 		FundDesc fundDesc7 = new FundDesc("ES0140963002", "Algar Global Fund Fi", "Pinball Wizards", "Alto riesgo",
 				"Monetario", "Euro", 0.01, 0.02);
+		FundDesc fundDesc8 = new FundDesc("ES0116848005", "Fondo Sin Nada", "Pinball Wizards", "Alto riesgo",
+				"Monetario", "Euro", 0.01, 0.02);
 
 		FundPort fundPort1 = new FundPort("Cartera Test 1", "Esto es una cartera de prueba");
 		FundPort fundPort2 = new FundPort("Cartera Test 2", "Esto es una cartera de prueba");
@@ -3141,12 +3139,14 @@ public class Gui extends javax.swing.JFrame {
 			fundService.addFund(fundDesc5);
 			fundService.addFund(fundDesc6);
 			fundService.addFund(fundDesc7);
+			fundService.addFund(fundDesc8);
 
 			fundService.addFundPortfolio(fundPort1);
 			fundService.addFundPortfolio(fundPort2);
 
 			fundService.addPortDesc(fundPort1, fundDesc1);
 			fundService.addPortDesc(fundPort1, fundDesc2);
+			fundService.addPortDesc(fundPort1, fundDesc8);
 
 			fundService.addPortDesc(fundPort2, fundDesc1);
 			fundService.addPortDesc(fundPort2, fundDesc2);

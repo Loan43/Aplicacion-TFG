@@ -1172,9 +1172,17 @@ public class FundServiceImpl implements FundService {
 
 					FundVl fundVl = findLatestFundVl(portOps.get(y).getPortDesc().getFundDesc(), LocalDate.now());
 
-					venta += ((portOps.get(y).getfPartfin() * fundVl.getVl())
-							- (portOps.get(y).getfPartfin() * fundVl.getVl())
-									* portOps.get(y).getPortDesc().getFundDesc().getfCancelComm());
+					if (fundVl == null) {
+
+						venta = compra;
+
+					} else {
+
+						venta += ((portOps.get(y).getfPartfin() * fundVl.getVl())
+								- (portOps.get(y).getfPartfin() * fundVl.getVl())
+										* portOps.get(y).getPortDesc().getFundDesc().getfCancelComm());
+
+					}
 
 				}
 
@@ -1182,7 +1190,7 @@ public class FundServiceImpl implements FundService {
 
 			} else {
 
-				fundDescs.get(x).setProfit(0.0);
+				fundDescs.get(x).setProfit((double) 0);
 
 			}
 

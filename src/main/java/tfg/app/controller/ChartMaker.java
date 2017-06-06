@@ -13,9 +13,12 @@ import javax.swing.JPanel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.time.Day;
@@ -54,8 +57,17 @@ public class ChartMaker {
 		for (int x = 0; x < fundDescs.size(); x++) {
 
 			try {
-				dataset.setValue(fundDescs.get(x).toString(),
-						fundService.findLatestPortOp(fundPort, fundDescs.get(x), LocalDate.now()).getfPrice());
+
+				double vl = 0;
+				FundVl fundVl = fundService.findLatestFundVl(fundDescs.get(x), LocalDate.now());
+
+				if (fundVl != null) {
+					vl = fundVl.getVl();
+				}
+
+				double value = fundService.findLatestPortOp(fundPort, fundDescs.get(x), LocalDate.now()).getfPartfin()
+						* vl;
+				dataset.setValue(fundDescs.get(x).toString(), value);
 			} catch (InstanceNotFoundException e) {
 				continue;
 			}
@@ -250,30 +262,39 @@ public class ChartMaker {
 
 		TimeSeries esperado = new TimeSeries("Vl Esperado");
 
-		FundVl vlInicial = fundDesc.getFundVls().get(0);
+		if (fundDesc.getFundVls().size() != 0) {
 
-		FundVl vlFinal = fundDesc.getFundVls().get(fundDesc.getFundVls().size() - 1);
+			List<FundVl> fundVls = fundService.findFundVlbyRange(fundDesc, LocalDate.parse("2017-01-02"),
+					LocalDate.now());
 
-		double d = vlInicial.getDay().until(vlFinal.getDay(), ChronoUnit.DAYS);
+			if (fundVls.size() != 0) {
 
-		double resultado = (Math.pow(vlFinal.getVl() / vlInicial.getVl(), (1 / d))) - 1;
+				FundVl vlInicial = fundDesc.getFundVls().get(0);
 
-		List<FundVl> fundVls = fundService.findFundVlbyRange(fundDesc, LocalDate.parse("2017-01-02"), LocalDate.now());
+				FundVl vlFinal = fundDesc.getFundVls().get(fundDesc.getFundVls().size() - 1);
 
-		double primero = (fundVls.get(0).getVl());
+				double d = vlInicial.getDay().until(vlFinal.getDay(), ChronoUnit.DAYS);
 
-		double siguiente = primero / (1 + resultado);
+				double resultado = (Math.pow(vlFinal.getVl() / vlInicial.getVl(), (1 / d))) - 1;
 
-		for (int y = 0; y < fundVls.size(); y++) {
+				double primero = (fundVls.get(0).getVl());
 
-			siguiente = siguiente * (1 + resultado);
+				double siguiente = primero / (1 + resultado);
 
-			LocalDate date = fundVls.get(y).getDay();
-			Day day = new Day(date.getDayOfMonth(), date.getMonthValue(), date.getYear());
+				for (int y = 0; y < fundVls.size(); y++) {
 
-			esperado.add(day, siguiente);
+					siguiente = siguiente * (1 + resultado);
 
-			real.add(day, fundVls.get(y).getVl());
+					LocalDate date = fundVls.get(y).getDay();
+					Day day = new Day(date.getDayOfMonth(), date.getMonthValue(), date.getYear());
+
+					esperado.add(day, siguiente);
+
+					real.add(day, fundVls.get(y).getVl());
+
+				}
+
+			}
 
 		}
 
@@ -417,60 +438,114 @@ public class ChartMaker {
 				+ ", para los siguientes períodos de tiempo:\n"
 				+ "Último año fiscal, último semestre, último trimestre y último mes.\n";
 
-		LocalDate today = LocalDate.now();
+		if (fundDesc.getFundVls().size() == 0) {
 
-		// Año
+			string += "\nEl fondo no tiene ningún VL.";
 
-		List<FundVl> fundVls = fundService.findFundVlbyRange(fundDesc,
-				LocalDate.parse(today.minusYears(1).getYear() + "-01-01"),
-				LocalDate.parse(today.minusYears(1).getYear() + "-12-31"));
-
-		if (fundVls.size() >= 300) {
-
-			profit = (fundVls.get(fundVls.size() - 1).getVl() - fundVls.get(0).getVl()) / fundVls.get(0).getVl();
-			bar_chart_dataset.addValue(profit, "Año", "Último año fiscal");
 		} else {
-			string += "\nNo existen suficentes datos para calcular la rentabilidad del último año fiscal ("
-					+ today.minusYears(1).getYear() + "). ";
-		}
 
-		// Semestre
+			LocalDate today = LocalDate.now();
 
-		fundVls = fundService.findFundVlbyRange(fundDesc, today.minusMonths(6), today);
+			// Año
 
-		if (fundVls.size() >= 180) {
-			profit = (fundVls.get(fundVls.size() - 1).getVl() - fundVls.get(0).getVl()) / fundVls.get(0).getVl();
-			bar_chart_dataset.addValue(profit, "Semestre", "Último semestre");
-		} else {
-			string += "\nNo existen suficentes datos para calcular la rentabilidad del último semestre. ";
-		}
+			List<FundVl> fundVls = fundService.findFundVlbyRange(fundDesc,
+					LocalDate.parse(today.minusYears(1).getYear() + "-01-01"),
+					LocalDate.parse(today.minusYears(1).getYear() + "-12-31"));
 
-		// Trimestre
+			if (fundVls.size() != 0) {
 
-		fundVls = fundService.findFundVlbyRange(fundDesc, today.minusMonths(3), today);
+				double d = fundVls.get(0).getDay().until(fundVls.get(fundVls.size() - 1).getDay(), ChronoUnit.DAYS);
 
-		if (fundVls.size() >= 90) {
-			profit = (fundVls.get(fundVls.size() - 1).getVl() - fundVls.get(0).getVl()) / fundVls.get(0).getVl();
-			bar_chart_dataset.addValue(profit, "Trimestre", "Último trimestre");
-		} else {
-			string += "\nNo existen suficentes datos para calcular la rentabilidad del último trimestre. ";
-		}
+				if (d >= 175) {
 
-		// Mes
+					profit = (fundVls.get(fundVls.size() - 1).getVl() - fundVls.get(0).getVl())
+							/ fundVls.get(0).getVl();
+					bar_chart_dataset.addValue(profit, "Año", "Último año fiscal");
+				} else {
+					string += "\nNo existen suficentes datos para calcular la rentabilidad del último año fiscal ("
+							+ today.minusYears(1).getYear() + "). ";
+				}
 
-		fundVls = fundService.findFundVlbyRange(fundDesc, today.minusMonths(1), today);
+			} else {
+				string += "\nNo existen datos del último año fiscal (" + today.minusYears(1).getYear() + "). ";
 
-		if (fundVls.size() >= 30) {
-			profit = (fundVls.get(fundVls.size() - 1).getVl() - fundVls.get(0).getVl()) / fundVls.get(0).getVl();
-			bar_chart_dataset.addValue(profit, "Mes", "Último mes");
-		} else {
-			string += "\nNo existen suficentes datos para calcular la rentabilidad del último mes. ";
+			}
+
+			// Semestre
+
+			fundVls = fundService.findFundVlbyRange(fundDesc, today.minusMonths(6), today);
+
+			if (fundVls.size() != 0) {
+
+				double d = fundVls.get(0).getDay().until(fundVls.get(fundVls.size() - 1).getDay(), ChronoUnit.DAYS);
+
+				if (d >= 90) {
+					profit = (fundVls.get(fundVls.size() - 1).getVl() - fundVls.get(0).getVl())
+							/ fundVls.get(0).getVl();
+					bar_chart_dataset.addValue(profit, "Semestre", "Último semestre");
+				} else {
+					string += "\nNo existen suficentes datos para calcular la rentabilidad del último semestre. ";
+				}
+
+			} else {
+				string += "\nNo existen datos del último semestre. ";
+
+			}
+			// Trimestre
+
+			fundVls = fundService.findFundVlbyRange(fundDesc, today.minusMonths(3), today);
+
+			if (fundVls.size() != 0) {
+
+				double d = fundVls.get(0).getDay().until(fundVls.get(fundVls.size() - 1).getDay(), ChronoUnit.DAYS);
+
+				if (d >= 45) {
+					profit = (fundVls.get(fundVls.size() - 1).getVl() - fundVls.get(0).getVl())
+							/ fundVls.get(0).getVl();
+					bar_chart_dataset.addValue(profit, "Trimestre", "Último trimestre");
+				} else {
+					string += "\nNo existen suficentes datos para calcular la rentabilidad del último trimestre. ";
+				}
+			} else {
+				string += "\nNo existen datos del último trimestre. ";
+
+			}
+
+			// Mes
+
+			fundVls = fundService.findFundVlbyRange(fundDesc, today.minusMonths(1), today);
+
+			if (fundVls.size() != 0) {
+
+				double d = fundVls.get(0).getDay().until(fundVls.get(fundVls.size() - 1).getDay(), ChronoUnit.DAYS);
+
+				if (d >= 15) {
+					profit = (fundVls.get(fundVls.size() - 1).getVl() - fundVls.get(0).getVl())
+							/ fundVls.get(0).getVl();
+					bar_chart_dataset.addValue(profit, "Mes", "Último mes");
+				} else {
+					string += "\nNo existen suficentes datos para calcular la rentabilidad del último mes. ";
+				}
+			} else {
+				string += "\nNo existen datos del último mes. ";
+
+			}
 		}
 
 		JFreeChart barChart = ChartFactory.createBarChart("Rentabilidades", "Fondo", "Rentabilidad", bar_chart_dataset,
 				PlotOrientation.VERTICAL, true, true, false);
 
+		CategoryPlot cplot = (CategoryPlot) barChart.getPlot();
+		cplot.setBackgroundPaint(Color.DARK_GRAY);
+		cplot.setOutlinePaint(Color.BLUE);
+
+		((BarRenderer) cplot.getRenderer()).setBarPainter(new StandardBarPainter());
+
+		BarRenderer r = (BarRenderer) barChart.getCategoryPlot().getRenderer();
+		r.setSeriesPaint(0, Color.CYAN);
+
 		ChartPanel CP = new ChartPanel(barChart);
+
 		panel.removeAll();
 		panel.updateUI();
 		panel.setLayout(new java.awt.BorderLayout());
@@ -504,7 +579,7 @@ public class ChartMaker {
 		}
 
 		for (int x = fundDescs.size() - 1; x >= 0 && x >= fundDescs.size() - 5; x--) {
-			if (fundDescs.get(x).getProfit() <= 0) {
+			if (fundDescs.get(x).getProfit() < 0) {
 
 				bar_chart_dataset.addValue(fundDescs.get(x).getProfit(), fundDescs.get(x).getfName(),
 						"Menos rentables");
@@ -515,7 +590,17 @@ public class ChartMaker {
 		JFreeChart barChart = ChartFactory.createBarChart("Rentabilidades", "Fondo", "Rentabilidad", bar_chart_dataset,
 				PlotOrientation.VERTICAL, true, true, false);
 
+		CategoryPlot cplot = (CategoryPlot) barChart.getPlot();
+		cplot.setBackgroundPaint(Color.DARK_GRAY);
+		cplot.setOutlinePaint(Color.BLUE);
+
+		((BarRenderer) cplot.getRenderer()).setBarPainter(new StandardBarPainter());
+
+		BarRenderer r = (BarRenderer) barChart.getCategoryPlot().getRenderer();
+		r.setSeriesPaint(0, Color.CYAN);
+
 		ChartPanel CP = new ChartPanel(barChart);
+
 		panel.removeAll();
 		panel.updateUI();
 		panel.setLayout(new java.awt.BorderLayout());
