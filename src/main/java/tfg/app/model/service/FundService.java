@@ -213,7 +213,8 @@ public interface FundService {
 	 *
 	 * @param
 	 */
-	public List<FundDesc> getProfitOfFundsOfPortfolio(FundPort fundPort) throws InstanceNotFoundException;
+	public List<FundDesc> getProfitOfFundsOfPortfolio(FundPort fundPort, LocalDate date)
+			throws InstanceNotFoundException;
 
 	// ################################################################
 	// #
@@ -291,7 +292,7 @@ public interface FundService {
 	 *
 	 * @param
 	 */
-	public List<PortOp> findAllPortOpbyRange(FundPort fundPort, FundDesc fundDesc, LocalDate startDay, LocalDate endDay,
+	public List<PortOp> findAllPortOpByRange(FundPort fundPort, FundDesc fundDesc, LocalDate startDay, LocalDate endDay,
 			int flag) throws InstanceNotFoundException;
 
 	/**

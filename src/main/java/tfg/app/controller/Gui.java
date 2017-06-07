@@ -1815,7 +1815,7 @@ public class Gui extends javax.swing.JFrame {
 		if (nodeInfo.getClass() == tfg.app.model.entities.FundPort.class) {
 
 			graficasBox.setModel(new javax.swing.DefaultComboBoxModel<>(
-					new String[] { "Distribución", "Fondos Norm", "Rentabilidad" }));
+					new String[] { "Distribución", "Fondos Norm", "Rent de los fondos", "Rent total" }));
 
 			graficasBox.setSelectedItem("Distribución");
 			graficasBox.setVisible(true);
@@ -2922,10 +2922,23 @@ public class Gui extends javax.swing.JFrame {
 					}
 				}
 
-				if (graficasBox.getSelectedItem().equals("Rentabilidad")) {
+				if (graficasBox.getSelectedItem().equals("Rent de los fondos")) {
 
 					try {
 						chartMaker.createPortfolioProfitBarChart(fundService, panelGraficas, descripcionTex, fundPort);
+					} catch (InstanceNotFoundException e) {
+						JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de base de datos",
+								JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+
+				}
+
+				if (graficasBox.getSelectedItem().equals("Rent total")) {
+
+					try {
+						chartMaker.createProfitOfPortfolioLineChart(fundService, panelGraficas, descripcionTex,
+								fundPort, LocalDate.now().minusDays(30), LocalDate.now());
 					} catch (InstanceNotFoundException e) {
 						JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de base de datos",
 								JOptionPane.ERROR_MESSAGE);
@@ -2961,86 +2974,94 @@ public class Gui extends javax.swing.JFrame {
 
 		int size = fundDesc.getFundVls().size();
 
-		for (int x = 0; x < size; x++) {
+		if (size == 0) {
 
-			sumatoria = sumatoria + fundDesc.getFundVls().get(x).getVl();
+			varDesc.setText("Desviación estandar: El fondo no tiene ningún vl.");
+			drawDesc.setText("Máximo Drawdown: El fondo no tiene ningún vl.");
 
-		}
+		} else {
 
-		double media = sumatoria / size;
+			for (int x = 0; x < size; x++) {
 
-		double varianza = 0;
-		for (int i = 0; i < size; i++) {
-			double rango;
-			rango = Math.pow(fundDesc.getFundVls().get(i).getVl() - media, 2);
-			varianza = varianza + rango;
-		}
-
-		varianza = varianza / size;
-
-		double desviacion = Math.sqrt(varianza);
-
-		varDesc.setText("Desviación estandar: " + String.format("%.3f", desviacion));
-
-		int maxRelativo = 0;
-		int minRelativo = 0;
-		int maxFinal = 0;
-		int minFinal = 0;
-
-		for (int x = 0; x < fundDesc.getFundVls().size(); x++) {
-
-			if (fundDesc.getFundVls().get(x).getVl() >= fundDesc.getFundVls().get(maxRelativo).getVl()) {
-
-				maxRelativo = x;
-				minRelativo = x;
-
-			} else {
-				// mientras
-				int y = 0;
-				for (y = x; ((y < fundDesc.getFundVls().size()) && (fundDesc.getFundVls().get(maxRelativo)
-						.getVl() >= fundDesc.getFundVls().get(y).getVl())); y++) {
-
-					if (fundDesc.getFundVls().get(y).getVl() <= fundDesc.getFundVls().get(minRelativo).getVl()) {
-
-						minRelativo = y;
-
-					}
-
-				}
-
-				if (y != fundDesc.getFundVls().size()) {
-
-					if ((fundDesc.getFundVls().get(maxRelativo).getVl() - fundDesc.getFundVls().get(minRelativo)
-							.getVl()) > (fundDesc.getFundVls().get(maxFinal).getVl()
-									- fundDesc.getFundVls().get(minFinal).getVl())) {
-
-						maxFinal = maxRelativo;
-						minFinal = minRelativo;
-
-					}
-				}
-
-				maxRelativo = y;
-				minRelativo = y;
-				x = y;
+				sumatoria = sumatoria + fundDesc.getFundVls().get(x).getVl();
 
 			}
 
-		}
+			double media = sumatoria / size;
 
-		if (maxFinal == 0 && minFinal == 0) {
+			double varianza = 0;
+			for (int i = 0; i < size; i++) {
+				double rango;
+				rango = Math.pow(fundDesc.getFundVls().get(i).getVl() - media, 2);
+				varianza = varianza + rango;
+			}
 
-			drawDesc.setText("Máximo Drawdown: No se ha podido calcular para este fondo.");
+			varianza = varianza / size;
 
-		} else {
-			drawDesc.setText(
-					"Máximo Drawdown: "
-							+ String.format("%.3f",
-									((fundDesc.getFundVls().get(minFinal).getVl()
-											- fundDesc.getFundVls().get(maxFinal).getVl())
-											/ fundDesc.getFundVls().get(maxFinal).getVl()) * 100)
-							+ "% entre los días: " + fundDesc.getFundVls().get(maxFinal).getDay() + " y "
-							+ fundDesc.getFundVls().get(minFinal).getDay());
+			double desviacion = Math.sqrt(varianza);
+
+			varDesc.setText("Desviación estandar: " + String.format("%.3f", desviacion));
+
+			int maxRelativo = 0;
+			int minRelativo = 0;
+			int maxFinal = 0;
+			int minFinal = 0;
+
+			for (int x = 0; x < size; x++) {
+
+				if (fundDesc.getFundVls().get(x).getVl() >= fundDesc.getFundVls().get(maxRelativo).getVl()) {
+
+					maxRelativo = x;
+					minRelativo = x;
+
+				} else {
+					// mientras
+					int y = 0;
+					for (y = x; ((y < fundDesc.getFundVls().size()) && (fundDesc.getFundVls().get(maxRelativo)
+							.getVl() >= fundDesc.getFundVls().get(y).getVl())); y++) {
+
+						if (fundDesc.getFundVls().get(y).getVl() <= fundDesc.getFundVls().get(minRelativo).getVl()) {
+
+							minRelativo = y;
+
+						}
+
+					}
+
+					if (y != size) {
+
+						if ((fundDesc.getFundVls().get(maxRelativo).getVl() - fundDesc.getFundVls().get(minRelativo)
+								.getVl()) > (fundDesc.getFundVls().get(maxFinal).getVl()
+										- fundDesc.getFundVls().get(minFinal).getVl())) {
+
+							maxFinal = maxRelativo;
+							minFinal = minRelativo;
+
+						}
+					}
+
+					maxRelativo = y;
+					minRelativo = y;
+					x = y;
+
+				}
+
+			}
+
+			if (maxFinal == 0 && minFinal == 0) {
+
+				drawDesc.setText("Máximo Drawdown: No se ha podido calcular para este fondo.");
+
+			} else {
+				drawDesc.setText("Máximo Drawdown: "
+						+ String.format("%.3f",
+								((fundDesc.getFundVls().get(minFinal).getVl()
+										- fundDesc.getFundVls().get(maxFinal).getVl())
+										/ fundDesc.getFundVls().get(maxFinal).getVl()) * 100)
+						+ "% entre los días: " + fundDesc.getFundVls().get(maxFinal).getDay() + " y "
+						+ fundDesc.getFundVls().get(minFinal).getDay());
+			}
+
 		}
 
 		javax.swing.GroupLayout panelLayout = new javax.swing.GroupLayout(panel);
@@ -3091,10 +3112,10 @@ public class Gui extends javax.swing.JFrame {
 		FundPort fundPort1 = new FundPort("Cartera Test 1", "Esto es una cartera de prueba");
 		FundPort fundPort2 = new FundPort("Cartera Test 2", "Esto es una cartera de prueba");
 
-		LocalDate date = LocalDate.parse("2015-05-30");
+		LocalDate date = LocalDate.parse("2014-01-01");
 		double start = 100.0;
 
-		for (int x = 0; x < 1000; x++) {
+		while (date.isBefore(LocalDate.now())) {
 			date = date.plusDays(1);
 			fundDesc1.getFundVls()
 					.add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1, 1), fundDesc1));
@@ -3106,10 +3127,10 @@ public class Gui extends javax.swing.JFrame {
 					.add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1, 1), fundDesc7));
 		}
 
-		date = LocalDate.parse("2016-05-30");
+		date = LocalDate.parse("2015-05-30");
 		start = 70.0;
 
-		for (int x = 0; x < 400; x++) {
+		while (date.isBefore(LocalDate.now())) {
 			date = date.plusDays(1);
 			fundDesc2.getFundVls()
 					.add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1, 1), fundDesc2));

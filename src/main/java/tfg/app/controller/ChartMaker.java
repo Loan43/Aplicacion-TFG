@@ -74,8 +74,8 @@ public class ChartMaker {
 
 		}
 
-		JFreeChart chart = ChartFactory.createPieChart("Participaciones de la cartera " + fundPort.getpName(), dataset,
-				true, true, false);
+		JFreeChart chart = ChartFactory.createPieChart("Capital invertido de la cartera " + fundPort.getpName(),
+				dataset, true, true, false);
 
 		PiePlot plot = (PiePlot) chart.getPlot();
 
@@ -93,6 +93,66 @@ public class ChartMaker {
 		panel.validate();
 
 		description.setText("Gráfica de la distrubución del capital de la cartera " + fundPort.getpName());
+	}
+
+	/**
+	 * Crea una gráfica de lineas con la rentabilidad diaria en conjunto de la cartera.
+	 * 
+	 * @param
+	 * @throws InstanceNotFoundException
+	 */
+
+	public void createProfitOfPortfolioLineChart(FundService fundService, JPanel panel, JEditorPane description,
+			FundPort fundPort, LocalDate start, LocalDate end) throws InstanceNotFoundException {
+
+		List<FundDesc> fundDescs = null;
+		double total = 0;
+
+		TimeSeries series = new TimeSeries("Rentabilidad total");
+
+		for (int x = 0; start.plusDays(x).compareTo(end) < 0; x++) {
+
+			fundDescs = fundService.getProfitOfFundsOfPortfolio(fundPort, start.plusDays(x));
+			total = 0;
+
+			for (int i = 0; i < fundDescs.size(); i++) {
+
+				total = total + fundDescs.get(i).getProfit();
+
+			}
+			LocalDate date = start.plusDays(x);
+			Day day = new Day(date.getDayOfMonth(), date.getMonthValue(), date.getYear());
+			series.add(day, total);
+
+		}
+
+		final TimeSeriesCollection data = new TimeSeriesCollection(series);
+
+		final JFreeChart chart = ChartFactory.createTimeSeriesChart("Rentabilidad total de la cartera", "Fecha",
+				"Rentabilidad (%)", data, true, true, false);
+
+		XYPlot plot = (XYPlot) chart.getPlot();
+
+		plot.getRenderer().setSeriesPaint(0, Color.BLUE);
+
+		plot.setOutlinePaint(Color.BLUE);
+		plot.setOutlineStroke(new BasicStroke(2.0f));
+
+		plot.setBackgroundPaint(Color.DARK_GRAY);
+
+		plot.setRangeGridlinesVisible(true);
+		plot.setRangeGridlinePaint(Color.BLACK);
+
+		plot.setDomainGridlinesVisible(true);
+		plot.setDomainGridlinePaint(Color.BLACK);
+
+		ChartPanel CP = new ChartPanel(chart);
+		panel.removeAll();
+		panel.updateUI();
+		panel.setLayout(new java.awt.BorderLayout());
+		panel.add(CP, BorderLayout.CENTER);
+
+		description.setText("Gráfica de la rentabilidad total del capital de la cartera " + fundPort.getpName());
 	}
 
 	/**
@@ -557,7 +617,7 @@ public class ChartMaker {
 
 	/**
 	 * Crea una gráfica de barras que muestra los cinco fondos más y menos
-	 * rentables de la cartera.
+	 * rentables de la cartera en el día de hoy.
 	 * 
 	 * @param
 	 */
@@ -566,7 +626,7 @@ public class ChartMaker {
 
 		List<FundDesc> fundDescs = null;
 
-		fundDescs = fundService.getProfitOfFundsOfPortfolio(fundPort);
+		fundDescs = fundService.getProfitOfFundsOfPortfolio(fundPort, LocalDate.now());
 
 		DefaultCategoryDataset bar_chart_dataset = new DefaultCategoryDataset();
 

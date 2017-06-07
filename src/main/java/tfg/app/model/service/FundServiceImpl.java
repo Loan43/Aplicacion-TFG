@@ -52,6 +52,7 @@ public class FundServiceImpl implements FundService {
 
 	private SessionFactory sessionFactory;
 	private Transaction tx;
+	private LocalDate firstDate = LocalDate.parse("1950-01-01");
 
 	public FundServiceImpl() {
 		sessionFactory = new Configuration().configure().buildSessionFactory();
@@ -70,6 +71,7 @@ public class FundServiceImpl implements FundService {
 	private void validateFundVl(FundVl fundVl) throws InputValidationException {
 
 		PropertyValidator.validateNotNegativeDouble(fundVl.getVl());
+		PropertyValidator.validateNotFutureDate(fundVl.getDay());
 
 	}
 
@@ -77,9 +79,10 @@ public class FundServiceImpl implements FundService {
 		// Flag = 0 para validar add.
 		// Flag != 0 para validar remove.
 		PropertyValidator.validateNotZeroInt(portOp.getfPartOp());
+		PropertyValidator.validateNotFutureDate(portOp.getDay());
 
-		List<PortOp> fundPortOpList = findAllPortOpbyRange(portOp.getPortDesc().getFundPort(),
-				portOp.getPortDesc().getFundDesc(), LocalDate.parse("1950-01-01"), portOp.getDay().minusDays(1), 0);
+		List<PortOp> fundPortOpList = findAllPortOpByRange(portOp.getPortDesc().getFundPort(),
+				portOp.getPortDesc().getFundDesc(), firstDate, portOp.getDay().minusDays(1), 0);
 
 		int i = 0;
 
@@ -98,7 +101,7 @@ public class FundServiceImpl implements FundService {
 
 		}
 
-		fundPortOpList = findAllPortOpbyRange(portOp.getPortDesc().getFundPort(), portOp.getPortDesc().getFundDesc(),
+		fundPortOpList = findAllPortOpByRange(portOp.getPortDesc().getFundPort(), portOp.getPortDesc().getFundDesc(),
 				portOp.getDay().plusDays(1), LocalDate.parse("2150-01-01"), 0);
 
 		for (int x = 0; x < fundPortOpList.size(); x++) {
@@ -774,7 +777,7 @@ public class FundServiceImpl implements FundService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<PortOp> findAllPortOpbyRange(FundPort fundPort, FundDesc fundDesc, LocalDate startDay, LocalDate endDay,
+	public List<PortOp> findAllPortOpByRange(FundPort fundPort, FundDesc fundDesc, LocalDate startDay, LocalDate endDay,
 			int flag) {
 		// Con flag = 0 devuelve los objetos PortOp sin rellenar sus campos
 		// Con flag != 0 devuelve los objetos PortOp rellenando sus campos
@@ -849,8 +852,8 @@ public class FundServiceImpl implements FundService {
 
 	private PortOp calculatePortOp(PortOp portOp) {
 
-		List<PortOp> fundPortOpList = findAllPortOpbyRange(portOp.getPortDesc().getFundPort(),
-				portOp.getPortDesc().getFundDesc(), LocalDate.parse("1950-01-01"), portOp.getDay(), 0);
+		List<PortOp> fundPortOpList = findAllPortOpByRange(portOp.getPortDesc().getFundPort(),
+				portOp.getPortDesc().getFundDesc(), firstDate, portOp.getDay(), 0);
 
 		int i = 0;
 
@@ -1138,14 +1141,15 @@ public class FundServiceImpl implements FundService {
 	}
 
 	@Override
-	public List<FundDesc> getProfitOfFundsOfPortfolio(FundPort fundPort) throws InstanceNotFoundException {
+	public List<FundDesc> getProfitOfFundsOfPortfolio(FundPort fundPort, LocalDate date)
+			throws InstanceNotFoundException {
 
 		List<FundDesc> fundDescs = findFundsOfPortfolio(fundPort);
 		List<PortOp> portOps = null;
 
 		for (int x = 0; x < fundDescs.size(); x++) {
 
-			portOps = findAllPortOp(fundPort, fundDescs.get(x));
+			portOps = findAllPortOpByRange(fundPort, fundDescs.get(x), firstDate, date, 1);
 
 			Double compra = 0.0;
 			Double venta = -0.0;
@@ -1170,7 +1174,7 @@ public class FundServiceImpl implements FundService {
 				venta = venta * -1;
 				if (portOps.get(y).getfPartfin() != 0) {
 
-					FundVl fundVl = findLatestFundVl(portOps.get(y).getPortDesc().getFundDesc(), LocalDate.now());
+					FundVl fundVl = findLatestFundVl(portOps.get(y).getPortDesc().getFundDesc(), date);
 
 					if (fundVl == null) {
 

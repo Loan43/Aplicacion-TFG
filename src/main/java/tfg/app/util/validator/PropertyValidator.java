@@ -1,5 +1,7 @@
 package tfg.app.util.validator;
 
+import java.time.LocalDate;
+
 import tfg.app.util.exceptions.InputValidationException;
 
 public final class PropertyValidator {
@@ -14,11 +16,19 @@ public final class PropertyValidator {
 		}
 
 	}
-	
+
 	public static void validateNotZeroInt(int intValue) throws InputValidationException {
 
 		if (intValue == 0) {
 			throw new InputValidationException("Operación inválida (Debe ser distinta a 0): " + intValue);
+		}
+
+	}
+
+	public static void validateNotFutureDate(LocalDate date) throws InputValidationException {
+
+		if (date.isAfter(LocalDate.now())) {
+			throw new InputValidationException("Error en la fecha, no puede ser posterior al día de hoy: " + date);
 		}
 
 	}

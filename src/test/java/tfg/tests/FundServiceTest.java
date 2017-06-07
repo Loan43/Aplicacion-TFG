@@ -55,9 +55,9 @@ public class FundServiceTest {
 
 		FundDesc fund = new FundDesc(VALID_FOUND_ID_1, "Fondo 1", "Pinball Wizards", "Alto riesgo", "Monetario", "Euro",
 				0.01, 0.02);
-		fund.getFundVls().add(getValidFundVl("2020-04-20", fund));
-		fund.getFundVls().add(getValidFundVl("2020-04-21", fund));
-		fund.getFundVls().add(getValidFundVl("2020-04-22", fund));
+		fund.getFundVls().add(getValidFundVl("2010-04-20", fund));
+		fund.getFundVls().add(getValidFundVl("2010-04-21", fund));
+		fund.getFundVls().add(getValidFundVl("2010-04-22", fund));
 
 		return fund;
 	}
@@ -67,7 +67,7 @@ public class FundServiceTest {
 		FundDesc fund = new FundDesc(VALID_FOUND_ID_1, "Fondo 1", "Pinball Wizards", "Alto riesgo", "Monetario", "Euro",
 				0.01, 0.02);
 
-		LocalDate date = LocalDate.parse("2020-04-20");
+		LocalDate date = LocalDate.parse("2010-04-20");
 
 		for (int x = 0; x < 1250; x++) {
 			date = date.plusDays(1);
@@ -134,7 +134,7 @@ public class FundServiceTest {
 		try {
 			fundService.addFund(baseFound);
 
-			FundVl fundVl = getValidFundVl("2020-04-20", baseFound);
+			FundVl fundVl = getValidFundVl("2010-04-20", baseFound);
 
 			fundService.addFundVl(fundVl);
 
@@ -186,8 +186,8 @@ public class FundServiceTest {
 
 		fundService.addFund(baseFound);
 
-		fundService.addFundVl((getValidFundVl("2020-04-27", baseFound)));
-		fundService.addFundVl((getValidFundVl("2020-04-28", baseFound)));
+		fundService.addFundVl((getValidFundVl("2010-04-27", baseFound)));
+		fundService.addFundVl((getValidFundVl("2010-04-28", baseFound)));
 
 		FundDesc findFound = fundService.findFund(baseFound.getfId());
 
@@ -204,7 +204,7 @@ public class FundServiceTest {
 
 		fundService.addFund(addedFound);
 
-		FundVl vl = fundService.findFundVl(addedFound, LocalDate.parse("2020-04-20"));
+		FundVl vl = fundService.findFundVl(addedFound, LocalDate.parse("2010-04-20"));
 		fundService.removeFund(addedFound);
 		assertTrue(vl.getVl() == 25.00);
 
@@ -347,8 +347,8 @@ public class FundServiceTest {
 		FundDesc addedFound = this.getValidFundDesc();
 
 		fundService.addFund(addedFound);
-		List<FundVl> vlList = fundService.findFundVlbyRange(addedFound, LocalDate.parse("2020-04-20"),
-				LocalDate.parse("2020-05-01"));
+		List<FundVl> vlList = fundService.findFundVlbyRange(addedFound, LocalDate.parse("2010-04-20"),
+				LocalDate.parse("2010-05-01"));
 
 		Boolean bool = true;
 
@@ -357,14 +357,14 @@ public class FundServiceTest {
 				bool = false;
 			}
 		}
-		vlList = fundService.findFundVlbyRange(addedFound, LocalDate.parse("2021-04-20"),
-				LocalDate.parse("2021-05-01"));
+		vlList = fundService.findFundVlbyRange(addedFound, LocalDate.parse("2011-04-20"),
+				LocalDate.parse("2011-05-01"));
 
 		if (vlList.size() != 0)
 			bool = false;
 
-		vlList = fundService.findFundVlbyRange(addedFound, LocalDate.parse("2020-04-20"),
-				LocalDate.parse("2020-04-21"));
+		vlList = fundService.findFundVlbyRange(addedFound, LocalDate.parse("2010-04-20"),
+				LocalDate.parse("2010-04-21"));
 
 		if (vlList.size() != 2)
 			bool = false;
@@ -390,7 +390,7 @@ public class FundServiceTest {
 
 		fundService.addFund(addedFound);
 
-		fundService.removeFundVl(new FundVl(addedFound, LocalDate.parse("2020-04-20")));
+		fundService.removeFundVl(new FundVl(addedFound, LocalDate.parse("2010-04-20")));
 
 		FundDesc findFund = fundService.findFund(addedFound.getfId());
 
@@ -408,7 +408,7 @@ public class FundServiceTest {
 		fundService.addFund(addedFound);
 
 		try {
-			fundService.removeFundVl(new FundVl(addedFound, LocalDate.parse("2027-04-22")));
+			fundService.removeFundVl(new FundVl(addedFound, LocalDate.parse("2017-04-22")));
 		} catch (InstanceNotFoundException e) {
 			throw new InstanceNotFoundException(addedFound.getfId(), "foundVl");
 		} finally {
@@ -425,7 +425,7 @@ public class FundServiceTest {
 
 		fundService.addFund(baseFound);
 
-		FundVl fundVl = getValidFundVl("2020-04-22", baseFound);
+		FundVl fundVl = getValidFundVl("2010-04-22", baseFound);
 
 		fundVl.setVl(23.23);
 
@@ -447,7 +447,7 @@ public class FundServiceTest {
 
 		fundService.addFund(baseFound);
 
-		FundVl fundVl = getValidFundVl("2020-04-30", baseFound);
+		FundVl fundVl = getValidFundVl("2010-04-30", baseFound);
 
 		fundVl.setVl(23.23);
 
@@ -469,7 +469,7 @@ public class FundServiceTest {
 
 		fundService.addFund(baseFound);
 
-		FundVl fundVl = getValidFundVl("2020-04-30", baseFound);
+		FundVl fundVl = getValidFundVl("2010-04-30", baseFound);
 
 		fundVl.setVl(-23.2);
 
@@ -491,9 +491,29 @@ public class FundServiceTest {
 
 		fundService.addFund(baseFound);
 
-		FundVl fundVl = getValidFundVl("2020-04-30", baseFound);
+		FundVl fundVl = getValidFundVl("2010-04-30", baseFound);
 
 		fundVl.setVl(-23.2);
+
+		try {
+			fundService.addFundVl(fundVl);
+		} catch (InputValidationException e) {
+			throw new InputValidationException(e.getMessage());
+		} finally {
+
+			fundService.removeFund(baseFound);
+		}
+
+	}
+
+	@Test(expected = InputValidationException.class)
+	public void testAddFutureDateFundVl() throws InputValidationException, InstanceNotFoundException, ParseException {
+
+		FundDesc baseFound = this.getValidFundDesc();
+
+		fundService.addFund(baseFound);
+
+		FundVl fundVl = getValidFundVl(LocalDate.now().plusDays(1).toString(), baseFound);
 
 		try {
 			fundService.addFundVl(fundVl);
@@ -793,20 +813,20 @@ public class FundServiceTest {
 
 		boolean bool = true;
 
-		if (!fundService.findLatestFundVl(addedFound, LocalDate.parse("2020-04-20")).getDay().toString()
-				.equals("2020-04-20")) {
+		if (!fundService.findLatestFundVl(addedFound, LocalDate.parse("2010-04-20")).getDay().toString()
+				.equals("2010-04-20")) {
 			bool = false;
 		}
-		if (!fundService.findLatestFundVl(addedFound, LocalDate.parse("2020-04-21")).getDay().toString()
-				.equals("2020-04-21")) {
+		if (!fundService.findLatestFundVl(addedFound, LocalDate.parse("2010-04-21")).getDay().toString()
+				.equals("2010-04-21")) {
 			bool = false;
 		}
-		if (!fundService.findLatestFundVl(addedFound, LocalDate.parse("2020-04-22")).getDay().toString()
-				.equals("2020-04-22")) {
+		if (!fundService.findLatestFundVl(addedFound, LocalDate.parse("2010-04-22")).getDay().toString()
+				.equals("2010-04-22")) {
 			bool = false;
 		}
-		if (!fundService.findLatestFundVl(addedFound, LocalDate.parse("2020-04-29")).getDay().toString()
-				.equals("2020-04-22")) {
+		if (!fundService.findLatestFundVl(addedFound, LocalDate.parse("2010-04-29")).getDay().toString()
+				.equals("2010-04-22")) {
 			bool = false;
 		}
 
@@ -824,7 +844,7 @@ public class FundServiceTest {
 
 		fundService.addFund(addedFound);
 
-		FundVl fundVl = fundService.findLatestFundVl(addedFound, LocalDate.parse("2020-04-17"));
+		FundVl fundVl = fundService.findLatestFundVl(addedFound, LocalDate.parse("2010-04-17"));
 
 		fundService.removeFund(addedFound);
 
@@ -877,11 +897,11 @@ public class FundServiceTest {
 		fundService.addPortDesc(fundPortfolio1, addedFound1);
 		fundService.addPortDesc(fundPortfolio1, addedFound2);
 
-		PortOp portOp1 = getValidPortOp("2020-04-30", fundPortfolio1, addedFound2);
+		PortOp portOp1 = getValidPortOp("2010-04-30", fundPortfolio1, addedFound2);
 
 		fundService.addPortOp(portOp1);
 
-		PortOp findPortOp = fundService.findPortOp(fundPortfolio1, addedFound2, LocalDate.parse("2020-04-30"));
+		PortOp findPortOp = fundService.findPortOp(fundPortfolio1, addedFound2, LocalDate.parse("2010-04-30"));
 
 		fundService.removeFundPortfolio(fundPortfolio1);
 		fundService.removeFund(addedFound1);
@@ -907,18 +927,18 @@ public class FundServiceTest {
 		fundService.addFund(addedFound1);
 		fundService.addFund(addedFound2);
 
-		FundVl fundVl = getValidFundVl("2020-01-01", addedFound1);
+		FundVl fundVl = getValidFundVl("2010-01-01", addedFound1);
 
 		fundService.addFundVl(fundVl);
 
-		FundVl fundVl2 = getValidFundVl("2020-01-01", addedFound2);
+		FundVl fundVl2 = getValidFundVl("2010-01-01", addedFound2);
 
 		fundService.addFundVl(fundVl2);
 
 		fundService.addPortDesc(fundPortfolio1, addedFound1);
 		fundService.addPortDesc(fundPortfolio1, addedFound2);
 
-		PortOp portOp1 = getValidPortOp("2020-04-17", fundPortfolio1, addedFound2);
+		PortOp portOp1 = getValidPortOp("2010-04-17", fundPortfolio1, addedFound2);
 
 		fundService.addPortOp(portOp1);
 
@@ -926,7 +946,7 @@ public class FundServiceTest {
 
 		fundService.UpdatePortOp(portOp1);
 
-		PortOp findPortOp = fundService.findPortOp(fundPortfolio1, addedFound2, LocalDate.parse("2020-04-17"));
+		PortOp findPortOp = fundService.findPortOp(fundPortfolio1, addedFound2, LocalDate.parse("2010-04-17"));
 
 		fundService.removePortOp(findPortOp);
 		fundService.removeFundPortfolio(fundPortfolio1);
@@ -949,15 +969,15 @@ public class FundServiceTest {
 
 		fundService.addPortDesc(fundPortfolio1, addedFound1);
 
-		PortOp portOp1 = getValidPortOp("2020-04-20", fundPortfolio1, addedFound1);
+		PortOp portOp1 = getValidPortOp("2010-04-20", fundPortfolio1, addedFound1);
 
 		fundService.addPortOp(portOp1);
 
-		PortOp portOp2 = getValidPortOp("2020-04-22", fundPortfolio1, addedFound1);
+		PortOp portOp2 = getValidPortOp("2010-04-22", fundPortfolio1, addedFound1);
 
 		fundService.addPortOp(portOp2);
 
-		PortOp portOp3 = getValidPortOp("2020-04-23", fundPortfolio1, addedFound1);
+		PortOp portOp3 = getValidPortOp("2010-04-23", fundPortfolio1, addedFound1);
 		portOp3.setfPartOp(-200);
 
 		fundService.addPortOp(portOp3);
@@ -990,15 +1010,15 @@ public class FundServiceTest {
 
 		fundService.addPortDesc(fundPortfolio1, addedFound1);
 
-		PortOp portOp1 = getValidPortOp("2020-04-20", fundPortfolio1, addedFound1);
+		PortOp portOp1 = getValidPortOp("2010-04-20", fundPortfolio1, addedFound1);
 
 		fundService.addPortOp(portOp1);
 
-		PortOp portOp2 = getValidPortOp("2020-04-22", fundPortfolio1, addedFound1);
+		PortOp portOp2 = getValidPortOp("2010-04-22", fundPortfolio1, addedFound1);
 
 		fundService.addPortOp(portOp2);
 
-		PortOp portOp3 = getValidPortOp("2020-04-23", fundPortfolio1, addedFound1);
+		PortOp portOp3 = getValidPortOp("2010-04-23", fundPortfolio1, addedFound1);
 		portOp3.setfPartOp(-200);
 
 		fundService.addPortOp(portOp3);
@@ -1031,16 +1051,16 @@ public class FundServiceTest {
 
 		fundService.addFund(addedFound1);
 
-		FundVl fundVl = getValidFundVl("2020-01-01", addedFound1);
+		FundVl fundVl = getValidFundVl("2010-01-01", addedFound1);
 
 		fundService.addFundVl(fundVl);
 
 		fundService.addPortDesc(fundPortfolio1, addedFound1);
 
-		PortOp portOp1 = getValidPortOp("2020-04-17", fundPortfolio1, addedFound1);
-		PortOp portOp2 = getValidPortOp("2020-04-18", fundPortfolio1, addedFound1);
-		PortOp portOp3 = getValidPortOp("2020-04-19", fundPortfolio1, addedFound1);
-		PortOp portOp4 = getValidPortOp("2020-04-20", fundPortfolio1, addedFound1);
+		PortOp portOp1 = getValidPortOp("2010-04-17", fundPortfolio1, addedFound1);
+		PortOp portOp2 = getValidPortOp("2010-04-18", fundPortfolio1, addedFound1);
+		PortOp portOp3 = getValidPortOp("2010-04-19", fundPortfolio1, addedFound1);
+		PortOp portOp4 = getValidPortOp("2010-04-20", fundPortfolio1, addedFound1);
 
 		fundService.addPortOp(portOp1);
 		fundService.addPortOp(portOp2);
@@ -1113,16 +1133,16 @@ public class FundServiceTest {
 
 		fundService.addFund(addedFound1);
 
-		FundVl fundVl = getValidFundVl("2020-01-01", addedFound1);
+		FundVl fundVl = getValidFundVl("2010-01-01", addedFound1);
 
 		fundService.addFundVl(fundVl);
 
 		fundService.addPortDesc(fundPortfolio1, addedFound1);
 
-		PortOp portOp1 = getValidPortOp("2020-04-17", fundPortfolio1, addedFound1);
-		PortOp portOp2 = getValidPortOp("2020-04-18", fundPortfolio1, addedFound1);
-		PortOp portOp3 = getValidPortOp("2020-04-19", fundPortfolio1, addedFound1);
-		PortOp portOp4 = getValidPortOp("2020-04-20", fundPortfolio1, addedFound1);
+		PortOp portOp1 = getValidPortOp("2010-04-17", fundPortfolio1, addedFound1);
+		PortOp portOp2 = getValidPortOp("2010-04-18", fundPortfolio1, addedFound1);
+		PortOp portOp3 = getValidPortOp("2010-04-19", fundPortfolio1, addedFound1);
+		PortOp portOp4 = getValidPortOp("2010-04-20", fundPortfolio1, addedFound1);
 
 		fundService.addPortOp(portOp1);
 		fundService.addPortOp(portOp2);
@@ -1131,28 +1151,28 @@ public class FundServiceTest {
 
 		boolean bool = true;
 
-		if (!fundService.findAllPortOpbyRange(fundPortfolio1, addedFound1, LocalDate.parse("2020-04-17"),
-				LocalDate.parse("2020-04-17"), 1).get(0).equals(portOp1)) {
+		if (!fundService.findAllPortOpByRange(fundPortfolio1, addedFound1, LocalDate.parse("2010-04-17"),
+				LocalDate.parse("2010-04-17"), 1).get(0).equals(portOp1)) {
 			bool = false;
 		}
 
-		if (fundService.findAllPortOpbyRange(fundPortfolio1, addedFound1, LocalDate.parse("2020-04-17"),
-				LocalDate.parse("2020-04-20"), 0).size() != 4) {
+		if (fundService.findAllPortOpByRange(fundPortfolio1, addedFound1, LocalDate.parse("2010-04-17"),
+				LocalDate.parse("2010-04-20"), 0).size() != 4) {
 			bool = false;
 		}
 
-		if (!fundService.findAllPortOpbyRange(fundPortfolio1, addedFound1, LocalDate.parse("2020-04-18"),
-				LocalDate.parse("2020-04-18"), 0).get(0).equals(portOp2)) {
+		if (!fundService.findAllPortOpByRange(fundPortfolio1, addedFound1, LocalDate.parse("2010-04-18"),
+				LocalDate.parse("2010-04-18"), 0).get(0).equals(portOp2)) {
 			bool = false;
 		}
 
-		if (fundService.findAllPortOpbyRange(fundPortfolio1, addedFound1, LocalDate.parse("2020-04-18"),
-				LocalDate.parse("2020-04-20"), 0).size() != 3) {
+		if (fundService.findAllPortOpByRange(fundPortfolio1, addedFound1, LocalDate.parse("2010-04-18"),
+				LocalDate.parse("2010-04-20"), 0).size() != 3) {
 			bool = false;
 		}
 
-		if (fundService.findAllPortOpbyRange(fundPortfolio1, addedFound1, LocalDate.parse("2020-04-23"),
-				LocalDate.parse("2020-04-27"), 0).size() != 0) {
+		if (fundService.findAllPortOpByRange(fundPortfolio1, addedFound1, LocalDate.parse("2010-04-23"),
+				LocalDate.parse("2010-04-27"), 0).size() != 0) {
 			bool = false;
 		}
 
@@ -1176,15 +1196,15 @@ public class FundServiceTest {
 
 		fundService.addFund(addedFound1);
 
-		FundVl fundVl = getValidFundVl("2020-01-01", addedFound1);
+		FundVl fundVl = getValidFundVl("2010-01-01", addedFound1);
 
 		fundService.addFundVl(fundVl);
 
 		fundService.addPortDesc(fundPortfolio1, addedFound1);
 
-		PortOp portOp1 = getValidPortOp("2020-04-17", fundPortfolio1, addedFound1);
-		PortOp portOp2 = getValidPortOp("2020-04-20", fundPortfolio1, addedFound1);
-		PortOp portOp3 = getValidPortOp("2020-04-23", fundPortfolio1, addedFound1);
+		PortOp portOp1 = getValidPortOp("2010-04-17", fundPortfolio1, addedFound1);
+		PortOp portOp2 = getValidPortOp("2010-04-20", fundPortfolio1, addedFound1);
+		PortOp portOp3 = getValidPortOp("2010-04-23", fundPortfolio1, addedFound1);
 
 		fundService.addPortOp(portOp1);
 		fundService.addPortOp(portOp2);
@@ -1192,15 +1212,15 @@ public class FundServiceTest {
 
 		boolean bool = true;
 
-		if (!fundService.findLatestPortOp(fundPortfolio1, addedFound1, LocalDate.parse("2020-04-19")).equals(portOp1)) {
+		if (!fundService.findLatestPortOp(fundPortfolio1, addedFound1, LocalDate.parse("2010-04-19")).equals(portOp1)) {
 			bool = false;
 		}
 
-		if (!fundService.findLatestPortOp(fundPortfolio1, addedFound1, LocalDate.parse("2020-04-22")).equals(portOp2)) {
+		if (!fundService.findLatestPortOp(fundPortfolio1, addedFound1, LocalDate.parse("2010-04-22")).equals(portOp2)) {
 			bool = false;
 		}
 
-		if (!fundService.findLatestPortOp(fundPortfolio1, addedFound1, LocalDate.parse("2020-04-27")).equals(portOp3)) {
+		if (!fundService.findLatestPortOp(fundPortfolio1, addedFound1, LocalDate.parse("2010-04-27")).equals(portOp3)) {
 			bool = false;
 		}
 
@@ -1226,7 +1246,7 @@ public class FundServiceTest {
 
 		fundService.addPortDesc(fundPortfolio1, addedFound1);
 
-		PortOp portOp1 = getValidPortOp("2020-04-30", fundPortfolio1, addedFound1);
+		PortOp portOp1 = getValidPortOp("2010-04-30", fundPortfolio1, addedFound1);
 
 		try {
 			fundService.addPortOp(portOp1);
@@ -1258,7 +1278,7 @@ public class FundServiceTest {
 
 		fundService.removeFund(addedFound1);
 
-		PortOp portOp1 = getValidPortOp("2020-04-30", fundPortfolio1, addedFound1);
+		PortOp portOp1 = getValidPortOp("2010-04-30", fundPortfolio1, addedFound1);
 
 		try {
 			fundService.addPortOp(portOp1);
@@ -1285,14 +1305,14 @@ public class FundServiceTest {
 
 		fundService.addPortDesc(fundPortfolio1, addedFound1);
 
-		PortOp portOp1 = getValidPortOp("2020-04-30", fundPortfolio1, addedFound1);
+		PortOp portOp1 = getValidPortOp("2010-04-30", fundPortfolio1, addedFound1);
 
 		fundService.addPortOp(portOp1);
 
 		fundService.removePortOp(portOp1);
 
 		try {
-			fundService.findPortOp(fundPortfolio1, addedFound1, LocalDate.parse("2020-04-30"));
+			fundService.findPortOp(fundPortfolio1, addedFound1, LocalDate.parse("2010-04-30"));
 		} catch (InstanceNotFoundException e) {
 			throw e;
 		} finally {
@@ -1316,17 +1336,53 @@ public class FundServiceTest {
 
 		fundService.addPortDesc(fundPortfolio1, addedFound1);
 
-		PortOp portOp1 = getValidPortOp("2020-04-30", fundPortfolio1, addedFound1);
+		PortOp portOp1 = getValidPortOp("2010-04-30", fundPortfolio1, addedFound1);
 
 		fundService.addPortOp(portOp1);
 
-		PortOp portOp2 = getValidPortOp("2020-04-27", fundPortfolio1, addedFound1);
+		PortOp portOp2 = getValidPortOp("2010-04-27", fundPortfolio1, addedFound1);
 
 		fundService.addPortOp(portOp2);
 
-		PortOp portOp3 = getValidPortOp("2020-05-27", fundPortfolio1, addedFound1);
+		PortOp portOp3 = getValidPortOp("2010-05-27", fundPortfolio1, addedFound1);
 
 		portOp3.setfPartOp(-500);
+
+		try {
+			fundService.addPortOp(portOp3);
+		} catch (InputValidationException e) {
+			throw e;
+		} finally {
+
+			fundService.removeFundPortfolio(fundPortfolio1);
+			fundService.removeFund(addedFound1);
+
+		}
+
+	}
+
+	@Test(expected = InputValidationException.class)
+	public void testAddFutureDatePortOp() throws InputValidationException, ParseException, InstanceNotFoundException {
+
+		FundPort fundPortfolio1 = getValidFundPort();
+
+		fundService.addFundPortfolio(fundPortfolio1);
+
+		FundDesc addedFound1 = this.getValidFundDesc();
+
+		fundService.addFund(addedFound1);
+
+		fundService.addPortDesc(fundPortfolio1, addedFound1);
+
+		PortOp portOp1 = getValidPortOp("2010-04-30", fundPortfolio1, addedFound1);
+
+		fundService.addPortOp(portOp1);
+
+		PortOp portOp2 = getValidPortOp("2010-04-27", fundPortfolio1, addedFound1);
+
+		fundService.addPortOp(portOp2);
+
+		PortOp portOp3 = getValidPortOp(LocalDate.now().plusDays(1).toString(), fundPortfolio1, addedFound1);
 
 		try {
 			fundService.addPortOp(portOp3);
@@ -1354,15 +1410,15 @@ public class FundServiceTest {
 
 		fundService.addPortDesc(fundPortfolio1, addedFound1);
 
-		PortOp portOp1 = getValidPortOp("2020-04-30", fundPortfolio1, addedFound1);
+		PortOp portOp1 = getValidPortOp("2010-04-30", fundPortfolio1, addedFound1);
 
 		fundService.addPortOp(portOp1);
 
-		PortOp portOp2 = getValidPortOp("2020-04-27", fundPortfolio1, addedFound1);
+		PortOp portOp2 = getValidPortOp("2010-04-27", fundPortfolio1, addedFound1);
 
 		fundService.addPortOp(portOp2);
 
-		PortOp portOp3 = getValidPortOp("2020-04-28", fundPortfolio1, addedFound1);
+		PortOp portOp3 = getValidPortOp("2010-04-28", fundPortfolio1, addedFound1);
 
 		portOp3.setfPartOp(-200);
 
@@ -1392,20 +1448,20 @@ public class FundServiceTest {
 
 		fundService.addPortDesc(fundPortfolio1, addedFound1);
 
-		PortOp portOp1 = getValidPortOp("2020-04-20", fundPortfolio1, addedFound1);
+		PortOp portOp1 = getValidPortOp("2010-04-20", fundPortfolio1, addedFound1);
 
 		fundService.addPortOp(portOp1);
 
-		PortOp portOp2 = getValidPortOp("2020-04-22", fundPortfolio1, addedFound1);
+		PortOp portOp2 = getValidPortOp("2010-04-22", fundPortfolio1, addedFound1);
 
 		fundService.addPortOp(portOp2);
 
-		PortOp portOp3 = getValidPortOp("2020-04-23", fundPortfolio1, addedFound1);
+		PortOp portOp3 = getValidPortOp("2010-04-23", fundPortfolio1, addedFound1);
 		portOp3.setfPartOp(-200);
 
 		fundService.addPortOp(portOp3);
 
-		PortOp portOp4 = getValidPortOp("2020-04-21", fundPortfolio1, addedFound1);
+		PortOp portOp4 = getValidPortOp("2010-04-21", fundPortfolio1, addedFound1);
 		portOp4.setfPartOp(-1);
 
 		try {
@@ -1434,15 +1490,15 @@ public class FundServiceTest {
 
 		fundService.addPortDesc(fundPortfolio1, addedFound1);
 
-		PortOp portOp1 = getValidPortOp("2020-04-20", fundPortfolio1, addedFound1);
+		PortOp portOp1 = getValidPortOp("2010-04-20", fundPortfolio1, addedFound1);
 
 		fundService.addPortOp(portOp1);
 
-		PortOp portOp2 = getValidPortOp("2020-04-22", fundPortfolio1, addedFound1);
+		PortOp portOp2 = getValidPortOp("2010-04-22", fundPortfolio1, addedFound1);
 
 		fundService.addPortOp(portOp2);
 
-		PortOp portOp3 = getValidPortOp("2020-04-23", fundPortfolio1, addedFound1);
+		PortOp portOp3 = getValidPortOp("2010-04-23", fundPortfolio1, addedFound1);
 		portOp3.setfPartOp(-200);
 
 		fundService.addPortOp(portOp3);
@@ -1469,15 +1525,15 @@ public class FundServiceTest {
 
 		fundService.addPortDesc(fundPortfolio1, addedFound1);
 
-		PortOp portOp1 = getValidPortOp("2020-04-20", fundPortfolio1, addedFound1);
+		PortOp portOp1 = getValidPortOp("2010-04-20", fundPortfolio1, addedFound1);
 
 		fundService.addPortOp(portOp1);
 
-		PortOp portOp2 = getValidPortOp("2020-04-22", fundPortfolio1, addedFound1);
+		PortOp portOp2 = getValidPortOp("2010-04-22", fundPortfolio1, addedFound1);
 
 		fundService.addPortOp(portOp2);
 
-		PortOp portOp3 = getValidPortOp("2020-04-23", fundPortfolio1, addedFound1);
+		PortOp portOp3 = getValidPortOp("2010-04-23", fundPortfolio1, addedFound1);
 		portOp3.setfPartOp(-200);
 
 		fundService.addPortOp(portOp3);
@@ -1510,11 +1566,11 @@ public class FundServiceTest {
 
 		fundService.addPortDesc(fundPortfolio1, addedFound1);
 
-		PortOp portOp1 = getValidPortOp("2020-04-30", fundPortfolio1, addedFound1);
+		PortOp portOp1 = getValidPortOp("2010-04-30", fundPortfolio1, addedFound1);
 
 		fundService.addPortOp(portOp1);
 
-		PortOp findPortOp = fundService.findPortOp(fundPortfolio1, addedFound1, LocalDate.parse("2020-04-30"));
+		PortOp findPortOp = fundService.findPortOp(fundPortfolio1, addedFound1, LocalDate.parse("2010-04-30"));
 
 		// System.out.println(findPortOp.getDay());
 		// System.out.println(findPortOp.getfPartini());
@@ -1540,13 +1596,13 @@ public class FundServiceTest {
 			bool = false;
 		}
 
-		PortOp portOp2 = getValidPortOp("2020-07-22", fundPortfolio1, addedFound1);
+		PortOp portOp2 = getValidPortOp("2010-07-22", fundPortfolio1, addedFound1);
 
 		portOp2.setfPartOp(-100);
 
 		fundService.addPortOp(portOp2);
 
-		PortOp findPortOp2 = fundService.findPortOp(fundPortfolio1, addedFound1, LocalDate.parse("2020-07-22"));
+		PortOp findPortOp2 = fundService.findPortOp(fundPortfolio1, addedFound1, LocalDate.parse("2010-07-22"));
 
 		if (findPortOp2.getfPartini() != 100) {
 			bool = false;
@@ -1584,9 +1640,9 @@ public class FundServiceTest {
 		//
 		// System.out.println(elapsedTime);
 
-		fundService.findFundVlbyRange(fund, LocalDate.parse("2020-04-21"), LocalDate.parse("2021-04-21"));
+		fundService.findFundVlbyRange(fund, LocalDate.parse("2010-04-21"), LocalDate.parse("2011-04-21"));
 
-		fundService.findFundVl(fund, LocalDate.parse("2021-04-21"));
+		fundService.findFundVl(fund, LocalDate.parse("2010-04-21"));
 
 		fundService.removeFund(fund);
 
@@ -1606,7 +1662,7 @@ public class FundServiceTest {
 
 		fundService.addPortDesc(fundPortfolio1, addedFound1);
 
-		LocalDate date = LocalDate.parse("2020-04-30");
+		LocalDate date = LocalDate.parse("2010-04-30");
 
 		for (int x = 0; x < 200; x++) {
 			PortOp portOp1 = getValidPortOp(date.toString(), fundPortfolio1, addedFound1);
