@@ -209,7 +209,8 @@ public interface FundService {
 	public List<FundDesc> findFundsOfPortfolio(FundPort fundPortfolio) throws InstanceNotFoundException;
 
 	/**
-	 * Obtiene las rentababilidades de los fondos de una cartera
+	 * Obtiene las rentababilidades de los fondos de una cartera en un día
+	 * determinado
 	 *
 	 * @param
 	 */

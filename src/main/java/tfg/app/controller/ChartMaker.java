@@ -27,6 +27,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import tfg.app.model.entities.FundDesc;
 import tfg.app.model.entities.FundPort;
 import tfg.app.model.entities.FundVl;
+import tfg.app.model.entities.PortOp;
 import tfg.app.model.service.FundService;
 import tfg.app.util.comparator.compVl;
 import tfg.app.util.exceptions.InstanceNotFoundException;
@@ -92,11 +93,16 @@ public class ChartMaker {
 		panel.add(CP, BorderLayout.CENTER);
 		panel.validate();
 
-		description.setText("Gráfica de la distrubución del capital de la cartera " + fundPort.getpName());
+		if (fundDescs.size() == 0) {
+			description.setText("La cartera seleccionada: " + fundPort.getpName() + " no tiene ningún fondo asignado.");
+		} else {
+			description.setText("Gráfica de la distrubución del capital de la cartera " + fundPort.getpName());
+		}
 	}
 
 	/**
-	 * Crea una gráfica de lineas con la rentabilidad diaria en conjunto de la cartera.
+	 * Crea una gráfica de lineas con la rentabilidad diaria en conjunto de la
+	 * cartera.
 	 * 
 	 * @param
 	 * @throws InstanceNotFoundException
@@ -389,8 +395,8 @@ public class ChartMaker {
 	}
 
 	/**
-	 * Crea una gráfica de líneas que muestra los vls y sus medias móviles a 39,
-	 * 90 y 200 diass.
+	 * Crea una gráfica de líneas que muestra los vls y sus medias móviles a los
+	 * días indicados.
 	 * 
 	 * @param
 	 */
@@ -621,8 +627,8 @@ public class ChartMaker {
 	 * 
 	 * @param
 	 */
-	public void createPortfolioProfitBarChart(FundService fundService, JPanel panel, JEditorPane description,
-			FundPort fundPort) throws InstanceNotFoundException {
+	public void createPortfolioMostProfitableFundsBarChart(FundService fundService, JPanel panel,
+			JEditorPane description, FundPort fundPort) throws InstanceNotFoundException {
 
 		List<FundDesc> fundDescs = null;
 
@@ -671,6 +677,79 @@ public class ChartMaker {
 		} else {
 
 			description.setText("Gráfica de los fondos más y menos rentables de la cartera: " + fundPort.getpName());
+
+		}
+
+	}
+
+	/**
+	 * Crea una gráfica de barras que muestra una comparativa entre el valor de
+	 * los diferentes fondos de la cartera el día de la última operación y el
+	 * día actual.
+	 * 
+	 * @param
+	 */
+	public void createPortfolioFundsValueBarChart(FundService fundService, JPanel panel, JEditorPane description,
+			FundPort fundPort) throws InstanceNotFoundException {
+
+		List<FundDesc> fundDescs = null;
+
+		fundDescs = fundService.findFundsOfPortfolio(fundPort);
+
+		DefaultCategoryDataset bar_chart_dataset = new DefaultCategoryDataset();
+
+		for (int x = 0; x < fundDescs.size(); x++) {
+
+			try {
+
+				PortOp portOp = fundService.findLatestPortOp(fundPort, fundDescs.get(x), LocalDate.now());
+
+				FundVl inicialFundVl = fundService.findLatestFundVl(fundDescs.get(x), portOp.getDay());
+
+				FundVl actualFundVl = fundService.findLatestFundVl(fundDescs.get(x), LocalDate.now());
+
+				if (actualFundVl != null && inicialFundVl != null) {
+
+					double inicial = ((portOp.getfPartfin() * inicialFundVl.getVl()));
+
+					bar_chart_dataset.addValue(inicial, fundDescs.get(x).getfName(), "Valor Inicial");
+
+					double actual = ((portOp.getfPartfin() * actualFundVl.getVl()));
+
+					bar_chart_dataset.addValue(actual, fundDescs.get(x).getfName(), "Valor Actual");
+
+				}
+
+			} catch (InstanceNotFoundException e) {
+				continue;
+
+			}
+
+		}
+
+		JFreeChart barChart = ChartFactory.createBarChart("Comparativa de inversión", "Fondo", "Valor",
+				bar_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
+
+		CategoryPlot cplot = (CategoryPlot) barChart.getPlot();
+		cplot.setBackgroundPaint(Color.DARK_GRAY);
+		cplot.setOutlinePaint(Color.BLUE);
+
+		((BarRenderer) cplot.getRenderer()).setBarPainter(new StandardBarPainter());
+
+		ChartPanel CP = new ChartPanel(barChart);
+
+		panel.removeAll();
+		panel.updateUI();
+		panel.setLayout(new java.awt.BorderLayout());
+		panel.add(CP, BorderLayout.CENTER);
+
+		if (fundDescs.size() == 0) {
+			description.setText("La cartera seleccionada: " + fundPort.getpName() + " no tiene ningún fondo asignado.");
+		} else {
+
+			description.setText(
+					"Gráfica que muestra una comparativa entre el valor de los diferentes fondos de la cartera: "
+							+ fundPort.getpName() + " el día de la última operación y el día actual. ");
 
 		}
 

@@ -1815,7 +1815,7 @@ public class Gui extends javax.swing.JFrame {
 		if (nodeInfo.getClass() == tfg.app.model.entities.FundPort.class) {
 
 			graficasBox.setModel(new javax.swing.DefaultComboBoxModel<>(
-					new String[] { "Distribución", "Fondos Norm", "Rent de los fondos", "Rent total" }));
+					new String[] { "Distribución", "Fondos Norm", "Rent de los fondos", "Rent total", "Comparativa" }));
 
 			graficasBox.setSelectedItem("Distribución");
 			graficasBox.setVisible(true);
@@ -2925,7 +2925,8 @@ public class Gui extends javax.swing.JFrame {
 				if (graficasBox.getSelectedItem().equals("Rent de los fondos")) {
 
 					try {
-						chartMaker.createPortfolioProfitBarChart(fundService, panelGraficas, descripcionTex, fundPort);
+						chartMaker.createPortfolioMostProfitableFundsBarChart(fundService, panelGraficas,
+								descripcionTex, fundPort);
 					} catch (InstanceNotFoundException e) {
 						JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de base de datos",
 								JOptionPane.ERROR_MESSAGE);
@@ -2939,6 +2940,19 @@ public class Gui extends javax.swing.JFrame {
 					try {
 						chartMaker.createProfitOfPortfolioLineChart(fundService, panelGraficas, descripcionTex,
 								fundPort, LocalDate.now().minusDays(30), LocalDate.now());
+					} catch (InstanceNotFoundException e) {
+						JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de base de datos",
+								JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+
+				}
+
+				if (graficasBox.getSelectedItem().equals("Comparativa")) {
+
+					try {
+						chartMaker.createPortfolioFundsValueBarChart(fundService, panelGraficas, descripcionTex,
+								fundPort);
 					} catch (InstanceNotFoundException e) {
 						JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de base de datos",
 								JOptionPane.ERROR_MESSAGE);
