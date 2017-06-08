@@ -526,7 +526,7 @@ public class ChartMaker {
 
 					profit = (fundVls.get(fundVls.size() - 1).getVl() - fundVls.get(0).getVl())
 							/ fundVls.get(0).getVl();
-					bar_chart_dataset.addValue(profit, "Año", "Último año fiscal");
+					bar_chart_dataset.addValue(profit, fundDesc.getfName(), "Último año fiscal");
 				} else {
 					string += "\nNo existen suficentes datos para calcular la rentabilidad del último año fiscal ("
 							+ today.minusYears(1).getYear() + "). ";
@@ -548,7 +548,7 @@ public class ChartMaker {
 				if (d >= 90) {
 					profit = (fundVls.get(fundVls.size() - 1).getVl() - fundVls.get(0).getVl())
 							/ fundVls.get(0).getVl();
-					bar_chart_dataset.addValue(profit, "Semestre", "Último semestre");
+					bar_chart_dataset.addValue(profit, fundDesc.getfName(), "Último semestre");
 				} else {
 					string += "\nNo existen suficentes datos para calcular la rentabilidad del último semestre. ";
 				}
@@ -568,7 +568,7 @@ public class ChartMaker {
 				if (d >= 45) {
 					profit = (fundVls.get(fundVls.size() - 1).getVl() - fundVls.get(0).getVl())
 							/ fundVls.get(0).getVl();
-					bar_chart_dataset.addValue(profit, "Trimestre", "Último trimestre");
+					bar_chart_dataset.addValue(profit, fundDesc.getfName(), "Último trimestre");
 				} else {
 					string += "\nNo existen suficentes datos para calcular la rentabilidad del último trimestre. ";
 				}
@@ -588,7 +588,7 @@ public class ChartMaker {
 				if (d >= 15) {
 					profit = (fundVls.get(fundVls.size() - 1).getVl() - fundVls.get(0).getVl())
 							/ fundVls.get(0).getVl();
-					bar_chart_dataset.addValue(profit, "Mes", "Último mes");
+					bar_chart_dataset.addValue(profit, fundDesc.getfName(), "Último mes");
 				} else {
 					string += "\nNo existen suficentes datos para calcular la rentabilidad del último mes. ";
 				}
@@ -608,7 +608,7 @@ public class ChartMaker {
 		((BarRenderer) cplot.getRenderer()).setBarPainter(new StandardBarPainter());
 
 		BarRenderer r = (BarRenderer) barChart.getCategoryPlot().getRenderer();
-		r.setSeriesPaint(0, Color.CYAN);
+		r.setSeriesPaint(0, Color.BLUE);
 
 		ChartPanel CP = new ChartPanel(barChart);
 
@@ -712,7 +712,7 @@ public class ChartMaker {
 
 					double inicial = ((portOp.getfPartfin() * inicialFundVl.getVl()));
 
-					bar_chart_dataset.addValue(inicial, fundDescs.get(x).getfName(), "Valor Inicial");
+					bar_chart_dataset.addValue(inicial, fundDescs.get(x).getfName(), "Valor en la última inversión");
 
 					double actual = ((portOp.getfPartfin() * actualFundVl.getVl()));
 
