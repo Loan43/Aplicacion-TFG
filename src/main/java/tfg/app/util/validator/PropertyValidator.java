@@ -11,7 +11,7 @@ public final class PropertyValidator {
 
 	public static void validateNotNegativeDouble(Double doubleValue) throws InputValidationException {
 
-		if (doubleValue < 0) {
+		if (doubleValue <= 0) {
 			throw new InputValidationException("Vl inválido (Debe ser mayor que 0): " + doubleValue);
 		}
 

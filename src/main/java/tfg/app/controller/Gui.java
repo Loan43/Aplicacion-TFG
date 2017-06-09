@@ -153,7 +153,6 @@ public class Gui extends javax.swing.JFrame {
 		vlVlText = new javax.swing.JFormattedTextField();
 		vlCancBoton = new javax.swing.JButton();
 		vlAccBoton = new javax.swing.JButton();
-		vlFechaText = new javax.swing.JSpinner();
 		actuaVl = new javax.swing.JDialog();
 		vlIsinLabel1 = new javax.swing.JLabel();
 		vlFechaLabel1 = new javax.swing.JLabel();
@@ -194,8 +193,6 @@ public class Gui extends javax.swing.JFrame {
 		cancelarConfirBoton = new javax.swing.JButton();
 		selFondoLabel = new javax.swing.JLabel();
 		selFondoDespl = new javax.swing.JComboBox<>();
-		new javax.swing.JButton();
-		new javax.swing.JButton();
 		tablaVls = new javax.swing.JDialog();
 		jScrollPane3 = new javax.swing.JScrollPane();
 		jScrollPane6 = new javax.swing.JScrollPane();
@@ -204,6 +201,11 @@ public class Gui extends javax.swing.JFrame {
 		importarFondo = new javax.swing.JMenuItem();
 		vlFechaLabel2 = new javax.swing.JLabel();
 		vlIsinLabel2 = new javax.swing.JLabel();
+		ventaBoton1 = new javax.swing.JRadioButton();
+		compraBoton1 = new javax.swing.JRadioButton();
+		opFechaLabel2 = new javax.swing.JLabel();
+		nombreLabel1 = new javax.swing.JLabel();
+		nombreText1 = new javax.swing.JTextField();
 
 		vlTabla = new javax.swing.JTable() {
 			@Override
@@ -269,6 +271,7 @@ public class Gui extends javax.swing.JFrame {
 		descripcionTex = new javax.swing.JEditorPane();
 		desdeLabel = new javax.swing.JLabel();
 		hastaLabel = new javax.swing.JLabel();
+		isinLabel2 = new javax.swing.JLabel();
 
 		selectorDeFichero = new javax.swing.JFileChooser();
 		FileNameExtensionFilter xlsFilter = new FileNameExtensionFilter(" Archivos Excel (*.xls)", "xls");
@@ -304,7 +307,7 @@ public class Gui extends javax.swing.JFrame {
 		///////////////////////////////////////////
 
 		anadirFondo.setTitle("Añadir Fondo");
-		anadirFondo.setAlwaysOnTop(true);
+		anadirFondo.setAlwaysOnTop(false);
 		anadirFondo.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 		anadirFondo.setLocation(new java.awt.Point(0, 0));
 		anadirFondo.setLocationByPlatform(true);
@@ -347,9 +350,13 @@ public class Gui extends javax.swing.JFrame {
 			}
 		});
 
-		cancelComText.setValue(new Integer(0));
+		cancelComText.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(
+				new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
+		cancelComText.setValue(new Double(0));
 
-		apComText.setValue(new Integer(0));
+		apComText.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(
+				new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
+		apComText.setValue(new Double(0));
 
 		nombreLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		nombreLabel.setText("Nombre:");
@@ -504,13 +511,13 @@ public class Gui extends javax.swing.JFrame {
 						divisaText, gestoraLabel, gestoraText, tipoLabel, tipoText });
 
 		actuaFondo.setTitle("Actualizar Fondo");
-		actuaFondo.setAlwaysOnTop(true);
+		actuaFondo.setAlwaysOnTop(false);
 		actuaFondo.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 		actuaFondo.setLocation(new java.awt.Point(0, 0));
 		actuaFondo.setLocationByPlatform(true);
 		actuaFondo.setModal(true);
 		actuaFondo.setResizable(false);
-		actuaFondo.setSize(new java.awt.Dimension(360, 350));
+		actuaFondo.setSize(new java.awt.Dimension(380, 400));
 
 		isinLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		isinLabel1.setText("ISIN:");
@@ -528,10 +535,10 @@ public class Gui extends javax.swing.JFrame {
 		divisaLabel1.setText("Divisa:");
 
 		apComLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-		apComLabel1.setText("Comision de apertura:");
+		apComLabel1.setText("Comision de apertura (%):");
 
 		cancelComLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-		cancelComLabel1.setText("Comisión de cancelación:");
+		cancelComLabel1.setText("Comisión de cancelación (%):");
 
 		canActuaFondoBoton1.setText("Cancelar");
 		canActuaFondoBoton1.addActionListener(new java.awt.event.ActionListener() {
@@ -547,75 +554,109 @@ public class Gui extends javax.swing.JFrame {
 			}
 		});
 
-		cancelComText1.setValue(new Integer(0));
+		isinLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+		isinLabel2.setText("");
 
-		apComText1.setValue(new Integer(0));
+		nombreLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+		nombreLabel1.setText("Nombre:");
+
+		cancelComText1.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(
+				new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
+		cancelComText1.setValue(new Double(0));
+
+		apComText1.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(
+				new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
+		apComText1.setValue(new Double(0));
 
 		javax.swing.GroupLayout actuaFondoLayout = new javax.swing.GroupLayout(actuaFondo.getContentPane());
 		actuaFondo.getContentPane().setLayout(actuaFondoLayout);
 		actuaFondoLayout
-				.setHorizontalGroup(actuaFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(actuaFondoLayout.createSequentialGroup()
-								.addContainerGap().addGroup(actuaFondoLayout
-										.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-										.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, actuaFondoLayout
-												.createSequentialGroup()
-												.addGroup(actuaFondoLayout
-														.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-														.addComponent(gestoraLabel1).addComponent(tipoLabel1)
-														.addComponent(categoriaLabel1)
-														.addComponent(divisaLabel1).addComponent(cancelComLabel1)
-														.addComponent(apComLabel1))
-												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23,
-														Short.MAX_VALUE)
-												.addGroup(actuaFondoLayout
-														.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-														.addComponent(divisaText1,
-																javax.swing.GroupLayout.Alignment.TRAILING,
-																javax.swing.GroupLayout.PREFERRED_SIZE, 122,
-																javax.swing.GroupLayout.PREFERRED_SIZE)
-														.addComponent(cancelComText1,
-																javax.swing.GroupLayout.Alignment.TRAILING,
-																javax.swing.GroupLayout.PREFERRED_SIZE, 139,
-																javax.swing.GroupLayout.PREFERRED_SIZE)
-														.addComponent(categoriaText1,
-																javax.swing.GroupLayout.Alignment.TRAILING,
-																javax.swing.GroupLayout.PREFERRED_SIZE, 122,
-																javax.swing.GroupLayout.PREFERRED_SIZE)
-														.addComponent(tipoText1,
-																javax.swing.GroupLayout.Alignment.TRAILING,
-																javax.swing.GroupLayout.PREFERRED_SIZE, 122,
-																javax.swing.GroupLayout.PREFERRED_SIZE)
-														.addComponent(gestoraText1,
-																javax.swing.GroupLayout.Alignment.TRAILING,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																122, javax.swing.GroupLayout.PREFERRED_SIZE)
-														.addComponent(
-																apComText1, javax.swing.GroupLayout.Alignment.TRAILING,
-																javax.swing.GroupLayout.PREFERRED_SIZE, 139,
-																javax.swing.GroupLayout.PREFERRED_SIZE))
-												.addContainerGap())
-										.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, actuaFondoLayout
-												.createSequentialGroup().addGap(0, 0, Short.MAX_VALUE).addGroup(
-														actuaFondoLayout
+				.setHorizontalGroup(
+						actuaFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+								.addGroup(actuaFondoLayout
+										.createSequentialGroup().addContainerGap()
+										.addGroup(actuaFondoLayout
+												.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+												.addGroup(actuaFondoLayout.createSequentialGroup()
+														.addComponent(canActuaFondoBoton1).addGap(18, 18, 18)
+														.addComponent(actuaFondoBoton1))
+												.addGroup(actuaFondoLayout.createSequentialGroup()
+														.addGroup(actuaFondoLayout
+																.createParallelGroup(
+																		javax.swing.GroupLayout.Alignment.TRAILING)
+																.addGroup(actuaFondoLayout
+																		.createParallelGroup(
+																				javax.swing.GroupLayout.Alignment.LEADING)
+																		.addComponent(tipoLabel1)
+																		.addComponent(categoriaLabel1)
+																		.addComponent(divisaLabel1)
+																		.addComponent(cancelComLabel1)
+																		.addComponent(apComLabel1))
+																.addComponent(isinLabel1,
+																		javax.swing.GroupLayout.PREFERRED_SIZE,
+																		128, javax.swing.GroupLayout.PREFERRED_SIZE)
+																.addComponent(nombreLabel1)
+																.addComponent(gestoraLabel1,
+																		javax.swing.GroupLayout.Alignment.LEADING))
+														.addGap(18, 18, 18)
+														.addGroup(actuaFondoLayout
 																.createParallelGroup(
 																		javax.swing.GroupLayout.Alignment.LEADING)
-																.addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
-																		actuaFondoLayout.createSequentialGroup()
-																				.addComponent(canActuaFondoBoton1)
-																				.addGap(18, 18, 18)
-																				.addComponent(actuaFondoBoton1)
-																				.addGap(15, 15, 15))
-																.addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
-																		actuaFondoLayout.createSequentialGroup()
-																				.addComponent(isinLabel1,
-																						javax.swing.GroupLayout.PREFERRED_SIZE,
-																						228,
-																						javax.swing.GroupLayout.PREFERRED_SIZE)
-																				.addGap(69, 69, 69)))))));
+																.addComponent(
+																		gestoraText1,
+																		javax.swing.GroupLayout.PREFERRED_SIZE, 122,
+																		javax.swing.GroupLayout.PREFERRED_SIZE)
+																.addGroup(actuaFondoLayout
+																		.createParallelGroup(
+																				javax.swing.GroupLayout.Alignment.LEADING)
+																		.addComponent(divisaText1,
+																				javax.swing.GroupLayout.Alignment.TRAILING,
+																				javax.swing.GroupLayout.PREFERRED_SIZE,
+																				122,
+																				javax.swing.GroupLayout.PREFERRED_SIZE)
+																		.addComponent(cancelComText1,
+																				javax.swing.GroupLayout.Alignment.TRAILING,
+																				javax.swing.GroupLayout.PREFERRED_SIZE,
+																				139,
+																				javax.swing.GroupLayout.PREFERRED_SIZE)
+																		.addComponent(categoriaText1,
+																				javax.swing.GroupLayout.Alignment.TRAILING,
+																				javax.swing.GroupLayout.PREFERRED_SIZE,
+																				122,
+																				javax.swing.GroupLayout.PREFERRED_SIZE)
+																		.addComponent(tipoText1,
+																				javax.swing.GroupLayout.Alignment.TRAILING,
+																				javax.swing.GroupLayout.PREFERRED_SIZE,
+																				122,
+																				javax.swing.GroupLayout.PREFERRED_SIZE)
+																		.addComponent(apComText1,
+																				javax.swing.GroupLayout.Alignment.TRAILING,
+																				javax.swing.GroupLayout.PREFERRED_SIZE,
+																				139,
+																				javax.swing.GroupLayout.PREFERRED_SIZE))
+																.addComponent(isinLabel2,
+																		javax.swing.GroupLayout.Alignment.TRAILING)
+																.addComponent(nombreText1,
+																		javax.swing.GroupLayout.Alignment.TRAILING,
+																		javax.swing.GroupLayout.PREFERRED_SIZE, 148,
+																		javax.swing.GroupLayout.PREFERRED_SIZE))))
+										.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+
+		actuaFondoLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL,
+				new java.awt.Component[] { apComLabel1, apComText1, cancelComLabel1, cancelComText1, categoriaLabel1,
+						categoriaText1, divisaLabel1, divisaText1, gestoraLabel1, gestoraText1, isinLabel1, isinLabel2,
+						nombreLabel1, nombreText1, tipoLabel1, tipoText1 });
+
 		actuaFondoLayout.setVerticalGroup(actuaFondoLayout
 				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(actuaFondoLayout.createSequentialGroup().addGap(26, 26, 26).addComponent(isinLabel1)
+				.addGroup(actuaFondoLayout.createSequentialGroup().addGap(26, 26, 26)
+						.addGroup(actuaFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+								.addComponent(isinLabel1).addComponent(isinLabel2))
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+						.addGroup(actuaFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+								.addComponent(nombreText1, javax.swing.GroupLayout.PREFERRED_SIZE,
+										javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+								.addComponent(nombreLabel1))
 						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 						.addGroup(actuaFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 								.addComponent(gestoraLabel1).addComponent(gestoraText1,
@@ -651,8 +692,13 @@ public class Gui extends javax.swing.JFrame {
 								.addComponent(actuaFondoBoton1).addComponent(canActuaFondoBoton1))
 						.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 
+		actuaFondoLayout.linkSize(javax.swing.SwingConstants.VERTICAL,
+				new java.awt.Component[] { apComLabel1, apComText1, cancelComLabel1, cancelComText1, categoriaLabel1,
+						categoriaText1, divisaLabel1, divisaText1, gestoraLabel1, gestoraText1, isinLabel1, isinLabel2,
+						nombreLabel1, nombreText1, tipoLabel1, tipoText1 });
+
 		anadirCartera.setTitle("Añadir Cartera");
-		anadirCartera.setAlwaysOnTop(true);
+		anadirCartera.setAlwaysOnTop(false);
 		anadirCartera.setModal(true);
 		anadirCartera.setResizable(false);
 		anadirCartera.setSize(new java.awt.Dimension(380, 280));
@@ -799,9 +845,9 @@ public class Gui extends javax.swing.JFrame {
 				new java.awt.Component[] { descCarteraLabel1, nomCarteraLabel1, nomCarteraText1 });
 
 		anadirVl.setTitle("Añadir VL");
-		anadirVl.setAlwaysOnTop(true);
+		anadirVl.setAlwaysOnTop(false);
 		anadirVl.setModal(true);
-		anadirVl.setSize(new java.awt.Dimension(400, 260));
+		anadirVl.setSize(new java.awt.Dimension(290, 220));
 
 		vlIsinLabel.setText("ISIN:");
 
@@ -829,79 +875,65 @@ public class Gui extends javax.swing.JFrame {
 			}
 		});
 
-		vlFechaText.setModel(new javax.swing.SpinnerDateModel());
-		vlFechaText.setEditor(new javax.swing.JSpinner.DateEditor(vlFechaText, "yyyy-MM-dd"));
-
 		javax.swing.GroupLayout anadirVlLayout = new javax.swing.GroupLayout(anadirVl.getContentPane());
 		anadirVl.getContentPane().setLayout(anadirVlLayout);
-		anadirVlLayout
-				.setHorizontalGroup(anadirVlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(anadirVlLayout.createSequentialGroup()
-								.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addGroup(anadirVlLayout
-										.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-										.addComponent(vlIsinIdLabel).addGroup(anadirVlLayout
-												.createSequentialGroup()
-												.addGroup(anadirVlLayout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.TRAILING)
-														.addGroup(anadirVlLayout.createSequentialGroup()
-																.addComponent(vlCancBoton)
+		anadirVlLayout.setHorizontalGroup(anadirVlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(anadirVlLayout.createSequentialGroup()
+						.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.addGroup(anadirVlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+								.addGroup(anadirVlLayout.createSequentialGroup()
+										.addComponent(vlCancBoton).addPreferredGap(
+												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+										.addComponent(vlAccBoton))
+								.addGroup(anadirVlLayout.createSequentialGroup()
+										.addGroup(anadirVlLayout
+												.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+												.addGroup(anadirVlLayout.createSequentialGroup().addGroup(anadirVlLayout
+														.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+														.addComponent(vlVlLabel).addComponent(vlFechaLabel,
+																javax.swing.GroupLayout.DEFAULT_SIZE,
+																javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+														.addGap(37, 37, 37))
+												.addGroup(javax.swing.GroupLayout.Alignment.LEADING,
+														anadirVlLayout.createSequentialGroup().addComponent(vlIsinLabel)
 																.addPreferredGap(
-																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																.addComponent(vlAccBoton))
-														.addGroup(anadirVlLayout.createSequentialGroup()
-																.addGroup(anadirVlLayout
-																		.createParallelGroup(
-																				javax.swing.GroupLayout.Alignment.LEADING)
-																		.addComponent(vlFechaLabel,
-																				javax.swing.GroupLayout.Alignment.TRAILING,
-																				javax.swing.GroupLayout.DEFAULT_SIZE,
-																				javax.swing.GroupLayout.DEFAULT_SIZE,
-																				Short.MAX_VALUE)
-																		.addGroup(anadirVlLayout.createSequentialGroup()
-																				.addComponent(vlVlLabel).addGap(15, 15,
-																						15))
-																		.addComponent(vlIsinLabel,
-																				javax.swing.GroupLayout.Alignment.TRAILING))
-																.addGap(33, 33, 33)
-																.addGroup(anadirVlLayout
-																		.createParallelGroup(
-																				javax.swing.GroupLayout.Alignment.TRAILING)
-																		.addComponent(vlFechaText,
-																				javax.swing.GroupLayout.PREFERRED_SIZE,
-																				javax.swing.GroupLayout.DEFAULT_SIZE,
-																				javax.swing.GroupLayout.PREFERRED_SIZE)
-																		.addComponent(vlVlText))))
-												.addGap(22, 22, 22)))
-								.addContainerGap()));
+																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+										.addGroup(anadirVlLayout
+												.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+												.addComponent(vlIsinIdLabel, javax.swing.GroupLayout.PREFERRED_SIZE,
+														110, javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(vlVlText, javax.swing.GroupLayout.PREFERRED_SIZE, 110,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(opDate, javax.swing.GroupLayout.Alignment.LEADING,
+														javax.swing.GroupLayout.PREFERRED_SIZE, 110,
+														javax.swing.GroupLayout.DEFAULT_SIZE))))
+						.addGap(32, 32, 32)));
 
-		anadirVlLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] { vlFechaLabel,
-				vlFechaText, vlIsinIdLabel, vlIsinLabel, vlVlLabel, vlVlText });
+		anadirVlLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL,
+				new java.awt.Component[] { opDate, vlFechaLabel, vlIsinIdLabel, vlIsinLabel, vlVlLabel, vlVlText });
 
 		anadirVlLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL,
 				new java.awt.Component[] { vlAccBoton, vlCancBoton });
 
 		anadirVlLayout.setVerticalGroup(anadirVlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 				.addGroup(anadirVlLayout.createSequentialGroup().addGap(25, 25, 25)
-						.addGroup(anadirVlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-								.addComponent(vlIsinLabel, javax.swing.GroupLayout.Alignment.TRAILING)
-								.addComponent(vlIsinIdLabel))
+						.addGroup(anadirVlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+								.addComponent(vlIsinLabel).addComponent(vlIsinIdLabel))
 						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 						.addGroup(anadirVlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-								.addComponent(vlFechaLabel).addComponent(vlFechaText,
-										javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
-						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+								.addComponent(vlFechaLabel).addComponent(opDate, javax.swing.GroupLayout.PREFERRED_SIZE,
+										javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
 						.addGroup(anadirVlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 								.addComponent(vlVlLabel).addComponent(vlVlText, javax.swing.GroupLayout.PREFERRED_SIZE,
 										javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
 						.addGap(18, 18, 18)
 						.addGroup(anadirVlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 								.addComponent(vlCancBoton).addComponent(vlAccBoton))
-						.addContainerGap(92, Short.MAX_VALUE)));
+						.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 
 		anadirVlLayout.linkSize(javax.swing.SwingConstants.VERTICAL,
-				new java.awt.Component[] { vlFechaLabel, vlIsinIdLabel, vlIsinLabel, vlVlLabel, vlVlText });
+				new java.awt.Component[] { opDate, vlFechaLabel, vlIsinIdLabel, vlIsinLabel, vlVlLabel, vlVlText });
 
 		anadirVlLayout.linkSize(javax.swing.SwingConstants.VERTICAL,
 				new java.awt.Component[] { vlAccBoton, vlCancBoton });
@@ -1108,7 +1140,7 @@ public class Gui extends javax.swing.JFrame {
 		actuaOp.setTitle("Actualizar Operación");
 		actuaOp.setAlwaysOnTop(false);
 		actuaOp.setModal(true);
-		actuaOp.setSize(new java.awt.Dimension(420, 260));
+		actuaOp.setSize(new java.awt.Dimension(320, 240));
 
 		opIsinLabel1.setText("ISIN ID");
 
@@ -1116,7 +1148,7 @@ public class Gui extends javax.swing.JFrame {
 
 		opFechaLabel1.setText("Fecha:");
 
-		opOperacionLabel1.setText("Participaciones(+/-):");
+		opOperacionLabel1.setText("Participaciones:");
 
 		opOperacionText1.setValue(new Integer(0));
 
@@ -1134,52 +1166,79 @@ public class Gui extends javax.swing.JFrame {
 			}
 		});
 
+		buttonGroup1.add(ventaBoton1);
+		ventaBoton1.setText("Venta");
+
+		buttonGroup1.add(compraBoton1);
+		compraBoton1.setText("Compra");
+
+		opFechaLabel2.setText("jLabel1");
+
 		javax.swing.GroupLayout actuaOpLayout = new javax.swing.GroupLayout(actuaOp.getContentPane());
 		actuaOp.getContentPane().setLayout(actuaOpLayout);
-		actuaOpLayout
-				.setHorizontalGroup(
-						actuaOpLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-								.addGroup(actuaOpLayout.createSequentialGroup().addGap(36, 36, 36)
-										.addGroup(actuaOpLayout
-												.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-												.addGroup(
-														actuaOpLayout.createSequentialGroup().addComponent(opCancBoton1)
-																.addPreferredGap(
-																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																.addComponent(opAccBoton1))
+		actuaOpLayout.setHorizontalGroup(actuaOpLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+						actuaOpLayout.createSequentialGroup().addContainerGap()
+								.addGroup(actuaOpLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+										.addGroup(actuaOpLayout.createSequentialGroup().addGap(0, 0, Short.MAX_VALUE)
+												.addComponent(opCancBoton1)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(opAccBoton1))
+										.addGroup(actuaOpLayout.createSequentialGroup().addGroup(actuaOpLayout
+												.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+												.addComponent(opCarteraLabel1)
+												.addComponent(
+														opFechaLabel1, javax.swing.GroupLayout.DEFAULT_SIZE,
+														javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+												.addComponent(opOperacionLabel1))
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
+														Short.MAX_VALUE)
 												.addGroup(actuaOpLayout
-														.createSequentialGroup()
-														.addGroup(actuaOpLayout
-																.createParallelGroup(
-																		javax.swing.GroupLayout.Alignment.LEADING)
-																.addComponent(opFechaLabel1,
-																		javax.swing.GroupLayout.Alignment.TRAILING,
-																		javax.swing.GroupLayout.PREFERRED_SIZE,
-																		161, javax.swing.GroupLayout.PREFERRED_SIZE)
-																.addGroup(actuaOpLayout
-																		.createSequentialGroup()
-																		.addGroup(actuaOpLayout
-																				.createParallelGroup(
-																						javax.swing.GroupLayout.Alignment.LEADING)
-																				.addComponent(opOperacionLabel1)
-																				.addComponent(opIsinLabel1))
-																		.addGap(15, 15, 15)))
-														.addGap(33, 33, 33)
+														.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 														.addGroup(actuaOpLayout
 																.createParallelGroup(
 																		javax.swing.GroupLayout.Alignment.LEADING)
 																.addGroup(actuaOpLayout.createSequentialGroup()
-																		.addComponent(opCarteraLabel1).addPreferredGap(
-																				javax.swing.LayoutStyle.ComponentPlacement.RELATED,
-																				71, Short.MAX_VALUE))
-																.addComponent(opOperacionText1))))
-										.addGap(22, 22, 22)));
+																		.addComponent(compraBoton1,
+																				javax.swing.GroupLayout.DEFAULT_SIZE,
+																				javax.swing.GroupLayout.DEFAULT_SIZE,
+																				Short.MAX_VALUE)
+																		.addPreferredGap(
+																				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																		.addComponent(ventaBoton1,
+																				javax.swing.GroupLayout.PREFERRED_SIZE,
+																				59,
+																				javax.swing.GroupLayout.PREFERRED_SIZE))
+																.addComponent(opOperacionText1,
+																		javax.swing.GroupLayout.Alignment.TRAILING)
+																.addComponent(opFechaLabel2,
+																		javax.swing.GroupLayout.Alignment.TRAILING,
+																		javax.swing.GroupLayout.PREFERRED_SIZE, 126,
+																		javax.swing.GroupLayout.PREFERRED_SIZE))
+														.addComponent(opIsinLabel1,
+																javax.swing.GroupLayout.Alignment.TRAILING,
+																javax.swing.GroupLayout.PREFERRED_SIZE, 126,
+																javax.swing.GroupLayout.PREFERRED_SIZE))))
+								.addContainerGap()));
+
+		actuaOpLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL,
+				new java.awt.Component[] { compraBoton1, ventaBoton1 });
+
+		actuaOpLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] { opIsinLabel1,
+				opCarteraLabel1, opFechaLabel2, opFechaLabel1, opOperacionLabel1, opOperacionText1 });
+
 		actuaOpLayout.setVerticalGroup(actuaOpLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(actuaOpLayout.createSequentialGroup().addGap(25, 25, 25)
-						.addGroup(actuaOpLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-								.addComponent(opIsinLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
-								.addComponent(opCarteraLabel1))
-						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED).addComponent(opFechaLabel1)
+				.addGroup(actuaOpLayout.createSequentialGroup().addContainerGap()
+						.addGroup(actuaOpLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+								.addComponent(opCarteraLabel1).addComponent(opIsinLabel1,
+										javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
+										javax.swing.GroupLayout.PREFERRED_SIZE))
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+						.addGroup(actuaOpLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+								.addComponent(opFechaLabel1).addComponent(opFechaLabel2,
+										javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
+										javax.swing.GroupLayout.PREFERRED_SIZE))
 						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 						.addGroup(actuaOpLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 								.addComponent(opOperacionLabel1).addComponent(opOperacionText1,
@@ -1187,8 +1246,14 @@ public class Gui extends javax.swing.JFrame {
 										javax.swing.GroupLayout.PREFERRED_SIZE))
 						.addGap(18, 18, 18)
 						.addGroup(actuaOpLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+								.addComponent(ventaBoton1).addComponent(compraBoton1))
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+						.addGroup(actuaOpLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 								.addComponent(opCancBoton1).addComponent(opAccBoton1))
-						.addContainerGap(81, Short.MAX_VALUE)));
+						.addContainerGap()));
+
+		actuaOpLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] { opIsinLabel1,
+				opCarteraLabel1, opFechaLabel2, opFechaLabel1, opOperacionLabel1, opOperacionText1 });
 
 		anadirFondoCartera.setTitle("Añadir Fondo");
 		anadirFondoCartera.setModal(true);
@@ -1372,7 +1437,7 @@ public class Gui extends javax.swing.JFrame {
 
 		vlTabla.setModel(new javax.swing.table.DefaultTableModel(new Object[][] {
 
-		}, new String[] { "ISIN", "Fecha", "Valor Liquidativo", "Rentabilidad" }) {
+		}, new String[] { "ISIN", "Fecha", "Valor Liquidativo", "Rentabilidad (%)" }) {
 
 			@Override
 			public boolean isCellEditable(int row, int column) {
@@ -1810,7 +1875,8 @@ public class Gui extends javax.swing.JFrame {
 
 		FundDesc fund = new FundDesc(isinText.getText(), nombreText.getText(), gestoraText.getText(),
 				tipoText.getText(), categoriaText.getText(), divisaText.getText(),
-				Double.valueOf(apComText.getValue().toString()), Double.valueOf(cancelComText.getValue().toString()));
+				Double.valueOf(apComText.getValue().toString()) / 100,
+				Double.valueOf(cancelComText.getValue().toString()) / 100);
 
 		try {
 			fundService.addFund(fund);
@@ -2001,6 +2067,9 @@ public class Gui extends javax.swing.JFrame {
 		vlIsinIdLabel.setText(fundDesc.getfId());
 		vlVlText.setValue(0);
 
+		LocalDate date = LocalDate.now();
+		model3.setDate(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth());
+
 		anadirVl.setLocationRelativeTo(this);
 		anadirVl.setVisible(true);
 
@@ -2013,12 +2082,14 @@ public class Gui extends javax.swing.JFrame {
 		Object nodeInfo = node.getUserObject();
 		FundDesc fundDesc = (FundDesc) nodeInfo;
 
-		isinLabel1.setText("ISIN: " + fundDesc.getfId());
+		isinLabel1.setText("ISIN: ");
+		isinLabel2.setText(fundDesc.getfId());
+		nombreText1.setText(fundDesc.getfName());
 		gestoraText1.setText(fundDesc.getfGest());
 		tipoText1.setText(fundDesc.getfType());
 		categoriaText1.setText(fundDesc.getfCategory());
-		cancelComText1.setValue(fundDesc.getfCancelComm());
-		apComText1.setValue(fundDesc.getfSubComm());
+		cancelComText1.setValue(fundDesc.getfCancelComm() * 100);
+		apComText1.setValue(fundDesc.getfSubComm() * 100);
 		divisaText1.setText(fundDesc.getfCurrency());
 
 		actuaFondo.setLocationRelativeTo(this);
@@ -2121,12 +2192,13 @@ public class Gui extends javax.swing.JFrame {
 		Object nodeInfo = node.getUserObject();
 		FundDesc fundDesc = (FundDesc) nodeInfo;
 
+		fundDesc.setfName(nombreText1.getText());
 		fundDesc.setfType(tipoText1.getText());
 		fundDesc.setfGest(gestoraText1.getText());
 		fundDesc.setfCategory(categoriaText1.getText());
 		fundDesc.setfCurrency(divisaText1.getText());
-		fundDesc.setfCancelComm(Double.valueOf(cancelComText1.getValue().toString()));
-		fundDesc.setfSubComm(Double.valueOf(apComText1.getValue().toString()));
+		fundDesc.setfCancelComm(Double.valueOf(cancelComText1.getValue().toString()) / 100);
+		fundDesc.setfSubComm(Double.valueOf(apComText1.getValue().toString()) / 100);
 
 		try {
 
@@ -2139,6 +2211,8 @@ public class Gui extends javax.swing.JFrame {
 
 		actuaFondo.setVisible(false);
 
+		createNodes(top);
+
 	}
 
 	// Click en el boton de aceptar de la ventana anadir VL
@@ -2147,10 +2221,18 @@ public class Gui extends javax.swing.JFrame {
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
 		Object nodeInfo = node.getUserObject();
 		FundDesc fundDesc = (FundDesc) nodeInfo;
+		LocalDate date = null;
 
-		Date input = (Date) vlFechaText.getValue();
+		try {
 
-		LocalDate date = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			Date input = (Date) model3.getValue();
+			date = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+		} catch (java.lang.NullPointerException e) {
+			JOptionPane.showMessageDialog(ventanaError, "Debe seleccionar una fecha en el calendario.",
+					"Error de actualización", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
 
 		FundVl fundVl = new FundVl(date, Double.valueOf(vlVlText.getValue().toString()), fundDesc);
 
@@ -2209,6 +2291,8 @@ public class Gui extends javax.swing.JFrame {
 
 		opCarteraLabel.setText(fundPort.getpName());
 		compraBoton.setSelected(true);
+		LocalDate date = LocalDate.now();
+		model3.setDate(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth());
 
 		List<FundDesc> fundsOfPortfolio = null;
 
@@ -2280,8 +2364,11 @@ public class Gui extends javax.swing.JFrame {
 		}
 
 		opCarteraLabel1.setText(portOp.getPortDesc().getFundPort().getpName());
-		opIsinLabel1.setText(portOp.getPortDesc().getFundDesc().getfId());
-		opFechaLabel1.setText(portOp.getDay().toString());
+		opIsinLabel1.setText(portOp.getPortDesc().getFundDesc().getfName());
+		opFechaLabel2.setText(portOp.getDay().toString());
+		opOperacionText1.setValue(portOp.getfPartOp());
+
+		compraBoton1.setSelected(true);
 
 		actuaOp.setLocationRelativeTo(this);
 		actuaOp.setVisible(true);
@@ -2378,6 +2465,7 @@ public class Gui extends javax.swing.JFrame {
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
 		Object nodeInfo = node.getUserObject();
 		FundPort fundPort = (FundPort) nodeInfo;
+		LocalDate date = null;
 
 		FundDesc fundDesc = (FundDesc) fondoDesplegable2.getSelectedItem();
 
@@ -2397,7 +2485,16 @@ public class Gui extends javax.swing.JFrame {
 		try {
 
 			Date input = (Date) model3.getValue();
-			LocalDate date = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			date = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+		} catch (java.lang.NullPointerException e) {
+			JOptionPane.showMessageDialog(ventanaError, "Debe seleccionar una fecha en el calendario.",
+					"Error de actualización", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		try {
+
 			PortOp portOp = new PortOp(date, fundPort, fundDesc, x);
 
 			fundService.addPortOp(portOp);
@@ -2430,9 +2527,21 @@ public class Gui extends javax.swing.JFrame {
 			return;
 		}
 
+		if (portOp == null) {
+			actuaOp.setVisible(false);
+			return;
+		}
+
 		try {
 
-			portOp.setfPartOp((Integer.valueOf(opOperacionText1.getValue().toString())));
+			Integer x = Integer.valueOf(opOperacionText1.getValue().toString());
+			x = Math.abs(x);
+
+			if (ventaBoton1.isSelected()) {
+				x = x * -1;
+			}
+
+			portOp.setfPartOp(x);
 
 		} catch (NumberFormatException e) {
 
@@ -3514,7 +3623,6 @@ public class Gui extends javax.swing.JFrame {
 	private javax.swing.JButton vlCancBoton1;
 	private javax.swing.JLabel vlFechaLabel;
 	private javax.swing.JLabel vlFechaLabel1;
-	private javax.swing.JSpinner vlFechaText;
 	private javax.swing.JLabel vlIsinIdLabel;
 	private javax.swing.JLabel vlIsinLabel;
 	private javax.swing.JLabel vlIsinLabel1;
@@ -3558,5 +3666,11 @@ public class Gui extends javax.swing.JFrame {
 	private UtilDateModel model2;
 	private UtilDateModel model3;
 	private javax.swing.JMenuItem importarFondo;
+	private javax.swing.JRadioButton compraBoton1;
+	private javax.swing.JRadioButton ventaBoton1;
+	private javax.swing.JLabel opFechaLabel2;
+	private javax.swing.JLabel isinLabel2;
+	private javax.swing.JLabel nombreLabel1;
+	private javax.swing.JTextField nombreText1;
 	// End of variables declaration
 }

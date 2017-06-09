@@ -639,7 +639,8 @@ public class ChartMaker {
 		for (int x = 0; x < fundDescs.size() && x < 5; x++) {
 
 			if (fundDescs.get(x).getProfit() > 0) {
-				bar_chart_dataset.addValue(fundDescs.get(x).getProfit(), fundDescs.get(x).getfName(), "Más rentables");
+				bar_chart_dataset.addValue(fundDescs.get(x).getProfit(), fundDescs.get(x).getfName(),
+						Integer.toString(x));
 			}
 
 		}
@@ -648,17 +649,18 @@ public class ChartMaker {
 			if (fundDescs.get(x).getProfit() < 0) {
 
 				bar_chart_dataset.addValue(fundDescs.get(x).getProfit(), fundDescs.get(x).getfName(),
-						"Menos rentables");
+						Integer.toString(x));
 			}
 
 		}
 
-		JFreeChart barChart = ChartFactory.createBarChart("Rentabilidades", "Fondo", "Rentabilidad", bar_chart_dataset,
-				PlotOrientation.VERTICAL, true, true, false);
+		JFreeChart barChart = ChartFactory.createStackedBarChart("Rentabilidades", "Fondos", "Rentabilidad",
+				bar_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
 
 		CategoryPlot cplot = (CategoryPlot) barChart.getPlot();
 		cplot.setBackgroundPaint(Color.DARK_GRAY);
 		cplot.setOutlinePaint(Color.BLUE);
+		cplot.getDomainAxis().setTickLabelsVisible(false);
 
 		((BarRenderer) cplot.getRenderer()).setBarPainter(new StandardBarPainter());
 
@@ -676,7 +678,8 @@ public class ChartMaker {
 			description.setText("La cartera seleccionada: " + fundPort.getpName() + " no tiene ningún fondo asignado.");
 		} else {
 
-			description.setText("Gráfica de los fondos más y menos rentables de la cartera: " + fundPort.getpName());
+			description
+					.setText("Gráfica de los cinco fondos más y menos rentables de la cartera: " + fundPort.getpName());
 
 		}
 

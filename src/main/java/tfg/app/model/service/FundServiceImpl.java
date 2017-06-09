@@ -1035,15 +1035,17 @@ public class FundServiceImpl implements FundService {
 			excelSheet.addCell(label);
 			x++;
 
-			label = new Label(0, x, "Comisión de cancelación:", cellFormat);
+			label = new Label(0, x, "Comisión de cancelación (%):", cellFormat);
 			excelSheet.addCell(label);
-			label = new Label(1, x, fundDesc.getfCancelComm().toString(), cellFormat);
+			Double comm = fundDesc.getfCancelComm() * 100;
+			label = new Label(1, x, comm.toString(), cellFormat);
 			excelSheet.addCell(label);
 			x++;
 
-			label = new Label(0, x, "Comisión de suscripción:", cellFormat);
+			label = new Label(0, x, "Comisión de suscripción (%):", cellFormat);
 			excelSheet.addCell(label);
-			label = new Label(1, x, fundDesc.getfSubComm().toString(), cellFormat);
+			comm = fundDesc.getfSubComm() * 100;
+			label = new Label(1, x, comm.toString(), cellFormat);
 			excelSheet.addCell(label);
 			x += 2;
 
@@ -1119,14 +1121,14 @@ public class FundServiceImpl implements FundService {
 			Pattern patron = Pattern.compile(",");
 			Matcher encaja = patron.matcher(cell.getContents());
 			String resultado = encaja.replaceAll(".");
-			fundDesc.setfCancelComm(Double.parseDouble(resultado));
+			fundDesc.setfCancelComm(Double.parseDouble(resultado) / 100);
 			x++;
 
 			cell = sheet.getCell(1, x);
 			patron = Pattern.compile(",");
 			encaja = patron.matcher(cell.getContents());
 			resultado = encaja.replaceAll(".");
-			fundDesc.setfSubComm(Double.parseDouble(resultado));
+			fundDesc.setfSubComm(Double.parseDouble(resultado) / 100);
 			x += 3;
 
 			fundDesc.setFundVls(importVlsFromExcel(file, fundDesc, x, "yyyy-MM-dd"));
