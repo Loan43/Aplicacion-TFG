@@ -2564,7 +2564,8 @@ public class Gui extends javax.swing.JFrame {
 
 	// Click en el boton cancelar de la ventana actualizar operacion
 	private void opCancBoton1ActionPerformed(java.awt.event.ActionEvent evt) {
-		//
+
+		actuaOp.setVisible(false);
 	}
 
 	// Click en el boton aceptar de la ventana de confirmacion
