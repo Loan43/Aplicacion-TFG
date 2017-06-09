@@ -92,6 +92,7 @@ public class Gui extends javax.swing.JFrame {
 		ventaBoton = new javax.swing.JRadioButton();
 		compraBoton = new javax.swing.JRadioButton();
 		buttonGroup1 = new javax.swing.ButtonGroup();
+		buttonGroup2 = new javax.swing.ButtonGroup();
 		panelGraficas = new javax.swing.JPanel();
 		verVl = new javax.swing.JMenuItem();
 		anadirFondo = new javax.swing.JDialog();
@@ -206,6 +207,9 @@ public class Gui extends javax.swing.JFrame {
 		opFechaLabel2 = new javax.swing.JLabel();
 		nombreLabel1 = new javax.swing.JLabel();
 		nombreText1 = new javax.swing.JTextField();
+		rentaText = new javax.swing.JFormattedTextField();
+		rentaEstimadaLabel = new javax.swing.JLabel();
+		calcularBoton = new javax.swing.JButton();
 
 		vlTabla = new javax.swing.JTable() {
 			@Override
@@ -272,6 +276,9 @@ public class Gui extends javax.swing.JFrame {
 		desdeLabel = new javax.swing.JLabel();
 		hastaLabel = new javax.swing.JLabel();
 		isinLabel2 = new javax.swing.JLabel();
+		principalBoton1 = new javax.swing.JRadioButton();
+		principalBoton2 = new javax.swing.JRadioButton();
+		principalBoton3 = new javax.swing.JRadioButton();
 
 		selectorDeFichero = new javax.swing.JFileChooser();
 		FileNameExtensionFilter xlsFilter = new FileNameExtensionFilter(" Archivos Excel (*.xls)", "xls");
@@ -1708,7 +1715,7 @@ public class Gui extends javax.swing.JFrame {
 		jScrollPane2.setViewportView(arbolFondos);
 
 		panelGraficas.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-		panelGraficas.setPreferredSize(new java.awt.Dimension(756, 635));
+		panelGraficas.setPreferredSize(new java.awt.Dimension(1000, 700));
 		panelGraficas.setRequestFocusEnabled(false);
 
 		javax.swing.GroupLayout panelGraficasLayout = new javax.swing.GroupLayout(panelGraficas);
@@ -1728,6 +1735,20 @@ public class Gui extends javax.swing.JFrame {
 		});
 		graficasBox.setVisible(false);
 
+		rentaText.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(
+				new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
+		rentaText.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+		rentaText.setValue(0.0);
+
+		rentaEstimadaLabel.setText("Rentabilidad Estimada (%):");
+
+		calcularBoton.setText("Calcular");
+		calcularBoton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				calcularBotonActionPerformed(evt);
+			}
+		});
+
 		jMenu3.setText("Archivo");
 
 		jMenu1.setText("Añadir");
@@ -1735,6 +1756,10 @@ public class Gui extends javax.swing.JFrame {
 		desdeLabel.setText("Desde: ");
 
 		hastaLabel.setText("Hasta: ");
+
+		calcularBoton.setVisible(false);
+		rentaText.setVisible(false);
+		rentaEstimadaLabel.setVisible(false);
 
 		desdeDate.setVisible(false);
 		hastaDate.setVisible(false);
@@ -1787,6 +1812,33 @@ public class Gui extends javax.swing.JFrame {
 
 		setJMenuBar(barraMenu);
 
+		principalBoton1.setText("30 Días");
+		buttonGroup2.add(principalBoton1);
+		principalBoton1.setVisible(false);
+		principalBoton1.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				principalBotonActionPerformed(evt);
+			}
+		});
+
+		principalBoton2.setText("90 Días");
+		buttonGroup2.add(principalBoton2);
+		principalBoton2.setVisible(false);
+		principalBoton2.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				principalBotonActionPerformed(evt);
+			}
+		});
+
+		principalBoton3.setText("200 Días");
+		buttonGroup2.add(principalBoton3);
+		principalBoton3.setVisible(false);
+		principalBoton3.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				principalBotonActionPerformed(evt);
+			}
+		});
+
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
 		getContentPane().setLayout(layout);
 		layout.setHorizontalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1799,18 +1851,30 @@ public class Gui extends javax.swing.JFrame {
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
 												.addComponent(buscarLabel)))
 						.addGap(18, 18, 18)
-						.addGroup(
-								layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-										.addComponent(
-												panelGraficas, javax.swing.GroupLayout.DEFAULT_SIZE, 751,
-												Short.MAX_VALUE)
-										.addComponent(jScrollPane6)
-										.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout
-												.createSequentialGroup()
-												.addComponent(graficasBox, javax.swing.GroupLayout.PREFERRED_SIZE, 100,
+						.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+								.addComponent(panelGraficas,
+										javax.swing.GroupLayout.DEFAULT_SIZE,
+										javax.swing.GroupLayout.DEFAULT_SIZE,
+										Short.MAX_VALUE)
+								.addComponent(jScrollPane6).addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+										layout.createSequentialGroup()
+												.addComponent(graficasBox, javax.swing.GroupLayout.PREFERRED_SIZE, 125,
 														javax.swing.GroupLayout.PREFERRED_SIZE)
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED,
 														javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+												.addComponent(rentaEstimadaLabel)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(rentaText, javax.swing.GroupLayout.PREFERRED_SIZE, 70,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+												.addComponent(calcularBoton)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(principalBoton1)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(principalBoton2)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(principalBoton3)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
 												.addComponent(desdeLabel)
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 												.addComponent(desdeDate, javax.swing.GroupLayout.PREFERRED_SIZE, 120,
@@ -1820,34 +1884,47 @@ public class Gui extends javax.swing.JFrame {
 												.addComponent(hastaDate, javax.swing.GroupLayout.PREFERRED_SIZE, 120,
 														javax.swing.GroupLayout.PREFERRED_SIZE)))
 						.addGap(20, 20, 20)));
-		layout.setVerticalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(layout
-				.createSequentialGroup().addContainerGap()
-				.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-						.addComponent(buscarText, javax.swing.GroupLayout.PREFERRED_SIZE,
-								javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-						.addComponent(buscarLabel)
-						.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-								.addComponent(hastaDate, javax.swing.GroupLayout.PREFERRED_SIZE,
-										javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-								.addComponent(desdeDate, javax.swing.GroupLayout.PREFERRED_SIZE,
-										javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-								.addComponent(desdeLabel).addComponent(hastaLabel).addComponent(graficasBox,
-										javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
-										javax.swing.GroupLayout.PREFERRED_SIZE)))
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-						.addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 670, Short.MAX_VALUE)
-						.addGroup(layout.createSequentialGroup()
-								.addComponent(panelGraficas, javax.swing.GroupLayout.DEFAULT_SIZE, 568, Short.MAX_VALUE)
-								.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-								.addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 96,
-										javax.swing.GroupLayout.PREFERRED_SIZE)))
-				.addContainerGap()));
 
-		layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] { buscarLabel, buscarText });
+		layout.setVerticalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(layout.createSequentialGroup().addContainerGap()
+						.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+								.addComponent(buscarText, javax.swing.GroupLayout.PREFERRED_SIZE, 27,
+										javax.swing.GroupLayout.PREFERRED_SIZE)
+								.addComponent(buscarLabel)
+								.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+										.addComponent(hastaDate, javax.swing.GroupLayout.PREFERRED_SIZE, 27,
+												javax.swing.GroupLayout.PREFERRED_SIZE)
+										.addComponent(desdeDate, javax.swing.GroupLayout.PREFERRED_SIZE, 27,
+												javax.swing.GroupLayout.PREFERRED_SIZE)
+										.addComponent(desdeLabel).addComponent(hastaLabel).addComponent(principalBoton1)
+										.addComponent(principalBoton2).addComponent(principalBoton3)
+										.addComponent(graficasBox, javax.swing.GroupLayout.PREFERRED_SIZE, 27,
+												javax.swing.GroupLayout.PREFERRED_SIZE)
+										.addComponent(rentaText, javax.swing.GroupLayout.PREFERRED_SIZE, 27,
+												javax.swing.GroupLayout.PREFERRED_SIZE)
+										.addComponent(rentaEstimadaLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 27,
+												javax.swing.GroupLayout.PREFERRED_SIZE)
+										.addComponent(calcularBoton, javax.swing.GroupLayout.PREFERRED_SIZE, 27,
+												javax.swing.GroupLayout.PREFERRED_SIZE)))
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+						.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+								.addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 665, Short.MAX_VALUE)
+								.addGroup(layout.createSequentialGroup()
+										.addComponent(panelGraficas, javax.swing.GroupLayout.DEFAULT_SIZE,
+												javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+										.addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 96,
+												javax.swing.GroupLayout.PREFERRED_SIZE)))
+						.addContainerGap()));
 
 		layout.linkSize(javax.swing.SwingConstants.VERTICAL,
-				new java.awt.Component[] { desdeDate, desdeLabel, hastaDate, hastaLabel });
+				new java.awt.Component[] { buscarLabel, buscarText, graficasBox });
+
+		layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] { desdeLabel, hastaLabel,
+				principalBoton1, principalBoton2, principalBoton3, rentaEstimadaLabel, rentaText, calcularBoton });
+
+		layout.linkSize(javax.swing.SwingConstants.VERTICAL,
+				new java.awt.Component[] { desdeDate, hastaDate, buscarLabel, buscarText, graficasBox });
 
 		pack();
 	}// </editor-fold>
@@ -1941,9 +2018,16 @@ public class Gui extends javax.swing.JFrame {
 
 		desdeDate.setVisible(false);
 		hastaDate.setVisible(false);
-
 		desdeLabel.setVisible(false);
 		hastaLabel.setVisible(false);
+
+		principalBoton1.setVisible(false);
+		principalBoton2.setVisible(false);
+		principalBoton3.setVisible(false);
+
+		rentaText.setVisible(false);
+		rentaEstimadaLabel.setVisible(false);
+		calcularBoton.setVisible(false);
 
 		if (nodeInfo.getClass() == tfg.app.model.entities.FundDesc.class) {
 
@@ -1953,8 +2037,7 @@ public class Gui extends javax.swing.JFrame {
 			graficasBox.setSelectedItem("Descripción");
 			graficasBox.setVisible(true);
 
-		}
-		if (nodeInfo.getClass() == tfg.app.model.entities.FundPort.class) {
+		} else if (nodeInfo.getClass() == tfg.app.model.entities.FundPort.class) {
 
 			graficasBox.setModel(new javax.swing.DefaultComboBoxModel<>(
 					new String[] { "Distribución", "Fondos Norm", "Rent de los fondos", "Rent total", "Comparativa" }));
@@ -1962,6 +2045,22 @@ public class Gui extends javax.swing.JFrame {
 			graficasBox.setSelectedItem("Distribución");
 			graficasBox.setVisible(true);
 
+		} else {
+
+			desdeDate.setVisible(false);
+			hastaDate.setVisible(false);
+			desdeLabel.setVisible(false);
+			hastaLabel.setVisible(false);
+
+			principalBoton1.setVisible(false);
+			principalBoton2.setVisible(false);
+			principalBoton3.setVisible(false);
+
+			rentaText.setVisible(false);
+			rentaEstimadaLabel.setVisible(false);
+			calcularBoton.setVisible(false);
+
+			graficasBox.setVisible(false);
 		}
 
 	}
@@ -2766,45 +2865,68 @@ public class Gui extends javax.swing.JFrame {
 
 				chartMaker.createFundVlLineChart(fundService, panelGraficas, descripcionTex, fundDesc, null, null);
 				return;
-			}
+			} else {
 
-			try {
+				try {
 
-				Date input = (Date) model1.getValue();
-				date1 = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+					Date input = (Date) model1.getValue();
+					date1 = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-			} catch (NullPointerException e) {
+				} catch (NullPointerException e) {
 
-				date1 = fundDesc.getFundVls().get(0).getDay();
-				model1.setDate(date1.getYear(), date1.getMonthValue() - 1, date1.getDayOfMonth());
+					date1 = fundDesc.getFundVls().get(0).getDay();
+					model1.setDate(date1.getYear(), date1.getMonthValue() - 1, date1.getDayOfMonth());
 
-			}
-			try {
+				}
+				try {
 
-				Date input = (Date) model2.getValue();
-				date2 = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+					Date input = (Date) model2.getValue();
+					date2 = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-			} catch (NullPointerException e) {
+				} catch (NullPointerException e) {
 
-				date2 = fundDesc.getFundVls().get(fundDesc.getFundVls().size() - 1).getDay();
-				model2.setDate(date2.getYear(), date2.getMonthValue() - 1, date2.getDayOfMonth());
+					date2 = fundDesc.getFundVls().get(fundDesc.getFundVls().size() - 1).getDay();
+					model2.setDate(date2.getYear(), date2.getMonthValue() - 1, date2.getDayOfMonth());
 
-			}
+				}
 
-			if (date2.compareTo(date1) <= 0) {
+				if (date2.compareTo(date1) <= 0) {
 
-				JOptionPane.showMessageDialog(ventanaError,
-						"La fecha de inicio no puede ser superior a la fecha final.", "Error de entrada",
-						JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(ventanaError,
+							"La fecha de inicio no puede ser superior a la fecha final.", "Error de entrada",
+							JOptionPane.ERROR_MESSAGE);
 
-				date2 = date1.plusDays(1);
-				model2.setDate(date2.getYear(), date2.getMonthValue() - 1, date2.getDayOfMonth());
+					date2 = date1.plusDays(1);
+					model2.setDate(date2.getYear(), date2.getMonthValue() - 1, date2.getDayOfMonth());
+
+				}
 
 			}
 
 			if (graficasBox.getSelectedItem().equals("Historial Vl")) {
 
 				chartMaker.createFundVlLineChart(fundService, panelGraficas, descripcionTex, fundDesc, date1, date2);
+			}
+
+			if (graficasBox.getSelectedItem().equals("Renta Esperada")) {
+
+				chartMaker.createEstimateProfitOfFundDescLineChart(fundService, panelGraficas, descripcionTex, fundDesc,
+						2.0, date1, date2);
+			}
+
+			if (graficasBox.getSelectedItem().equals("Renta Esperada")) {
+
+				Double rent = null;
+
+				if (Double.valueOf(rentaText.getValue().toString()) != 0) {
+
+					rent = Double.valueOf(rentaText.getValue().toString());
+
+				}
+
+				chartMaker.createEstimateProfitOfFundDescLineChart(fundService, panelGraficas, descripcionTex, fundDesc,
+						rent, date1, date2);
+
 			}
 
 		}
@@ -3002,6 +3124,24 @@ public class Gui extends javax.swing.JFrame {
 
 			fundDesc = (FundDesc) nodeInfo;
 
+			if (fundDesc.getFundVls().size() != 0) {
+
+				LocalDate date1 = fundDesc.getFundVls().get(0).getDay();
+				LocalDate date2 = fundDesc.getFundVls().get(fundDesc.getFundVls().size() - 1).getDay();
+
+				model1.setDate(date1.getYear(), date1.getMonthValue() - 1, date1.getDayOfMonth());
+				model2.setDate(date2.getYear(), date2.getMonthValue() - 1, date2.getDayOfMonth());
+
+			} else {
+
+				LocalDate date1 = LocalDate.now();
+				LocalDate date2 = LocalDate.now();
+
+				model1.setDate(date1.getYear(), date1.getMonthValue() - 1, date1.getDayOfMonth());
+				model2.setDate(date2.getYear(), date2.getMonthValue() - 1, date2.getDayOfMonth());
+
+			}
+
 			if (graficasBox.getSelectedItem().equals("Historial Vl")) {
 
 				desdeDate.setVisible(true);
@@ -3010,38 +3150,33 @@ public class Gui extends javax.swing.JFrame {
 				desdeLabel.setVisible(true);
 				hastaLabel.setVisible(true);
 
+				principalBoton1.setVisible(false);
+				principalBoton2.setVisible(false);
+				principalBoton3.setVisible(false);
+
+				rentaText.setVisible(false);
+				rentaEstimadaLabel.setVisible(false);
+				calcularBoton.setVisible(false);
+
 				chartMaker.createFundVlLineChart(fundService, panelGraficas, descripcionTex, fundDesc, null, null);
-
-				if (fundDesc.getFundVls().size() != 0) {
-
-					LocalDate date1 = fundDesc.getFundVls().get(0).getDay();
-					LocalDate date2 = fundDesc.getFundVls().get(fundDesc.getFundVls().size() - 1).getDay();
-
-					model1.setDate(date1.getYear(), date1.getMonthValue() - 1, date1.getDayOfMonth());
-					model2.setDate(date2.getYear(), date2.getMonthValue() - 1, date2.getDayOfMonth());
-
-				} else {
-
-					LocalDate date1 = LocalDate.now();
-					LocalDate date2 = LocalDate.now();
-
-					model1.setDate(date1.getYear(), date1.getMonthValue() - 1, date1.getDayOfMonth());
-					model2.setDate(date2.getYear(), date2.getMonthValue() - 1, date2.getDayOfMonth());
-
-				}
 
 			}
 
 			if (graficasBox.getSelectedItem().equals("Descripción")) {
-
-				panelGraficas.removeAll();
-				panelGraficas.updateUI();
 
 				desdeDate.setVisible(false);
 				hastaDate.setVisible(false);
 
 				desdeLabel.setVisible(false);
 				hastaLabel.setVisible(false);
+
+				principalBoton1.setVisible(false);
+				principalBoton2.setVisible(false);
+				principalBoton3.setVisible(false);
+
+				rentaText.setVisible(false);
+				rentaEstimadaLabel.setVisible(false);
+				calcularBoton.setVisible(false);
 
 				descripcionTex.setText(
 						"Descripción del fondo " + fundDesc.getfName() + " y métricas simples de rendimiento.");
@@ -3058,6 +3193,14 @@ public class Gui extends javax.swing.JFrame {
 				desdeLabel.setVisible(false);
 				hastaLabel.setVisible(false);
 
+				principalBoton1.setVisible(false);
+				principalBoton2.setVisible(false);
+				principalBoton3.setVisible(false);
+
+				rentaText.setVisible(false);
+				rentaEstimadaLabel.setVisible(false);
+				calcularBoton.setVisible(false);
+
 				chartMaker.createFundDescProfitBarChart(fundService, panelGraficas, descripcionTex, fundDesc);
 
 			}
@@ -3065,14 +3208,29 @@ public class Gui extends javax.swing.JFrame {
 			if (graficasBox.getSelectedItem().equals("Renta Esperada")) {
 
 				// final-inicial/inicial x 100
-				desdeDate.setVisible(false);
-				hastaDate.setVisible(false);
+				desdeDate.setVisible(true);
+				hastaDate.setVisible(true);
 
-				desdeLabel.setVisible(false);
-				hastaLabel.setVisible(false);
+				desdeLabel.setVisible(true);
+				hastaLabel.setVisible(true);
 
-				chartMaker.createEstimateProfitOfFundDescLineChart(fundService, panelGraficas, descripcionTex,
-						fundDesc);
+				principalBoton1.setVisible(false);
+				principalBoton2.setVisible(false);
+				principalBoton3.setVisible(false);
+
+				rentaText.setVisible(true);
+				rentaEstimadaLabel.setVisible(true);
+				calcularBoton.setVisible(true);
+				rentaText.setValue(0);
+
+				Date input = (Date) model1.getValue();
+				LocalDate date1 = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+				input = (Date) model2.getValue();
+				LocalDate date2 = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+				chartMaker.createEstimateProfitOfFundDescLineChart(fundService, panelGraficas, descripcionTex, fundDesc,
+						null, date1, date2);
 
 			}
 
@@ -3084,6 +3242,16 @@ public class Gui extends javax.swing.JFrame {
 
 				desdeLabel.setVisible(false);
 				hastaLabel.setVisible(false);
+
+				principalBoton1.setVisible(true);
+				principalBoton2.setVisible(true);
+				principalBoton3.setVisible(true);
+
+				rentaText.setVisible(false);
+				rentaEstimadaLabel.setVisible(false);
+				calcularBoton.setVisible(false);
+
+				principalBoton1.setSelected(true);
 
 				chartMaker.createFundDescMeanMobileLineChart(fundService, panelGraficas, descripcionTex, fundDesc, 30);
 
@@ -3134,6 +3302,12 @@ public class Gui extends javax.swing.JFrame {
 
 				if (graficasBox.getSelectedItem().equals("Rent total")) {
 
+					principalBoton1.setVisible(true);
+					principalBoton2.setVisible(true);
+					principalBoton3.setVisible(true);
+
+					principalBoton1.setSelected(true);
+
 					try {
 						chartMaker.createProfitOfPortfolioLineChart(fundService, panelGraficas, descripcionTex,
 								fundPort, LocalDate.now().minusDays(30), LocalDate.now());
@@ -3161,7 +3335,118 @@ public class Gui extends javax.swing.JFrame {
 		}
 	}
 
+	// Boton calcular de la pantalla principal
+	private void calcularBotonActionPerformed(java.awt.event.ActionEvent evt) {
+		// TODO add your handling code here:
+
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+
+		Object nodeInfo = node.getUserObject();
+
+		if (nodeInfo.getClass() == tfg.app.model.entities.FundDesc.class) {
+
+			FundDesc fundDesc = (FundDesc) nodeInfo;
+
+			LocalDate date1;
+			try {
+
+				Date input = (Date) model1.getValue();
+				date1 = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+			} catch (NullPointerException e) {
+
+				date1 = fundDesc.getFundVls().get(0).getDay();
+				model1.setDate(date1.getYear(), date1.getMonthValue() - 1, date1.getDayOfMonth());
+
+			}
+			LocalDate date2;
+			try {
+
+				Date input = (Date) model2.getValue();
+				date2 = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+			} catch (NullPointerException e) {
+
+				date2 = fundDesc.getFundVls().get(fundDesc.getFundVls().size() - 1).getDay();
+				model2.setDate(date2.getYear(), date2.getMonthValue() - 1, date2.getDayOfMonth());
+
+			}
+
+			Double rent = null;
+
+			if (Double.valueOf(rentaText.getValue().toString()) != 0) {
+
+				rent = Double.valueOf(rentaText.getValue().toString());
+
+			}
+
+			chartMaker.createEstimateProfitOfFundDescLineChart(fundService, panelGraficas, descripcionTex, fundDesc,
+					rent, date1, date2);
+
+		}
+
+	}
+
+	// Seleccionar un boton de los días de la pantalla principal
+	private void principalBotonActionPerformed(java.awt.event.ActionEvent evt) {
+
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+
+		int days = 30;
+
+		if (principalBoton1.isSelected()) {
+
+			days = 30;
+
+		} else if (principalBoton2.isSelected()) {
+
+			days = 90;
+
+		} else {
+
+			days = 200;
+
+		}
+
+		if (node == null) {
+			return;
+		}
+		Object nodeInfo = node.getUserObject();
+
+		if (nodeInfo.getClass() == tfg.app.model.entities.FundDesc.class) {
+
+			FundDesc fundDesc = (FundDesc) nodeInfo;
+
+			if (graficasBox.getSelectedItem().equals("Media Móvil")) {
+
+				chartMaker.createFundDescMeanMobileLineChart(fundService, panelGraficas, descripcionTex, fundDesc,
+						days);
+
+			}
+
+		} else if (nodeInfo.getClass() == tfg.app.model.entities.FundPort.class) {
+
+			FundPort fundPort = (FundPort) nodeInfo;
+
+			if (graficasBox.getSelectedItem().equals("Rent total")) {
+
+				try {
+					chartMaker.createProfitOfPortfolioLineChart(fundService, panelGraficas, descripcionTex, fundPort,
+							LocalDate.now().minusDays(days), LocalDate.now());
+				} catch (InstanceNotFoundException e) {
+					JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de base de datos",
+							JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+
+			}
+		}
+	}
+
 	private void showFundDesc(FundDesc fundDesc, JPanel panel) {
+
+		panel.removeAll();
+		panel.updateUI();
 
 		nombreDesc.setText("Nombre: " + fundDesc.getfName());
 
@@ -3641,6 +3926,7 @@ public class Gui extends javax.swing.JFrame {
 	private javax.swing.JRadioButton ventaBoton;
 	private javax.swing.JRadioButton compraBoton;
 	private javax.swing.ButtonGroup buttonGroup1;
+	private javax.swing.ButtonGroup buttonGroup2;
 	private javax.swing.JLabel nombreDesc;
 	private javax.swing.JLabel isinDesc;
 	private javax.swing.JLabel gestoraDesc;
@@ -3673,5 +3959,11 @@ public class Gui extends javax.swing.JFrame {
 	private javax.swing.JLabel isinLabel2;
 	private javax.swing.JLabel nombreLabel1;
 	private javax.swing.JTextField nombreText1;
+	private javax.swing.JRadioButton principalBoton1;
+	private javax.swing.JRadioButton principalBoton2;
+	private javax.swing.JRadioButton principalBoton3;
+	private javax.swing.JLabel rentaEstimadaLabel;
+	private javax.swing.JFormattedTextField rentaText;
+	private javax.swing.JButton calcularBoton;
 	// End of variables declaration
 }

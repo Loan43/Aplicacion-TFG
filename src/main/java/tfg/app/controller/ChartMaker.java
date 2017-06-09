@@ -158,7 +158,8 @@ public class ChartMaker {
 		panel.setLayout(new java.awt.BorderLayout());
 		panel.add(CP, BorderLayout.CENTER);
 
-		description.setText("Gráfica de la rentabilidad total del capital de la cartera " + fundPort.getpName());
+		description.setText("Gráfica de la rentabilidad total del capital de la cartera " + fundPort.getpName()
+				+ " en los últimos " + start.until(end, ChronoUnit.DAYS) + " días.");
 	}
 
 	/**
@@ -320,7 +321,7 @@ public class ChartMaker {
 	 * @param
 	 */
 	public void createEstimateProfitOfFundDescLineChart(FundService fundService, JPanel panel, JEditorPane description,
-			FundDesc fundDesc) {
+			FundDesc fundDesc, Double estimate, LocalDate start, LocalDate end) {
 
 		final TimeSeriesCollection data = new TimeSeriesCollection();
 
@@ -330,8 +331,7 @@ public class ChartMaker {
 
 		if (fundDesc.getFundVls().size() != 0) {
 
-			List<FundVl> fundVls = fundService.findFundVlbyRange(fundDesc, LocalDate.parse("2017-01-02"),
-					LocalDate.now());
+			List<FundVl> fundVls = fundService.findFundVlbyRange(fundDesc, start, end);
 
 			if (fundVls.size() != 0) {
 
@@ -341,15 +341,25 @@ public class ChartMaker {
 
 				double d = vlInicial.getDay().until(vlFinal.getDay(), ChronoUnit.DAYS);
 
-				double resultado = (Math.pow(vlFinal.getVl() / vlInicial.getVl(), (1 / d))) - 1;
+				double rentDiaria = 0;
+
+				if (estimate == null) {
+
+					rentDiaria = (Math.pow(vlFinal.getVl() / vlInicial.getVl(), (1 / d))) - 1;
+
+				} else {
+
+					rentDiaria = (Math.pow(1 + (estimate / 100), (1 / d))) - 1;
+
+				}
 
 				double primero = (fundVls.get(0).getVl());
 
-				double siguiente = primero / (1 + resultado);
+				double siguiente = primero / (1 + rentDiaria);
 
 				for (int y = 0; y < fundVls.size(); y++) {
 
-					siguiente = siguiente * (1 + resultado);
+					siguiente = siguiente * (1 + rentDiaria);
 
 					LocalDate date = fundVls.get(y).getDay();
 					Day day = new Day(date.getDayOfMonth(), date.getMonthValue(), date.getYear());
@@ -389,8 +399,9 @@ public class ChartMaker {
 		panel.setLayout(new java.awt.BorderLayout());
 		panel.add(CP, BorderLayout.CENTER);
 
-		description.setText(" Gráfica que muestra la rentabilidad por dia del fondo " + fundDesc.getfName()
-				+ " y comparala los Vls reales con los esperados en función de la misma");
+		description.setText("Gráfica que calcula la rentabilidad por dia del fondo " + fundDesc.getfName()
+				+ ", a partir de su rentabilidad y comparala los Vls reales con los esperados en función de la misma."
+				+ "\nSi se introduce 0 en el campo de texto se calculará sobre la rentabilidad real.");
 
 	}
 
