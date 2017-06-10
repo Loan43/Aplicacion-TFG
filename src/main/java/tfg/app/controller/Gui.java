@@ -28,6 +28,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
+
+import tfg.app.controller.workers.ChartWorker;
 import tfg.app.model.entities.FundDesc;
 import tfg.app.model.entities.FundPort;
 import tfg.app.model.entities.FundVl;
@@ -2863,7 +2865,10 @@ public class Gui extends javax.swing.JFrame {
 				model1.setDate(date1.getYear(), date1.getMonthValue() - 1, date1.getDayOfMonth());
 				model2.setDate(date2.getYear(), date2.getMonthValue() - 1, date2.getDayOfMonth());
 
-				chartMaker.createFundVlLineChart(fundService, panelGraficas, descripcionTex, fundDesc, null, null);
+				ChartWorker worker = new ChartWorker(fundService, panelGraficas, descripcionTex);
+				worker.setFundVlLineChart(fundDesc, null, null);
+				worker.execute();
+
 				return;
 			} else {
 
@@ -2905,13 +2910,10 @@ public class Gui extends javax.swing.JFrame {
 
 			if (graficasBox.getSelectedItem().equals("Historial Vl")) {
 
-				chartMaker.createFundVlLineChart(fundService, panelGraficas, descripcionTex, fundDesc, date1, date2);
-			}
+				ChartWorker worker = new ChartWorker(fundService, panelGraficas, descripcionTex);
+				worker.setFundVlLineChart(fundDesc, date1, date2);
+				worker.execute();
 
-			if (graficasBox.getSelectedItem().equals("Renta Esperada")) {
-
-				chartMaker.createEstimateProfitOfFundDescLineChart(fundService, panelGraficas, descripcionTex, fundDesc,
-						2.0, date1, date2);
 			}
 
 			if (graficasBox.getSelectedItem().equals("Renta Esperada")) {
@@ -2924,8 +2926,9 @@ public class Gui extends javax.swing.JFrame {
 
 				}
 
-				chartMaker.createEstimateProfitOfFundDescLineChart(fundService, panelGraficas, descripcionTex, fundDesc,
-						rent, date1, date2);
+				ChartWorker worker = new ChartWorker(fundService, panelGraficas, descripcionTex);
+				worker.setEstimateProfitOfFundDescLineChart(fundDesc, rent, date1, date2);
+				worker.execute();
 
 			}
 
@@ -3158,7 +3161,9 @@ public class Gui extends javax.swing.JFrame {
 				rentaEstimadaLabel.setVisible(false);
 				calcularBoton.setVisible(false);
 
-				chartMaker.createFundVlLineChart(fundService, panelGraficas, descripcionTex, fundDesc, null, null);
+				ChartWorker worker = new ChartWorker(fundService, panelGraficas, descripcionTex);
+				worker.setFundVlLineChart(fundDesc, null, null);
+				worker.execute();
 
 			}
 
@@ -3201,7 +3206,9 @@ public class Gui extends javax.swing.JFrame {
 				rentaEstimadaLabel.setVisible(false);
 				calcularBoton.setVisible(false);
 
-				chartMaker.createFundDescProfitBarChart(fundService, panelGraficas, descripcionTex, fundDesc);
+				ChartWorker worker = new ChartWorker(fundService, panelGraficas, descripcionTex);
+				worker.setFundDescProfitBarChart(fundDesc);
+				worker.execute();
 
 			}
 
@@ -3229,8 +3236,9 @@ public class Gui extends javax.swing.JFrame {
 				input = (Date) model2.getValue();
 				LocalDate date2 = input.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-				chartMaker.createEstimateProfitOfFundDescLineChart(fundService, panelGraficas, descripcionTex, fundDesc,
-						null, date1, date2);
+				ChartWorker worker = new ChartWorker(fundService, panelGraficas, descripcionTex);
+				worker.setEstimateProfitOfFundDescLineChart(fundDesc, null, date1, date2);
+				worker.execute();
 
 			}
 
@@ -3253,7 +3261,9 @@ public class Gui extends javax.swing.JFrame {
 
 				principalBoton1.setSelected(true);
 
-				chartMaker.createFundDescMeanMobileLineChart(fundService, panelGraficas, descripcionTex, fundDesc, 30);
+				ChartWorker worker = new ChartWorker(fundService, panelGraficas, descripcionTex);
+				worker.setFundDescMeanMobileLineChart(fundDesc, 30);
+				worker.execute();
 
 			}
 		} else {
@@ -3264,39 +3274,24 @@ public class Gui extends javax.swing.JFrame {
 
 				if (graficasBox.getSelectedItem().equals("Distribución")) {
 
-					try {
-						chartMaker.createPortfolioDistributionChart(fundService, panelGraficas, descripcionTex,
-								fundPort);
-					} catch (InstanceNotFoundException e) {
-						JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de base de datos",
-								JOptionPane.ERROR_MESSAGE);
-						return;
-					}
+					ChartWorker worker = new ChartWorker(fundService, panelGraficas, descripcionTex);
+					worker.setPortfolioDistributionChart(fundPort);
+					worker.execute();
 
 				}
 
 				if (graficasBox.getSelectedItem().equals("Fondos Norm")) {
 
-					try {
-						chartMaker.createFundDescsOfPortfolioNormalizedLineChart(fundService, panelGraficas,
-								descripcionTex, fundPort);
-					} catch (InstanceNotFoundException e) {
-						JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de base de datos",
-								JOptionPane.ERROR_MESSAGE);
-						return;
-					}
+					ChartWorker worker = new ChartWorker(fundService, panelGraficas, descripcionTex);
+					worker.setFundDescsOfPortfolioNormalizedLineChart(fundPort);
+					worker.execute();
 				}
 
 				if (graficasBox.getSelectedItem().equals("Rent de los fondos")) {
 
-					try {
-						chartMaker.createPortfolioMostProfitableFundsBarChart(fundService, panelGraficas,
-								descripcionTex, fundPort);
-					} catch (InstanceNotFoundException e) {
-						JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de base de datos",
-								JOptionPane.ERROR_MESSAGE);
-						return;
-					}
+					ChartWorker worker = new ChartWorker(fundService, panelGraficas, descripcionTex);
+					worker.setPortfolioMostProfitableFundsBarChart(fundPort);
+					worker.execute();
 
 				}
 
@@ -3308,27 +3303,18 @@ public class Gui extends javax.swing.JFrame {
 
 					principalBoton1.setSelected(true);
 
-					try {
-						chartMaker.createProfitOfPortfolioLineChart(fundService, panelGraficas, descripcionTex,
-								fundPort, LocalDate.now().minusDays(30), LocalDate.now());
-					} catch (InstanceNotFoundException e) {
-						JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de base de datos",
-								JOptionPane.ERROR_MESSAGE);
-						return;
-					}
+					ChartWorker worker = new ChartWorker(fundService, panelGraficas, descripcionTex);
+					worker.setProfitOfPortfolioLineChart(fundPort, LocalDate.now().minusDays(30), LocalDate.now());
+
+					worker.execute();
 
 				}
 
 				if (graficasBox.getSelectedItem().equals("Comparativa")) {
 
-					try {
-						chartMaker.createPortfolioFundsValueBarChart(fundService, panelGraficas, descripcionTex,
-								fundPort);
-					} catch (InstanceNotFoundException e) {
-						JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de base de datos",
-								JOptionPane.ERROR_MESSAGE);
-						return;
-					}
+					ChartWorker worker = new ChartWorker(fundService, panelGraficas, descripcionTex);
+					worker.setPortfolioFundsValueBarChart(fundPort);
+					worker.execute();
 
 				}
 			}
@@ -3380,8 +3366,9 @@ public class Gui extends javax.swing.JFrame {
 
 			}
 
-			chartMaker.createEstimateProfitOfFundDescLineChart(fundService, panelGraficas, descripcionTex, fundDesc,
-					rent, date1, date2);
+			ChartWorker worker = new ChartWorker(fundService, panelGraficas, descripcionTex);
+			worker.setEstimateProfitOfFundDescLineChart(fundDesc, rent, date1, date2);
+			worker.execute();
 
 		}
 
@@ -3419,8 +3406,9 @@ public class Gui extends javax.swing.JFrame {
 
 			if (graficasBox.getSelectedItem().equals("Media Móvil")) {
 
-				chartMaker.createFundDescMeanMobileLineChart(fundService, panelGraficas, descripcionTex, fundDesc,
-						days);
+				ChartWorker worker = new ChartWorker(fundService, panelGraficas, descripcionTex);
+				worker.setFundDescMeanMobileLineChart(fundDesc, days);
+				worker.execute();
 
 			}
 
@@ -3430,14 +3418,9 @@ public class Gui extends javax.swing.JFrame {
 
 			if (graficasBox.getSelectedItem().equals("Rent total")) {
 
-				try {
-					chartMaker.createProfitOfPortfolioLineChart(fundService, panelGraficas, descripcionTex, fundPort,
-							LocalDate.now().minusDays(days), LocalDate.now());
-				} catch (InstanceNotFoundException e) {
-					JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de base de datos",
-							JOptionPane.ERROR_MESSAGE);
-					return;
-				}
+				ChartWorker worker = new ChartWorker(fundService, panelGraficas, descripcionTex);
+				worker.setProfitOfPortfolioLineChart(fundPort, LocalDate.now().minusDays(days), LocalDate.now());
+				worker.execute();
 
 			}
 		}
@@ -3704,7 +3687,6 @@ public class Gui extends javax.swing.JFrame {
 		 * html
 		 */
 		fundService = new FundServiceImpl();
-		chartMaker = new ChartMaker();
 
 		// FundDesc fundDesc1 = new FundDesc("DE0008490962", "Renta 4 Bolsa FI",
 		// "Pinball Wizards", "Alto riesgo",
@@ -3783,7 +3765,6 @@ public class Gui extends javax.swing.JFrame {
 	private DefaultMutableTreeNode top;
 	private DefaultTreeModel arbolFondosModel;
 	private static FundService fundService = null;
-	private static ChartMaker chartMaker = null;
 	private javax.swing.JComboBox<FundDesc> fondoDesplegable;
 	private javax.swing.JComboBox<FundDesc> fondoDesplegable1;
 	private javax.swing.JComboBox<FundDesc> fondoDesplegable2;

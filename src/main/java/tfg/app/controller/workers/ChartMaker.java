@@ -1,14 +1,12 @@
-package tfg.app.controller;
+package tfg.app.controller.workers;
 
 import java.awt.BasicStroke;
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.time.temporal.ChronoUnit;
-import javax.swing.JEditorPane;
-import javax.swing.JPanel;
+import javax.swing.SwingWorker;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -24,6 +22,8 @@ import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+
+import tfg.app.controller.Chart;
 import tfg.app.model.entities.FundDesc;
 import tfg.app.model.entities.FundPort;
 import tfg.app.model.entities.FundVl;
@@ -37,21 +37,22 @@ import tfg.app.util.exceptions.InstanceNotFoundException;
  * y añadir una descripcción acorde en un JEditorPane.
  */
 
-public class ChartMaker {
+public class ChartMaker extends SwingWorker<Chart, Integer> {
 
 	/**
 	 * Crea una gráfica en forma de tarta con la distribución del capital en una
-	 * cartera.
+	 * cartera. 0
 	 * 
 	 * @param
 	 * @throws InstanceNotFoundException
 	 */
 
-	public void createPortfolioDistributionChart(FundService fundService, JPanel panel, JEditorPane description,
-			FundPort fundPort) throws InstanceNotFoundException {
+	public Chart createPortfolioDistributionChart(FundService fundService, FundPort fundPort)
+			throws InstanceNotFoundException {
 
 		List<FundDesc> fundDescs = null;
 		DefaultPieDataset dataset = new DefaultPieDataset();
+		String desc = "";
 
 		fundDescs = fundService.findFundsOfPortfolio(fundPort);
 
@@ -85,34 +86,31 @@ public class ChartMaker {
 
 		plot.setBackgroundPaint(Color.DARK_GRAY);
 
-		ChartPanel CP = new ChartPanel(chart);
-
-		panel.removeAll();
-		panel.updateUI();
-		panel.setLayout(new java.awt.BorderLayout());
-		panel.add(CP, BorderLayout.CENTER);
-		panel.validate();
+		ChartPanel cP = new ChartPanel(chart);
 
 		if (fundDescs.size() == 0) {
-			description.setText("La cartera seleccionada: " + fundPort.getpName() + " no tiene ningún fondo asignado.");
+			desc = ("La cartera seleccionada: " + fundPort.getpName() + " no tiene ningún fondo asignado.");
 		} else {
-			description.setText("Gráfica de la distrubución del capital de la cartera " + fundPort.getpName());
+			desc = ("Gráfica de la distrubución del capital de la cartera " + fundPort.getpName());
 		}
+
+		return new Chart(cP, desc);
 	}
 
 	/**
 	 * Crea una gráfica de lineas con la rentabilidad diaria en conjunto de la
-	 * cartera.
+	 * cartera. 1
 	 * 
 	 * @param
 	 * @throws InstanceNotFoundException
 	 */
 
-	public void createProfitOfPortfolioLineChart(FundService fundService, JPanel panel, JEditorPane description,
-			FundPort fundPort, LocalDate start, LocalDate end) throws InstanceNotFoundException {
+	public Chart createProfitOfPortfolioLineChart(FundService fundService, FundPort fundPort, LocalDate start,
+			LocalDate end) throws InstanceNotFoundException {
 
 		List<FundDesc> fundDescs = null;
 		double total = 0;
+		String desc = "";
 
 		TimeSeries series = new TimeSeries("Rentabilidad total");
 
@@ -152,30 +150,36 @@ public class ChartMaker {
 		plot.setDomainGridlinesVisible(true);
 		plot.setDomainGridlinePaint(Color.BLACK);
 
-		ChartPanel CP = new ChartPanel(chart);
-		panel.removeAll();
-		panel.updateUI();
-		panel.setLayout(new java.awt.BorderLayout());
-		panel.add(CP, BorderLayout.CENTER);
+		ChartPanel cP = new ChartPanel(chart);
 
-		description.setText("Gráfica de la rentabilidad total del capital de la cartera " + fundPort.getpName()
-				+ " en los últimos " + start.until(end, ChronoUnit.DAYS) + " días.");
+		// panel.removeAll();
+		// panel.updateUI();
+		// panel.setLayout(new java.awt.BorderLayout());
+		// panel.add(CP, BorderLayout.CENTER);
+		//
+		// description.setText("Gráfica de la rentabilidad total del capital de
+		// la cartera " + fundPort.getpName()
+		// + " en los últimos " + start.until(end, ChronoUnit.DAYS) + " días.");
+
+		desc = ("Gráfica de la rentabilidad total del capital de la cartera " + fundPort.getpName() + " en los últimos "
+				+ start.until(end, ChronoUnit.DAYS) + " días.");
+
+		return new Chart(cP, desc);
 	}
 
 	/**
 	 * Crea una gráfica de lineas con los valores liquidativos de un fondo.
 	 * <p>
 	 * Si las fechas son nulas se toman todos los vls asociados al fondo, en
-	 * caso contrario se toman los vls acotados entre ambas fechas.
+	 * caso contrario se toman los vls acotados entre ambas fechas. 2
 	 * 
 	 * @param
 	 */
 
-	public void createFundVlLineChart(FundService fundService, JPanel panel, JEditorPane description, FundDesc fundDesc,
-			LocalDate start, LocalDate end) {
+	public Chart createFundVlLineChart(FundService fundService, FundDesc fundDesc, LocalDate start, LocalDate end) {
 
 		List<FundVl> fundVlList = null;
-		String string = "";
+		String desc = "";
 
 		TimeSeries series = new TimeSeries("Valor Liquidativo");
 
@@ -184,14 +188,14 @@ public class ChartMaker {
 			fundVlList = fundDesc.getFundVls();
 
 			if (fundVlList.size() == 0) {
-				string = ("El fondo seleccionado: " + fundDesc.getfName() + " con ISIN: " + fundDesc.getfId()
+				desc = ("El fondo seleccionado: " + fundDesc.getfName() + " con ISIN: " + fundDesc.getfId()
 						+ " no tiene ningún Vl.");
 			} else {
 
 				LocalDate date1 = fundVlList.get(0).getDay();
 				LocalDate date2 = fundVlList.get(fundDesc.getFundVls().size() - 1).getDay();
 
-				string = ("Gáfica con el historial de los Vl del fondo: " + fundDesc.getfName() + " con ISIN: "
+				desc = ("Gáfica con el historial de los Vl del fondo: " + fundDesc.getfName() + " con ISIN: "
 						+ fundDesc.getfId() + " entre los días: " + date1 + " y " + date2 + ".");
 
 			}
@@ -201,11 +205,11 @@ public class ChartMaker {
 			fundVlList = fundService.findFundVlbyRange(fundDesc, start, end);
 
 			if (fundVlList.size() == 0) {
-				string = ("El fondo seleccionado: " + fundDesc.getfName() + " con ISIN: " + fundDesc.getfId()
+				desc = ("El fondo seleccionado: " + fundDesc.getfName() + " con ISIN: " + fundDesc.getfId()
 						+ " no tiene ningún Vl entre los días: " + start + " y " + end + ".");
 			} else {
 
-				string = ("Gáfica con el historial de los Vl del fondo: " + fundDesc.getfName() + " con ISIN: "
+				desc = ("Gáfica con el historial de los Vl del fondo: " + fundDesc.getfName() + " con ISIN: "
 						+ fundDesc.getfId() + " entre los días: " + start + " y " + end + ".");
 
 			}
@@ -239,26 +243,23 @@ public class ChartMaker {
 		plot.setDomainGridlinesVisible(true);
 		plot.setDomainGridlinePaint(Color.BLACK);
 
-		ChartPanel CP = new ChartPanel(chart);
-		panel.removeAll();
-		panel.updateUI();
-		panel.setLayout(new java.awt.BorderLayout());
-		panel.add(CP, BorderLayout.CENTER);
+		ChartPanel cP = new ChartPanel(chart);
 
-		description.setText(string);
+		return new Chart(cP, desc);
 
 	}
 
 	/**
 	 * Crea una gráfica de lineas con los valores liquidativos normalizados de
-	 * todos los fondos de una cartera.
+	 * todos los fondos de una cartera. 3
 	 * 
 	 * @param
 	 */
-	public void createFundDescsOfPortfolioNormalizedLineChart(FundService fundService, JPanel panel,
-			JEditorPane description, FundPort fundPort) throws InstanceNotFoundException {
+	public Chart createFundDescsOfPortfolioNormalizedLineChart(FundService fundService, FundPort fundPort)
+			throws InstanceNotFoundException {
 
 		List<FundDesc> fundDescs = null;
+		String desc = "";
 
 		fundDescs = fundService.findFundsOfPortfolio(fundPort);
 
@@ -298,32 +299,29 @@ public class ChartMaker {
 		plot.setDomainGridlinesVisible(true);
 		plot.setDomainGridlinePaint(Color.BLACK);
 
-		ChartPanel CP = new ChartPanel(chart);
-		panel.removeAll();
-		panel.updateUI();
-		panel.setLayout(new java.awt.BorderLayout());
-		panel.add(CP, BorderLayout.CENTER);
+		ChartPanel cP = new ChartPanel(chart);
 
 		if (fundDescs.size() == 0) {
-			description.setText("La cartera seleccionada: " + fundPort.getpName() + " no tiene ningún fondo asignado.");
+			desc = ("La cartera seleccionada: " + fundPort.getpName() + " no tiene ningún fondo asignado.");
 		} else {
-
-			description.setText("Gráfica de los valores de la cartera: " + fundPort.getpName() + " normalizados.");
-
+			desc = ("Gráfica de los valores de la cartera: " + fundPort.getpName() + " normalizados.");
 		}
+
+		return new Chart(cP, desc);
 
 	}
 
 	/**
 	 * Crea una gráfica de lineas que muestra la rentabilidad por dia y compara
-	 * los Vls reales con los esperados en función de la rentabilidad por día.
+	 * los Vls reales con los esperados en función de la rentabilidad por día. 4
 	 * 
 	 * @param
 	 */
-	public void createEstimateProfitOfFundDescLineChart(FundService fundService, JPanel panel, JEditorPane description,
-			FundDesc fundDesc, Double estimate, LocalDate start, LocalDate end) {
+	public Chart createEstimateProfitOfFundDescLineChart(FundService fundService, FundDesc fundDesc, Double estimate,
+			LocalDate start, LocalDate end) {
 
 		final TimeSeriesCollection data = new TimeSeriesCollection();
+		String desc = "";
 
 		TimeSeries real = new TimeSeries("Vl real del fondo");
 
@@ -393,43 +391,40 @@ public class ChartMaker {
 		plot.setDomainGridlinesVisible(true);
 		plot.setDomainGridlinePaint(Color.BLACK);
 
-		ChartPanel CP = new ChartPanel(chart);
-		panel.removeAll();
-		panel.updateUI();
-		panel.setLayout(new java.awt.BorderLayout());
-		panel.add(CP, BorderLayout.CENTER);
+		ChartPanel cP = new ChartPanel(chart);
 
-		description.setText("Gráfica que calcula la rentabilidad por dia del fondo " + fundDesc.getfName()
+		desc = ("Gráfica que calcula la rentabilidad por dia del fondo " + fundDesc.getfName()
 				+ ", a partir de su rentabilidad y comparala los Vls reales con los esperados en función de la misma."
 				+ "\nSi se introduce 0 en el campo de texto se calculará sobre la rentabilidad real.");
+
+		return new Chart(cP, desc);
 
 	}
 
 	/**
 	 * Crea una gráfica de líneas que muestra los vls y sus medias móviles a los
-	 * días indicados.
+	 * días indicados. 5
 	 * 
 	 * @param
 	 */
 
-	public void createFundDescMeanMobileLineChart(FundService fundService, JPanel panel, JEditorPane description,
-			FundDesc fundDesc, int days) {
+	public Chart createFundDescMeanMobileLineChart(FundService fundService, FundDesc fundDesc, int days) {
 
 		final TimeSeriesCollection data = new TimeSeriesCollection();
+
+		String desc = "";
 
 		TimeSeries vls = new TimeSeries("Valor Liquidativo");
 		TimeSeries mediaMovil = new TimeSeries("Media Móvil");
 
-		String string = "";
-
 		if (fundDesc.getFundVls().size() <= days) {
 
-			string = "El fondo " + fundDesc.getfName()
+			desc = "El fondo " + fundDesc.getfName()
 					+ " no tiene suficientes valores para poder calcular su media móvil a " + days + " días.";
 
 		} else {
 
-			string = (" Gráfica que muestra la media móvil del fondo " + fundDesc.getfName()
+			desc = (" Gráfica que muestra la media móvil del fondo " + fundDesc.getfName()
 					+ " para un período de tiempo de " + days + " días.");
 
 			double sum = 0.0;
@@ -486,13 +481,9 @@ public class ChartMaker {
 		plot.setDomainGridlinesVisible(true);
 		plot.setDomainGridlinePaint(Color.BLACK);
 
-		ChartPanel CP = new ChartPanel(chart);
-		panel.removeAll();
-		panel.updateUI();
-		panel.setLayout(new java.awt.BorderLayout());
-		panel.add(CP, BorderLayout.CENTER);
+		ChartPanel cP = new ChartPanel(chart);
 
-		description.setText(string);
+		return new Chart(cP, desc);
 
 	}
 
@@ -500,24 +491,24 @@ public class ChartMaker {
 	 * Crea una gráfica de barras que muestra las rentabilidades históricas de
 	 * un fondo para los siguientes períodos de tiempo:
 	 * <p>
-	 * Último año fiscal, último semestre, último trimestre y último mes
+	 * Último año fiscal, último semestre, último trimestre y último mes 6
 	 * 
 	 * @param
 	 */
 
-	public void createFundDescProfitBarChart(FundService fundService, JPanel panel, JEditorPane description,
-			FundDesc fundDesc) {
+	public Chart createFundDescProfitBarChart(FundService fundService, FundDesc fundDesc) {
 
 		DefaultCategoryDataset bar_chart_dataset = new DefaultCategoryDataset();
 		Double profit = 0.0;
+		String desc = "";
 
-		String string = "Gráfica que muestra las rentabilidades históricas del fondo " + fundDesc.getfName()
+		desc = "Gráfica que muestra las rentabilidades históricas del fondo " + fundDesc.getfName()
 				+ ", para los siguientes períodos de tiempo:\n"
 				+ "Último año fiscal, último semestre, último trimestre y último mes.\n";
 
 		if (fundDesc.getFundVls().size() == 0) {
 
-			string += "\nEl fondo no tiene ningún VL.";
+			desc += "\nEl fondo no tiene ningún VL.";
 
 		} else {
 
@@ -539,12 +530,12 @@ public class ChartMaker {
 							/ fundVls.get(0).getVl();
 					bar_chart_dataset.addValue(profit, fundDesc.getfName(), "Último año fiscal");
 				} else {
-					string += "\nNo existen suficentes datos para calcular la rentabilidad del último año fiscal ("
+					desc += "\nNo existen suficentes datos para calcular la rentabilidad del último año fiscal ("
 							+ today.minusYears(1).getYear() + "). ";
 				}
 
 			} else {
-				string += "\nNo existen datos del último año fiscal (" + today.minusYears(1).getYear() + "). ";
+				desc += "\nNo existen datos del último año fiscal (" + today.minusYears(1).getYear() + "). ";
 
 			}
 
@@ -561,11 +552,11 @@ public class ChartMaker {
 							/ fundVls.get(0).getVl();
 					bar_chart_dataset.addValue(profit, fundDesc.getfName(), "Último semestre");
 				} else {
-					string += "\nNo existen suficentes datos para calcular la rentabilidad del último semestre. ";
+					desc += "\nNo existen suficentes datos para calcular la rentabilidad del último semestre. ";
 				}
 
 			} else {
-				string += "\nNo existen datos del último semestre. ";
+				desc += "\nNo existen datos del último semestre. ";
 
 			}
 			// Trimestre
@@ -581,10 +572,10 @@ public class ChartMaker {
 							/ fundVls.get(0).getVl();
 					bar_chart_dataset.addValue(profit, fundDesc.getfName(), "Último trimestre");
 				} else {
-					string += "\nNo existen suficentes datos para calcular la rentabilidad del último trimestre. ";
+					desc += "\nNo existen suficentes datos para calcular la rentabilidad del último trimestre. ";
 				}
 			} else {
-				string += "\nNo existen datos del último trimestre. ";
+				desc += "\nNo existen datos del último trimestre. ";
 
 			}
 
@@ -601,10 +592,10 @@ public class ChartMaker {
 							/ fundVls.get(0).getVl();
 					bar_chart_dataset.addValue(profit, fundDesc.getfName(), "Último mes");
 				} else {
-					string += "\nNo existen suficentes datos para calcular la rentabilidad del último mes. ";
+					desc += "\nNo existen suficentes datos para calcular la rentabilidad del último mes. ";
 				}
 			} else {
-				string += "\nNo existen datos del último mes. ";
+				desc += "\nNo existen datos del último mes. ";
 
 			}
 		}
@@ -621,27 +612,24 @@ public class ChartMaker {
 		BarRenderer r = (BarRenderer) barChart.getCategoryPlot().getRenderer();
 		r.setSeriesPaint(0, Color.BLUE);
 
-		ChartPanel CP = new ChartPanel(barChart);
+		ChartPanel cP = new ChartPanel(barChart);
 
-		panel.removeAll();
-		panel.updateUI();
-		panel.setLayout(new java.awt.BorderLayout());
-		panel.add(CP, BorderLayout.CENTER);
-
-		description.setText(string);
+		return new Chart(cP, desc);
 
 	}
 
 	/**
 	 * Crea una gráfica de barras que muestra los cinco fondos más y menos
-	 * rentables de la cartera en el día de hoy.
+	 * rentables de la cartera en el día de hoy. 7
 	 * 
 	 * @param
 	 */
-	public void createPortfolioMostProfitableFundsBarChart(FundService fundService, JPanel panel,
-			JEditorPane description, FundPort fundPort) throws InstanceNotFoundException {
+	public Chart createPortfolioMostProfitableFundsBarChart(FundService fundService, FundPort fundPort)
+			throws InstanceNotFoundException {
 
 		List<FundDesc> fundDescs = null;
+
+		String desc = "";
 
 		fundDescs = fundService.getProfitOfFundsOfPortfolio(fundPort, LocalDate.now());
 
@@ -678,35 +666,33 @@ public class ChartMaker {
 		BarRenderer r = (BarRenderer) barChart.getCategoryPlot().getRenderer();
 		r.setSeriesPaint(0, Color.CYAN);
 
-		ChartPanel CP = new ChartPanel(barChart);
-
-		panel.removeAll();
-		panel.updateUI();
-		panel.setLayout(new java.awt.BorderLayout());
-		panel.add(CP, BorderLayout.CENTER);
+		ChartPanel cP = new ChartPanel(barChart);
 
 		if (fundDescs.size() == 0) {
-			description.setText("La cartera seleccionada: " + fundPort.getpName() + " no tiene ningún fondo asignado.");
+			desc = ("La cartera seleccionada: " + fundPort.getpName() + " no tiene ningún fondo asignado.");
 		} else {
 
-			description
-					.setText("Gráfica de los cinco fondos más y menos rentables de la cartera: " + fundPort.getpName());
+			desc = ("Gráfica de los cinco fondos más y menos rentables de la cartera: " + fundPort.getpName());
 
 		}
+
+		return new Chart(cP, desc);
 
 	}
 
 	/**
 	 * Crea una gráfica de barras que muestra una comparativa entre el valor de
 	 * los diferentes fondos de la cartera el día de la última operación y el
-	 * día actual.
+	 * día actual. 8
 	 * 
 	 * @param
 	 */
-	public void createPortfolioFundsValueBarChart(FundService fundService, JPanel panel, JEditorPane description,
-			FundPort fundPort) throws InstanceNotFoundException {
+	public Chart createPortfolioFundsValueBarChart(FundService fundService, FundPort fundPort)
+			throws InstanceNotFoundException {
 
 		List<FundDesc> fundDescs = null;
+
+		String desc = "";
 
 		fundDescs = fundService.findFundsOfPortfolio(fundPort);
 
@@ -750,23 +736,25 @@ public class ChartMaker {
 
 		((BarRenderer) cplot.getRenderer()).setBarPainter(new StandardBarPainter());
 
-		ChartPanel CP = new ChartPanel(barChart);
-
-		panel.removeAll();
-		panel.updateUI();
-		panel.setLayout(new java.awt.BorderLayout());
-		panel.add(CP, BorderLayout.CENTER);
+		ChartPanel cP = new ChartPanel(barChart);
 
 		if (fundDescs.size() == 0) {
-			description.setText("La cartera seleccionada: " + fundPort.getpName() + " no tiene ningún fondo asignado.");
+			desc = ("La cartera seleccionada: " + fundPort.getpName() + " no tiene ningún fondo asignado.");
 		} else {
 
-			description.setText(
-					"Gráfica que muestra una comparativa entre el valor de los diferentes fondos de la cartera: "
-							+ fundPort.getpName() + " el día de la última operación y el día actual. ");
+			desc = ("Gráfica que muestra una comparativa entre el valor de los diferentes fondos de la cartera: "
+					+ fundPort.getpName() + " el día de la última operación y el día actual. ");
 
 		}
 
+		return new Chart(cP, desc);
+
+	}
+
+	@Override
+	protected Chart doInBackground() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
