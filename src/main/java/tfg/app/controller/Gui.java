@@ -26,14 +26,14 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-
 import org.apache.commons.io.FilenameUtils;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
 
 import tfg.app.controller.workers.ChartWorker;
+import tfg.app.controller.workers.ImportFundWorker;
+import tfg.app.controller.workers.NodesWorker;
 import tfg.app.model.entities.FundDesc;
 import tfg.app.model.entities.FundPort;
 import tfg.app.model.entities.FundVl;
@@ -104,10 +104,15 @@ public class Gui extends javax.swing.JFrame {
 		anadirFondo = new javax.swing.JDialog();
 		isinLabel = new javax.swing.JLabel();
 		isinText = new javax.swing.JTextField();
+		isinText.setDocument(new JTextFieldLimit(12));
 		gestoraText = new javax.swing.JTextField();
+		gestoraText.setDocument(new JTextFieldLimit(40));
 		tipoText = new javax.swing.JTextField();
+		tipoText.setDocument(new JTextFieldLimit(20));
 		categoriaText = new javax.swing.JTextField();
+		categoriaText.setDocument(new JTextFieldLimit(30));
 		divisaText = new javax.swing.JTextField();
+		divisaText.setDocument(new JTextFieldLimit(20));
 		gestoraLabel = new javax.swing.JLabel();
 		tipoLabel = new javax.swing.JLabel();
 		categoriaLabel = new javax.swing.JLabel();
@@ -121,9 +126,13 @@ public class Gui extends javax.swing.JFrame {
 		actuaFondo = new javax.swing.JDialog();
 		isinLabel1 = new javax.swing.JLabel();
 		gestoraText1 = new javax.swing.JTextField();
+		gestoraText1.setDocument(new JTextFieldLimit(40));
 		tipoText1 = new javax.swing.JTextField();
+		tipoText1.setDocument(new JTextFieldLimit(20));
 		categoriaText1 = new javax.swing.JTextField();
+		categoriaText1.setDocument(new JTextFieldLimit(30));
 		divisaText1 = new javax.swing.JTextField();
+		divisaText1.setDocument(new JTextFieldLimit(20));
 		gestoraLabel1 = new javax.swing.JLabel();
 		tipoLabel1 = new javax.swing.JLabel();
 		categoriaLabel1 = new javax.swing.JLabel();
@@ -137,6 +146,7 @@ public class Gui extends javax.swing.JFrame {
 		anadirCartera = new javax.swing.JDialog();
 		nomCarteraLabel = new javax.swing.JLabel();
 		nomCarteraText = new javax.swing.JTextField();
+		nomCarteraText.setDocument(new JTextFieldLimit(40));
 		descCarteraLabel = new javax.swing.JLabel();
 		jScrollPane1 = new javax.swing.JScrollPane();
 		descCarteraText = new javax.swing.JTextArea();
@@ -213,6 +223,7 @@ public class Gui extends javax.swing.JFrame {
 		opFechaLabel2 = new javax.swing.JLabel();
 		nombreLabel1 = new javax.swing.JLabel();
 		nombreText1 = new javax.swing.JTextField();
+		nombreText1.setDocument(new JTextFieldLimit(40));
 		rentaText = new javax.swing.JFormattedTextField();
 		rentaEstimadaLabel = new javax.swing.JLabel();
 		calcularBoton = new javax.swing.JButton();
@@ -250,6 +261,17 @@ public class Gui extends javax.swing.JFrame {
 				}
 			}
 		};
+		progressBarListener = new PropertyChangeListener() {
+			@Override
+			public void propertyChange(final PropertyChangeEvent event) {
+				switch (event.getPropertyName()) {
+				case "progress":
+					progressBar.setIndeterminate(false);
+					progressBar.setValue((Integer) event.getNewValue());
+					break;
+				}
+			}
+		};
 		tablaOps = new javax.swing.JDialog();
 		jScrollPane4 = new javax.swing.JScrollPane();
 		opTabla = new javax.swing.JTable();
@@ -271,6 +293,7 @@ public class Gui extends javax.swing.JFrame {
 		actuOp = new javax.swing.JMenuItem();
 		borrarOp = new javax.swing.JMenuItem();
 		buscarText = new javax.swing.JTextField();
+		buscarText.setDocument(new JTextFieldLimit(40));
 		buscarLabel = new javax.swing.JLabel();
 		jScrollPane2 = new javax.swing.JScrollPane();
 		barraMenu = new javax.swing.JMenuBar();
@@ -282,6 +305,7 @@ public class Gui extends javax.swing.JFrame {
 		graficasBox = new javax.swing.JComboBox<>();
 		nombreLabel = new javax.swing.JLabel();
 		nombreText = new javax.swing.JTextField();
+		nombreText.setDocument(new JTextFieldLimit(40));
 		nombreDesc = new javax.swing.JLabel();
 		isinDesc = new javax.swing.JLabel();
 		gestoraDesc = new javax.swing.JLabel();
@@ -300,6 +324,8 @@ public class Gui extends javax.swing.JFrame {
 		principalBoton1 = new javax.swing.JRadioButton();
 		principalBoton2 = new javax.swing.JRadioButton();
 		principalBoton3 = new javax.swing.JRadioButton();
+		progressLabel = new javax.swing.JLabel();
+		progressBar = new javax.swing.JProgressBar();
 		workers = new ArrayList<>();
 
 		selectorDeFichero = new javax.swing.JFileChooser();
@@ -309,9 +335,12 @@ public class Gui extends javax.swing.JFrame {
 
 		///////////////////////////////////////////
 		top = new DefaultMutableTreeNode("Carteras");
-		createNodes(top);
 		arbolFondos = new javax.swing.JTree(top);
-		arbolFondosModel = (DefaultTreeModel) arbolFondos.getModel();
+
+		progressLabel.setText("Actualizando Modelo:");
+		NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+		createNodes.addPropertyChangeListener(progressBarListener);
+		createNodes.execute();
 
 		model1 = new UtilDateModel();
 		model2 = new UtilDateModel();
@@ -1463,6 +1492,11 @@ public class Gui extends javax.swing.JFrame {
 		tablaVls.setTitle("Valores Liquidativos");
 		tablaVls.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 		tablaVls.setSize(new java.awt.Dimension(700, 450));
+		tablaVls.addWindowListener(new java.awt.event.WindowAdapter() {
+			public void windowClosing(java.awt.event.WindowEvent evt) {
+				tablaVlsWindowClosing(evt);
+			}
+		});
 
 		vlTabla.setModel(new javax.swing.table.DefaultTableModel(new Object[][] {
 
@@ -1514,6 +1548,12 @@ public class Gui extends javax.swing.JFrame {
 		tablaOps.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 		tablaOps.setTitle("Operaciones");
 		tablaOps.setSize(new java.awt.Dimension(700, 450));
+		tablaOps.setLocationRelativeTo(this);
+		tablaOps.addWindowListener(new java.awt.event.WindowAdapter() {
+			public void windowClosing(java.awt.event.WindowEvent evt) {
+				tablaOpsWindowClosing(evt);
+			}
+		});
 
 		opTabla.setModel(new javax.swing.table.DefaultTableModel(new Object[][] {
 
@@ -1771,6 +1811,9 @@ public class Gui extends javax.swing.JFrame {
 			}
 		});
 
+		progressLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+		progressLabel.setText("Actualizando Modelo:");
+
 		jMenu3.setText("Archivo");
 
 		jMenu1.setText("Añadir");
@@ -1866,16 +1909,24 @@ public class Gui extends javax.swing.JFrame {
 		layout.setHorizontalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 				.addGroup(layout.createSequentialGroup().addContainerGap()
 						.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-								.addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE,
-										220, javax.swing.GroupLayout.PREFERRED_SIZE)
-								.addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+								.addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 220,
+										javax.swing.GroupLayout.PREFERRED_SIZE)
+								.addGroup(
+										javax.swing.GroupLayout.Alignment.TRAILING,
 										layout.createSequentialGroup().addComponent(buscarText)
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-												.addComponent(buscarLabel)))
-						.addGap(18, 18, 18)
+												.addComponent(buscarLabel))
+								.addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+										layout.createSequentialGroup()
+												.addComponent(progressLabel, javax.swing.GroupLayout.PREFERRED_SIZE,
+														120, javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+												.addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 80,
+														javax.swing.GroupLayout.PREFERRED_SIZE)))
+						.addGap(10, 10, 10)
 						.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-								.addComponent(panelGraficas,
-										javax.swing.GroupLayout.DEFAULT_SIZE,
+								.addComponent(
+										panelGraficas, javax.swing.GroupLayout.DEFAULT_SIZE,
 										javax.swing.GroupLayout.DEFAULT_SIZE,
 										Short.MAX_VALUE)
 								.addComponent(jScrollPane6).addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
@@ -1905,7 +1956,7 @@ public class Gui extends javax.swing.JFrame {
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
 												.addComponent(hastaDate, javax.swing.GroupLayout.PREFERRED_SIZE, 120,
 														javax.swing.GroupLayout.PREFERRED_SIZE)))
-						.addGap(20, 20, 20)));
+						.addGap(10, 10, 10)));
 
 		layout.setVerticalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 				.addGroup(layout.createSequentialGroup().addContainerGap()
@@ -1930,14 +1981,26 @@ public class Gui extends javax.swing.JFrame {
 												javax.swing.GroupLayout.PREFERRED_SIZE)))
 						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
 						.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-								.addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 665, Short.MAX_VALUE)
+
+								.addGroup(layout.createSequentialGroup()
+
+										.addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE,
+												javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+										.addGroup(layout
+												.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+												.addComponent(progressLabel, javax.swing.GroupLayout.DEFAULT_SIZE,
+														javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+												.addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE,
+														javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+
 								.addGroup(layout.createSequentialGroup()
 										.addComponent(panelGraficas, javax.swing.GroupLayout.DEFAULT_SIZE,
 												javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 										.addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 96,
 												javax.swing.GroupLayout.PREFERRED_SIZE)))
-						.addContainerGap()));
+						.addGap(10, 10, 10)));
 
 		layout.linkSize(javax.swing.SwingConstants.VERTICAL,
 				new java.awt.Component[] { buscarLabel, buscarText, graficasBox });
@@ -1947,6 +2010,8 @@ public class Gui extends javax.swing.JFrame {
 
 		layout.linkSize(javax.swing.SwingConstants.VERTICAL,
 				new java.awt.Component[] { desdeDate, hastaDate, buscarLabel, buscarText, graficasBox });
+
+		layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] { progressLabel, progressBar });
 
 		pack();
 	}// </editor-fold>
@@ -1983,6 +2048,11 @@ public class Gui extends javax.swing.JFrame {
 			JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de entrada", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
+
+		progressLabel.setText("Actualizando Modelo:");
+		NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+		createNodes.addPropertyChangeListener(progressBarListener);
+		createNodes.execute();
 
 		anadirFondo.setVisible(false);
 
@@ -2022,8 +2092,11 @@ public class Gui extends javax.swing.JFrame {
 			JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de entrada", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-		createNodes(top);
-		arbolFondosModel.reload(top);
+
+		progressLabel.setText("Actualizando Modelo:");
+		NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+		createNodes.addPropertyChangeListener(progressBarListener);
+		createNodes.execute();
 
 		anadirCartera.setVisible(false);
 	}
@@ -2036,6 +2109,7 @@ public class Gui extends javax.swing.JFrame {
 		if (node == null) {
 			return;
 		}
+
 		Object nodeInfo = node.getUserObject();
 
 		desdeDate.setVisible(false);
@@ -2052,6 +2126,8 @@ public class Gui extends javax.swing.JFrame {
 		calcularBoton.setVisible(false);
 
 		if (nodeInfo.getClass() == tfg.app.model.entities.FundDesc.class) {
+
+			tablaVls.setLocationRelativeTo(this);
 
 			graficasBox.setModel(new javax.swing.DefaultComboBoxModel<>(
 					new String[] { "Descripción", "Historial Vl", "Hist Renta", "Renta Esperada", "Media Móvil" }));
@@ -2231,8 +2307,10 @@ public class Gui extends javax.swing.JFrame {
 			return;
 		}
 
-		createNodes(top);
-		arbolFondosModel.reload(top);
+		progressLabel.setText("Actualizando Modelo:");
+		NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+		createNodes.addPropertyChangeListener(progressBarListener);
+		createNodes.execute();
 
 	}
 
@@ -2281,6 +2359,22 @@ public class Gui extends javax.swing.JFrame {
 
 	}
 
+	private void tablaOpsWindowClosing(java.awt.event.WindowEvent evt) {
+
+		progressLabel.setText("Actualizando Modelo:");
+		NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+		createNodes.addPropertyChangeListener(progressBarListener);
+		createNodes.execute();
+	}
+
+	private void tablaVlsWindowClosing(java.awt.event.WindowEvent evt) {
+
+		progressLabel.setText("Actualizando Modelo:");
+		NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+		createNodes.addPropertyChangeListener(progressBarListener);
+		createNodes.execute();
+	}
+
 	// Borrar cartera del popupmenu de cartera
 	private void borrarCarteraActionPerformed(java.awt.event.ActionEvent evt) {
 
@@ -2295,8 +2389,10 @@ public class Gui extends javax.swing.JFrame {
 			return;
 		}
 
-		createNodes(top);
-		arbolFondosModel.reload(top);
+		progressLabel.setText("Actualizando Modelo:");
+		NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+		createNodes.addPropertyChangeListener(progressBarListener);
+		createNodes.execute();
 	}
 
 	// Click en el boton de cancelar de la ventana actualizar fondo
@@ -2332,8 +2428,10 @@ public class Gui extends javax.swing.JFrame {
 
 		actuaFondo.setVisible(false);
 
-		createNodes(top);
-
+		progressLabel.setText("Actualizando Modelo:");
+		NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+		createNodes.addPropertyChangeListener(progressBarListener);
+		createNodes.execute();
 	}
 
 	// Click en el boton de aceptar de la ventana anadir VL
@@ -2363,6 +2461,11 @@ public class Gui extends javax.swing.JFrame {
 			JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de entrada", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
+
+		progressLabel.setText("Actualizando Modelo:");
+		NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+		createNodes.addPropertyChangeListener(progressBarListener);
+		createNodes.execute();
 
 		anadirVl.setVisible(false);
 	}
@@ -2547,8 +2650,10 @@ public class Gui extends javax.swing.JFrame {
 			return;
 		} finally {
 
-			createNodes(top);
-			arbolFondosModel.reload(top);
+			progressLabel.setText("Actualizando Modelo:");
+			NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+			createNodes.addPropertyChangeListener(progressBarListener);
+			createNodes.execute();
 
 		}
 
@@ -2575,6 +2680,7 @@ public class Gui extends javax.swing.JFrame {
 			JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de entrada", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
+
 		actuaVl.setVisible(false);
 
 		verVlActionPerformed(evt);
@@ -2624,6 +2730,11 @@ public class Gui extends javax.swing.JFrame {
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
+
+		progressLabel.setText("Actualizando Modelo:");
+		NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+		createNodes.addPropertyChangeListener(progressBarListener);
+		createNodes.execute();
 
 		anadirOp.setVisible(false);
 
@@ -2699,33 +2810,6 @@ public class Gui extends javax.swing.JFrame {
 		//
 	}
 
-	private static void createNodes(DefaultMutableTreeNode top) {
-
-		DefaultMutableTreeNode found = null;
-		DefaultMutableTreeNode porfolio = null;
-
-		List<FundPort> fundPorts = fundService.findAllFundPortfolios();
-
-		top.removeAllChildren();
-
-		for (int x = 0; x < fundPorts.size(); x++) {
-			porfolio = new DefaultMutableTreeNode(fundPorts.get(x));
-			top.add(porfolio);
-			try {
-				List<FundDesc> fundDescs = fundService.findFundsOfPortfolio(fundPorts.get(x));
-
-				for (int x1 = 0; x1 < fundDescs.size(); x1++) {
-					found = new DefaultMutableTreeNode(fundDescs.get(x1));
-					porfolio.add(found);
-				}
-			} catch (InstanceNotFoundException e) {
-				// ¡
-				e.printStackTrace();
-			}
-		}
-	}
-	///////////////////////////
-
 	// Click en el boton de aceptar de la ventana añadir fondo a cartera
 	private void aceptAnFondoCartBotonActionPerformed(java.awt.event.ActionEvent evt) {
 
@@ -2750,8 +2834,11 @@ public class Gui extends javax.swing.JFrame {
 			return;
 		}
 
-		createNodes(top);
-		arbolFondosModel.reload(top);
+		progressLabel.setText("Actualizando Modelo:");
+		NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+		createNodes.addPropertyChangeListener(progressBarListener);
+		createNodes.execute();
+
 		anadirFondoCartera.setVisible(false);
 
 	}
@@ -2793,8 +2880,10 @@ public class Gui extends javax.swing.JFrame {
 			return;
 		}
 
-		createNodes(top);
-		arbolFondosModel.reload(top);
+		progressLabel.setText("Actualizando Modelo:");
+		NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+		createNodes.addPropertyChangeListener(progressBarListener);
+		createNodes.execute();
 		borrarFondoCartera.setVisible(false);
 
 	}
@@ -2811,6 +2900,7 @@ public class Gui extends javax.swing.JFrame {
 		if (fundDesc == null) {
 			return;
 		}
+
 		try {
 			fundDesc = fundService.findFund(fundDesc.getfId());
 		} catch (InstanceNotFoundException e) {
@@ -2836,7 +2926,6 @@ public class Gui extends javax.swing.JFrame {
 				model.addRow(new Object[] { fundDesc.getfId(), fundVl, String.format("%.4f", fundVl.getVl()), 0.0 });
 			}
 		}
-		tablaVls.setLocationRelativeTo(this);
 		tablaVls.setTitle("Valores liquidativos del fondo: " + fundDesc.getfName());
 		tablaVls.setVisible(true);
 	}
@@ -2870,6 +2959,7 @@ public class Gui extends javax.swing.JFrame {
 		LocalDate date2 = null;
 
 		if (node == null) {
+			JOptionPane.showMessageDialog(ventanaError, "Seleccione un fondo.", "Error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		Object nodeInfo = node.getUserObject();
@@ -2965,15 +3055,15 @@ public class Gui extends javax.swing.JFrame {
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = selectorDeFichero.getSelectedFile();
 
-			try {
-				FundDesc fundDesc = fundService.importFundDescFromExcel(file);
-				fundService.addFund(fundDesc);
-			} catch (InputValidationException e) {
-				JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error al importar",
-						JOptionPane.ERROR_MESSAGE);
-			}
-			createNodes(top);
-			arbolFondosModel.reload(top);
+			progressLabel.setText("Importando Fondo:");
+			progressBar.setIndeterminate(true);
+			NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+			createNodes.addPropertyChangeListener(progressBarListener);
+
+			ImportFundWorker importFund = new ImportFundWorker(fundService, progressLabel, progressBar, createNodes,
+					file);
+			importFund.execute();
+
 		}
 
 	}
@@ -3044,34 +3134,16 @@ public class Gui extends javax.swing.JFrame {
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				File file = selectorDeFichero.getSelectedFile();
 
-				try {
+				progressLabel.setText("Importando Vls:");
+				NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+				createNodes.addPropertyChangeListener(progressBarListener);
 
-					List<FundVl> fundVls = fundService.importVlsFromExcel(file, fundDesc, 0, "dd/MM/yyyy");
+				ImportFundWorker importFundVls = new ImportFundWorker(fundService, progressLabel, progressBar,
+						createNodes, file);
+				importFundVls.setImportVls(fundDesc, "dd/MM/yyyy");
+				importFundVls.addPropertyChangeListener(progressBarListener);
 
-					for (int x = 0; x < fundVls.size(); x++) {
-
-						try {
-
-							fundService.addFundVl(fundVls.get(x));
-
-						} catch (InputValidationException e) {
-
-							try {
-								fundService.updateFundVl(fundVls.get(x));
-							} catch (InstanceNotFoundException e1) {
-								JOptionPane.showMessageDialog(ventanaError, "Ha ocurrido un error en la BD",
-										"Error interno", JOptionPane.ERROR_MESSAGE);
-							}
-							continue;
-						}
-					}
-				} catch (InputValidationException e) {
-					JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de entrada",
-							JOptionPane.ERROR_MESSAGE);
-				}
-
-				createNodes(top);
-				arbolFondosModel.reload(top);
+				importFundVls.execute();
 
 			} else {
 
@@ -3151,6 +3223,8 @@ public class Gui extends javax.swing.JFrame {
 		}
 
 		if (node == null) {
+			JOptionPane.showMessageDialog(ventanaError, "Seleccione un fondo o una cartera.", "Error",
+					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		Object nodeInfo = node.getUserObject();
@@ -3322,7 +3396,6 @@ public class Gui extends javax.swing.JFrame {
 
 	// Boton calcular de la pantalla principal
 	private void calcularBotonActionPerformed(java.awt.event.ActionEvent evt) {
-		// TODO add your handling code here:
 
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
 
@@ -3395,6 +3468,9 @@ public class Gui extends javax.swing.JFrame {
 		}
 
 		if (node == null) {
+
+			JOptionPane.showMessageDialog(ventanaError, "Seleccione un fondo o una cartera.", "Error",
+					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		Object nodeInfo = node.getUserObject();
@@ -3446,21 +3522,21 @@ public class Gui extends javax.swing.JFrame {
 		panel.removeAll();
 		panel.updateUI();
 
-		javax.swing.GroupLayout panelGraficasLayout = new javax.swing.GroupLayout(panel);
-		panel.setLayout(panelGraficasLayout);
+		javax.swing.GroupLayout panelGraficasLayout = new javax.swing.GroupLayout(panelGraficas);
+		panelGraficas.setLayout(panelGraficasLayout);
 		panelGraficasLayout
-				.setHorizontalGroup(
-						panelGraficasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-								.addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
-										panelGraficasLayout.createSequentialGroup()
-												.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-												.addComponent(progresoGrafica, javax.swing.GroupLayout.PREFERRED_SIZE,
-														782, javax.swing.GroupLayout.PREFERRED_SIZE)
-												.addGap(110, 110, 110)));
+				.setHorizontalGroup(panelGraficasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+						.addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+								panelGraficasLayout.createSequentialGroup()
+										.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addComponent(progresoGrafica, javax.swing.GroupLayout.PREFERRED_SIZE, 572,
+												javax.swing.GroupLayout.PREFERRED_SIZE)
+										.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 		panelGraficasLayout
 				.setVerticalGroup(panelGraficasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(panelGraficasLayout.createSequentialGroup().addGap(295, 295, 295)
-								.addComponent(progresoGrafica, javax.swing.GroupLayout.PREFERRED_SIZE, 50,
+						.addGroup(panelGraficasLayout.createSequentialGroup()
+								.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addComponent(progresoGrafica, javax.swing.GroupLayout.PREFERRED_SIZE, 35,
 										javax.swing.GroupLayout.PREFERRED_SIZE)
 								.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 
@@ -3803,7 +3879,6 @@ public class Gui extends javax.swing.JFrame {
 	////////////////////////////////////////////
 
 	private DefaultMutableTreeNode top;
-	private DefaultTreeModel arbolFondosModel;
 	private static FundService fundService = null;
 	private javax.swing.JComboBox<FundDesc> fondoDesplegable;
 	private javax.swing.JComboBox<FundDesc> fondoDesplegable1;
@@ -3988,6 +4063,9 @@ public class Gui extends javax.swing.JFrame {
 	private javax.swing.JButton calcularBoton;
 	private javax.swing.JProgressBar progresoGrafica;
 	private PropertyChangeListener progresoGraficaListener;
+	private PropertyChangeListener progressBarListener;
 	private List<SwingWorker> workers;
+	private javax.swing.JProgressBar progressBar;
+	private javax.swing.JLabel progressLabel;
 	// End of variables declaration
 }

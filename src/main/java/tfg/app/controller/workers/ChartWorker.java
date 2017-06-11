@@ -803,11 +803,11 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 
 					double inicial = ((portOp.getfPartfin() * inicialFundVl.getVl()));
 
-					bar_chart_dataset.addValue(inicial, fundDescs.get(x).getfName(), "Valor en la última inversión");
+					bar_chart_dataset.addValue(inicial, "Valor en la última inversión", fundDescs.get(x).getfName());
 
 					double actual = ((portOp.getfPartfin() * actualFundVl.getVl()));
 
-					bar_chart_dataset.addValue(actual, fundDescs.get(x).getfName(), "Valor Actual");
+					bar_chart_dataset.addValue(actual, "Valor Actual", fundDescs.get(x).getfName());
 
 				}
 
