@@ -2,11 +2,14 @@ package tfg.app.controller;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -14,6 +17,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.plaf.ColorUIResource;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -212,6 +216,9 @@ public class Gui extends javax.swing.JFrame {
 		rentaText = new javax.swing.JFormattedTextField();
 		rentaEstimadaLabel = new javax.swing.JLabel();
 		calcularBoton = new javax.swing.JButton();
+		progresoGrafica = new javax.swing.JProgressBar();
+		ColorUIResource colorResource = new ColorUIResource(Color.BLUE.darker());
+		UIManager.put("nimbusOrange", colorResource);
 
 		vlTabla = new javax.swing.JTable() {
 			@Override
@@ -229,6 +236,18 @@ public class Gui extends javax.swing.JFrame {
 					comp.setForeground(Color.black);
 				}
 				return comp;
+			}
+		};
+
+		progresoGraficaListener = new PropertyChangeListener() {
+			@Override
+			public void propertyChange(final PropertyChangeEvent event) {
+				switch (event.getPropertyName()) {
+				case "progress":
+					progresoGrafica.setIndeterminate(false);
+					progresoGrafica.setValue((Integer) event.getNewValue());
+					break;
+				}
 			}
 		};
 		tablaOps = new javax.swing.JDialog();
@@ -281,6 +300,7 @@ public class Gui extends javax.swing.JFrame {
 		principalBoton1 = new javax.swing.JRadioButton();
 		principalBoton2 = new javax.swing.JRadioButton();
 		principalBoton3 = new javax.swing.JRadioButton();
+		workers = new ArrayList<>();
 
 		selectorDeFichero = new javax.swing.JFileChooser();
 		FileNameExtensionFilter xlsFilter = new FileNameExtensionFilter(" Archivos Excel (*.xls)", "xls");
@@ -3118,10 +3138,36 @@ public class Gui extends javax.swing.JFrame {
 		FundDesc fundDesc = null;
 		FundPort fundPort = null;
 
+		for (int x = 0; x < workers.size(); x++) {
+
+			workers.get(x).cancel(true);
+			workers.remove(x);
+			try {
+				Thread.sleep(200);
+			} catch (InterruptedException e) {
+				continue;
+			}
+
+		}
+
 		if (node == null) {
 			return;
 		}
 		Object nodeInfo = node.getUserObject();
+
+		principalBoton1.setVisible(false);
+		principalBoton2.setVisible(false);
+		principalBoton3.setVisible(false);
+
+		desdeDate.setVisible(false);
+		hastaDate.setVisible(false);
+
+		desdeLabel.setVisible(false);
+		hastaLabel.setVisible(false);
+
+		rentaText.setVisible(false);
+		rentaEstimadaLabel.setVisible(false);
+		calcularBoton.setVisible(false);
 
 		if (nodeInfo.getClass() == tfg.app.model.entities.FundDesc.class) {
 
@@ -3153,14 +3199,6 @@ public class Gui extends javax.swing.JFrame {
 				desdeLabel.setVisible(true);
 				hastaLabel.setVisible(true);
 
-				principalBoton1.setVisible(false);
-				principalBoton2.setVisible(false);
-				principalBoton3.setVisible(false);
-
-				rentaText.setVisible(false);
-				rentaEstimadaLabel.setVisible(false);
-				calcularBoton.setVisible(false);
-
 				ChartWorker worker = new ChartWorker(fundService, panelGraficas, descripcionTex);
 				worker.setFundVlLineChart(fundDesc, null, null);
 				worker.execute();
@@ -3169,20 +3207,6 @@ public class Gui extends javax.swing.JFrame {
 
 			if (graficasBox.getSelectedItem().equals("Descripción")) {
 
-				desdeDate.setVisible(false);
-				hastaDate.setVisible(false);
-
-				desdeLabel.setVisible(false);
-				hastaLabel.setVisible(false);
-
-				principalBoton1.setVisible(false);
-				principalBoton2.setVisible(false);
-				principalBoton3.setVisible(false);
-
-				rentaText.setVisible(false);
-				rentaEstimadaLabel.setVisible(false);
-				calcularBoton.setVisible(false);
-
 				descripcionTex.setText(
 						"Descripción del fondo " + fundDesc.getfName() + " y métricas simples de rendimiento.");
 				showFundDesc(fundDesc, panelGraficas);
@@ -3190,21 +3214,6 @@ public class Gui extends javax.swing.JFrame {
 			}
 
 			if (graficasBox.getSelectedItem().equals("Hist Renta")) {
-
-				// final-inicial/inicial x 100
-				desdeDate.setVisible(false);
-				hastaDate.setVisible(false);
-
-				desdeLabel.setVisible(false);
-				hastaLabel.setVisible(false);
-
-				principalBoton1.setVisible(false);
-				principalBoton2.setVisible(false);
-				principalBoton3.setVisible(false);
-
-				rentaText.setVisible(false);
-				rentaEstimadaLabel.setVisible(false);
-				calcularBoton.setVisible(false);
 
 				ChartWorker worker = new ChartWorker(fundService, panelGraficas, descripcionTex);
 				worker.setFundDescProfitBarChart(fundDesc);
@@ -3220,10 +3229,6 @@ public class Gui extends javax.swing.JFrame {
 
 				desdeLabel.setVisible(true);
 				hastaLabel.setVisible(true);
-
-				principalBoton1.setVisible(false);
-				principalBoton2.setVisible(false);
-				principalBoton3.setVisible(false);
 
 				rentaText.setVisible(true);
 				rentaEstimadaLabel.setVisible(true);
@@ -3245,19 +3250,10 @@ public class Gui extends javax.swing.JFrame {
 			if (graficasBox.getSelectedItem().equals("Media Móvil")) {
 
 				// final-inicial/inicial x 100
-				desdeDate.setVisible(false);
-				hastaDate.setVisible(false);
-
-				desdeLabel.setVisible(false);
-				hastaLabel.setVisible(false);
 
 				principalBoton1.setVisible(true);
 				principalBoton2.setVisible(true);
 				principalBoton3.setVisible(true);
-
-				rentaText.setVisible(false);
-				rentaEstimadaLabel.setVisible(false);
-				calcularBoton.setVisible(false);
 
 				principalBoton1.setSelected(true);
 
@@ -3303,9 +3299,12 @@ public class Gui extends javax.swing.JFrame {
 
 					principalBoton1.setSelected(true);
 
+					showProgressBar(panelGraficas);
+
 					ChartWorker worker = new ChartWorker(fundService, panelGraficas, descripcionTex);
 					worker.setProfitOfPortfolioLineChart(fundPort, LocalDate.now().minusDays(30), LocalDate.now());
-
+					worker.addPropertyChangeListener(progresoGraficaListener);
+					workers.add(worker);
 					worker.execute();
 
 				}
@@ -3418,12 +3417,53 @@ public class Gui extends javax.swing.JFrame {
 
 			if (graficasBox.getSelectedItem().equals("Rent total")) {
 
+				for (int x = 0; x < workers.size(); x++) {
+
+					workers.get(x).cancel(true);
+					workers.remove(x);
+					try {
+						Thread.sleep(200);
+					} catch (InterruptedException e) {
+						continue;
+					}
+
+				}
+
+				showProgressBar(panelGraficas);
+
 				ChartWorker worker = new ChartWorker(fundService, panelGraficas, descripcionTex);
 				worker.setProfitOfPortfolioLineChart(fundPort, LocalDate.now().minusDays(days), LocalDate.now());
+				worker.addPropertyChangeListener(progresoGraficaListener);
+				workers.add(worker);
 				worker.execute();
 
 			}
 		}
+	}
+
+	private void showProgressBar(JPanel panel) {
+
+		panel.removeAll();
+		panel.updateUI();
+
+		javax.swing.GroupLayout panelGraficasLayout = new javax.swing.GroupLayout(panel);
+		panel.setLayout(panelGraficasLayout);
+		panelGraficasLayout
+				.setHorizontalGroup(
+						panelGraficasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+								.addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+										panelGraficasLayout.createSequentialGroup()
+												.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+												.addComponent(progresoGrafica, javax.swing.GroupLayout.PREFERRED_SIZE,
+														782, javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addGap(110, 110, 110)));
+		panelGraficasLayout
+				.setVerticalGroup(panelGraficasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+						.addGroup(panelGraficasLayout.createSequentialGroup().addGap(295, 295, 295)
+								.addComponent(progresoGrafica, javax.swing.GroupLayout.PREFERRED_SIZE, 50,
+										javax.swing.GroupLayout.PREFERRED_SIZE)
+								.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+
 	}
 
 	private void showFundDesc(FundDesc fundDesc, JPanel panel) {
@@ -3946,5 +3986,8 @@ public class Gui extends javax.swing.JFrame {
 	private javax.swing.JLabel rentaEstimadaLabel;
 	private javax.swing.JFormattedTextField rentaText;
 	private javax.swing.JButton calcularBoton;
+	private javax.swing.JProgressBar progresoGrafica;
+	private PropertyChangeListener progresoGraficaListener;
+	private List<SwingWorker> workers;
 	// End of variables declaration
 }
