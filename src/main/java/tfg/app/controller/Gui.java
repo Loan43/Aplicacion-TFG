@@ -2103,6 +2103,9 @@ public class Gui extends javax.swing.JFrame {
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
 
 		if (node == null) {
+			panelGraficas.removeAll();
+			panelGraficas.updateUI();
+			descripcionTex.setText("");
 			return;
 		}
 

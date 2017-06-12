@@ -5,7 +5,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -35,7 +34,6 @@ import tfg.app.model.entities.FundPort;
 import tfg.app.model.entities.FundVl;
 import tfg.app.model.entities.PortOp;
 import tfg.app.model.service.FundService;
-import tfg.app.util.comparator.compVl;
 import tfg.app.util.exceptions.InstanceNotFoundException;
 
 public class ChartWorker extends SwingWorker<Chart, Integer> {
@@ -359,17 +357,20 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 		for (int x = 0; x < fundDescs.size(); x++) {
 
 			TimeSeries series = new TimeSeries(fundDescs.get(x).getfName());
+			double factor = 100 / fundDescs.get(x).getFundVls().get(0).getVl();
 
 			for (int y = 0; y < fundDescs.get(x).getFundVls().size(); y++) {
 
-				Double max = Collections.max(fundDescs.get(x).getFundVls(), new compVl()).getVl();
-				Double min = Collections.min(fundDescs.get(x).getFundVls(), new compVl()).getVl();
+				// Double max = Collections.max(fundDescs.get(x).getFundVls(),
+				// new compVl()).getVl();
+				// Double min = Collections.min(fundDescs.get(x).getFundVls(),
+				// new compVl()).getVl();
 				Double z = fundDescs.get(x).getFundVls().get(y).getVl();
 
 				LocalDate date = fundDescs.get(x).getFundVls().get(y).getDay();
 				Day day = new Day(date.getDayOfMonth(), date.getMonthValue(), date.getYear());
-				series.add(day, (z - min) / (max - min));
-
+				// series.add(day, (z - min) / (max - min));
+				series.add(day, z * factor);
 			}
 			data.addSeries(series);
 		}
@@ -428,7 +429,9 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 
 				FundVl vlFinal = fundDesc.getFundVls().get(fundDesc.getFundVls().size() - 1);
 
-				double d = vlInicial.getDay().until(vlFinal.getDay(), ChronoUnit.DAYS);
+				// double d = vlInicial.getDay().until(vlFinal.getDay(),
+				// ChronoUnit.DAYS);
+				double d = fundDesc.getFundVls().size();
 
 				double rentDiaria = 0;
 
@@ -438,7 +441,9 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 
 				} else {
 
-					rentDiaria = (Math.pow(1 + (estimate / 100), (1 / d))) - 1;
+					// rentDiaria = (Math.pow(1 + (estimate / 100), (1 / d))) -
+					// 1;
+					rentDiaria = (Math.pow(1 + (estimate / 100), (1.0 / 260))) - 1; // anual
 
 				}
 
