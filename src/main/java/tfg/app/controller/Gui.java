@@ -1399,26 +1399,24 @@ public class Gui extends javax.swing.JFrame {
 		javax.swing.GroupLayout borrarFondoCarteraLayout = new javax.swing.GroupLayout(
 				borrarFondoCartera.getContentPane());
 		borrarFondoCartera.getContentPane().setLayout(borrarFondoCarteraLayout);
-		borrarFondoCarteraLayout.setHorizontalGroup(borrarFondoCarteraLayout
-				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(borrarFondoCarteraLayout.createSequentialGroup().addContainerGap()
-						.addGroup(borrarFondoCarteraLayout
-								.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-								.addGroup(borrarFondoCarteraLayout.createSequentialGroup().addComponent(carteraLabel1)
-										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED,
-												javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-										.addComponent(fondoDesplegable1, javax.swing.GroupLayout.PREFERRED_SIZE,
-												javax.swing.GroupLayout.DEFAULT_SIZE,
-												javax.swing.GroupLayout.PREFERRED_SIZE))
-								.addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
-										borrarFondoCarteraLayout.createSequentialGroup().addGap(0, 28, Short.MAX_VALUE)
+		borrarFondoCarteraLayout.setHorizontalGroup(
+				borrarFondoCarteraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+						.addGroup(borrarFondoCarteraLayout.createSequentialGroup().addContainerGap()
+								.addGroup(borrarFondoCarteraLayout
+										.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+										.addGroup(borrarFondoCarteraLayout
+												.createSequentialGroup().addComponent(carteraLabel1).addGap(27, 27, 27)
+												.addComponent(fondoDesplegable1, javax.swing.GroupLayout.PREFERRED_SIZE,
+														120, javax.swing.GroupLayout.PREFERRED_SIZE))
+										.addGroup(borrarFondoCarteraLayout.createSequentialGroup()
 												.addComponent(canBoFondoCartBoton)
-												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
 												.addComponent(aceptBoFondoCartBoton)))
-						.addContainerGap()));
+								.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 		borrarFondoCarteraLayout.setVerticalGroup(borrarFondoCarteraLayout
 				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(borrarFondoCarteraLayout.createSequentialGroup().addGap(23, 23, 23)
+				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, borrarFondoCarteraLayout.createSequentialGroup()
+						.addContainerGap(20, Short.MAX_VALUE)
 						.addGroup(borrarFondoCarteraLayout
 								.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 								.addComponent(carteraLabel1).addComponent(fondoDesplegable1,
@@ -1428,10 +1426,7 @@ public class Gui extends javax.swing.JFrame {
 						.addGroup(
 								borrarFondoCarteraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 										.addComponent(canBoFondoCartBoton).addComponent(aceptBoFondoCartBoton))
-						.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
-
-		borrarFondoCarteraLayout.linkSize(javax.swing.SwingConstants.VERTICAL,
-				new java.awt.Component[] { carteraLabel, fondoDesplegable });
+						.addContainerGap()));
 
 		ventanaConfirmacion.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 		ventanaConfirmacion.setTitle("Confirmación");
@@ -2852,6 +2847,7 @@ public class Gui extends javax.swing.JFrame {
 
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
 		Object nodeInfo = node.getUserObject();
+
 		FundPort fundPort = (FundPort) nodeInfo;
 
 		FundDesc fundDesc = (FundDesc) fondoDesplegable.getSelectedItem();

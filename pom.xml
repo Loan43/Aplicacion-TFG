@@ -62,7 +62,7 @@
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.4.0</version>
 				<configuration>
-					<mainClass>tfg.app.app</mainClass>
+					<mainClass>tfg.app.controller.gui</mainClass>
 					<cleanupDaemonThreads>false</cleanupDaemonThreads>
 				</configuration>
 			</plugin>

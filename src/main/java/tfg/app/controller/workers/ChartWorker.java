@@ -619,7 +619,7 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 
 					profit = (fundVls.get(fundVls.size() - 1).getVl() - fundVls.get(0).getVl())
 							/ fundVls.get(0).getVl();
-					bar_chart_dataset.addValue(profit, fundDesc.getfName(), "Último año fiscal");
+					bar_chart_dataset.addValue(profit * 100, fundDesc.getfName(), "Último año fiscal");
 				} else {
 					desc += "\nNo existen suficentes datos para calcular la rentabilidad del último año fiscal ("
 							+ today.minusYears(1).getYear() + "). ";
@@ -641,7 +641,7 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 				if (d >= 90) {
 					profit = (fundVls.get(fundVls.size() - 1).getVl() - fundVls.get(0).getVl())
 							/ fundVls.get(0).getVl();
-					bar_chart_dataset.addValue(profit, fundDesc.getfName(), "Último semestre");
+					bar_chart_dataset.addValue(profit * 100, fundDesc.getfName(), "Último semestre");
 				} else {
 					desc += "\nNo existen suficentes datos para calcular la rentabilidad del último semestre. ";
 				}
@@ -661,7 +661,7 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 				if (d >= 45) {
 					profit = (fundVls.get(fundVls.size() - 1).getVl() - fundVls.get(0).getVl())
 							/ fundVls.get(0).getVl();
-					bar_chart_dataset.addValue(profit, fundDesc.getfName(), "Último trimestre");
+					bar_chart_dataset.addValue(profit * 100, fundDesc.getfName(), "Último trimestre");
 				} else {
 					desc += "\nNo existen suficentes datos para calcular la rentabilidad del último trimestre. ";
 				}
@@ -681,7 +681,7 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 				if (d >= 15) {
 					profit = (fundVls.get(fundVls.size() - 1).getVl() - fundVls.get(0).getVl())
 							/ fundVls.get(0).getVl();
-					bar_chart_dataset.addValue(profit, fundDesc.getfName(), "Último mes");
+					bar_chart_dataset.addValue(profit * 100, fundDesc.getfName(), "Último mes");
 				} else {
 					desc += "\nNo existen suficentes datos para calcular la rentabilidad del último mes. ";
 				}

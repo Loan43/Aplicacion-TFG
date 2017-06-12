@@ -1,5 +1,6 @@
 package tfg.app.controller.workers;
 
+import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -8,6 +9,7 @@ import javax.swing.JLabel;
 import javax.swing.SwingWorker;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 
 import tfg.app.model.entities.FundDesc;
 import tfg.app.model.entities.FundPort;
@@ -27,6 +29,20 @@ public class NodesWorker extends SwingWorker<Void, Integer> {
 		this.tree = tree;
 		this.top = top;
 		this.label = label;
+	}
+
+	private TreePath find(DefaultMutableTreeNode root, String s) {
+
+		@SuppressWarnings("unchecked")
+		Enumeration<DefaultMutableTreeNode> e = root.depthFirstEnumeration();
+
+		while (e.hasMoreElements()) {
+			DefaultMutableTreeNode node = e.nextElement();
+			if (node.toString().equalsIgnoreCase(s)) {
+				return new TreePath(node.getPath());
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -59,6 +75,7 @@ public class NodesWorker extends SwingWorker<Void, Integer> {
 				e.printStackTrace();
 			}
 		}
+		setProgress(100);
 		return null;
 	}
 
@@ -68,12 +85,41 @@ public class NodesWorker extends SwingWorker<Void, Integer> {
 		try {
 
 			get();
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 			DefaultTreeModel treeModel = (DefaultTreeModel) tree.getModel();
+
 			treeModel.reload(top);
 
-			for (int i = 0; i < tree.getRowCount(); i++) {
-				tree.expandRow(i);
+			TreePath treePath = find((DefaultMutableTreeNode) treeModel.getRoot(), node.toString());
+
+			if (treePath != null) {
+
+				tree.setSelectionPath(treePath);
+				tree.scrollPathToVisible(treePath);
+
+			} else {
+
+				node = (DefaultMutableTreeNode) node.getParent();
+
+				if (node != null) {
+
+					treePath = find((DefaultMutableTreeNode) treeModel.getRoot(), node.toString());
+					if (treePath != null) {
+						tree.setSelectionPath(treePath);
+						tree.scrollPathToVisible(treePath);
+					}
+
+				} else {
+
+					node = (DefaultMutableTreeNode) treeModel.getRoot();
+					treePath = new TreePath(node.getPath());
+					tree.setSelectionPath(treePath);
+					tree.scrollPathToVisible(treePath);
+
+				}
+
 			}
+
 			label.setText("Modelo Actualizado");
 
 		} catch (InterruptedException | CancellationException | java.lang.NullPointerException e) {
