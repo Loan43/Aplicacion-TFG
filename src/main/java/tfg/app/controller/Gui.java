@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ThreadLocalRandom;
-
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.ColorUIResource;
@@ -1492,6 +1490,7 @@ public class Gui extends javax.swing.JFrame {
 		tablaVls.setTitle("Valores Liquidativos");
 		tablaVls.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 		tablaVls.setSize(new java.awt.Dimension(700, 450));
+		tablaVls.setModal(true);
 		tablaVls.addWindowListener(new java.awt.event.WindowAdapter() {
 			public void windowClosing(java.awt.event.WindowEvent evt) {
 				tablaVlsWindowClosing(evt);
@@ -1547,6 +1546,7 @@ public class Gui extends javax.swing.JFrame {
 
 		tablaOps.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 		tablaOps.setTitle("Operaciones");
+		tablaOps.setModal(true);
 		tablaOps.setSize(new java.awt.Dimension(700, 450));
 		tablaOps.setLocationRelativeTo(this);
 		tablaOps.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -2022,6 +2022,7 @@ public class Gui extends javax.swing.JFrame {
 	private void botonAnadirFondoActionPerformed(java.awt.event.ActionEvent evt) {
 
 		isinText.setText("");
+		nombreText.setText("");
 		gestoraText.setText("");
 		tipoText.setText("");
 		categoriaText.setText("");
@@ -2242,15 +2243,23 @@ public class Gui extends javax.swing.JFrame {
 		} catch (java.lang.ArrayIndexOutOfBoundsException e) {
 			return;
 		}
-		try {
 
-			fundService.removeFundVl(fundVl);
-		} catch (InstanceNotFoundException e) {
-			JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de borrado", JOptionPane.ERROR_MESSAGE);
-			return;
+		int input = JOptionPane.showConfirmDialog(this, "¿Desea borrar el Vl del día: " + fundVl.getDay() + " ?",
+				"Confirmación", JOptionPane.YES_NO_OPTION);
+
+		if (input == 0) {
+
+			try {
+
+				fundService.removeFundVl(fundVl);
+			} catch (InstanceNotFoundException e) {
+				JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de borrado",
+						JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+
+			verVlActionPerformed(evt);
 		}
-
-		verVlActionPerformed(evt);
 
 	}
 
@@ -2300,17 +2309,25 @@ public class Gui extends javax.swing.JFrame {
 		Object nodeInfo = node.getUserObject();
 		FundDesc fundDesc = (FundDesc) nodeInfo;
 
-		try {
-			fundService.removeFund(fundDesc);
-		} catch (InstanceNotFoundException e) {
-			JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de borrado", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
+		int input = JOptionPane.showConfirmDialog(this, "¿Desea borrar el fondo " + fundDesc.getfName() + " ?",
+				"Confirmación", JOptionPane.YES_NO_OPTION);
 
-		progressLabel.setText("Actualizando Modelo:");
-		NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
-		createNodes.addPropertyChangeListener(progressBarListener);
-		createNodes.execute();
+		if (input == 0) {
+
+			try {
+				fundService.removeFund(fundDesc);
+			} catch (InstanceNotFoundException e) {
+				JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de borrado",
+						JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+
+			progressLabel.setText("Actualizando Modelo:");
+			NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+			createNodes.addPropertyChangeListener(progressBarListener);
+			createNodes.execute();
+
+		}
 
 	}
 
@@ -2359,6 +2376,7 @@ public class Gui extends javax.swing.JFrame {
 
 	}
 
+	// Click en cerrar la ventana de la tabla de ops
 	private void tablaOpsWindowClosing(java.awt.event.WindowEvent evt) {
 
 		progressLabel.setText("Actualizando Modelo:");
@@ -2367,6 +2385,7 @@ public class Gui extends javax.swing.JFrame {
 		createNodes.execute();
 	}
 
+	// Click en cerrar la ventana de la tabla de vls
 	private void tablaVlsWindowClosing(java.awt.event.WindowEvent evt) {
 
 		progressLabel.setText("Actualizando Modelo:");
@@ -2382,17 +2401,26 @@ public class Gui extends javax.swing.JFrame {
 		Object nodeInfo = node.getUserObject();
 		FundPort fundPort = (FundPort) nodeInfo;
 
-		try {
-			fundService.removeFundPortfolio(fundPort);
-		} catch (InstanceNotFoundException e) {
-			JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de borrado", JOptionPane.ERROR_MESSAGE);
-			return;
+		int input = JOptionPane.showConfirmDialog(this, "¿Desea borrar la cartera: " + fundPort.getpName() + " ?",
+				"Confirmación", JOptionPane.YES_NO_OPTION);
+
+		if (input == 0) {
+
+			try {
+				fundService.removeFundPortfolio(fundPort);
+			} catch (InstanceNotFoundException e) {
+				JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de borrado",
+						JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+
+			progressLabel.setText("Actualizando Modelo:");
+			NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+			createNodes.addPropertyChangeListener(progressBarListener);
+			createNodes.execute();
+
 		}
 
-		progressLabel.setText("Actualizando Modelo:");
-		NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
-		createNodes.addPropertyChangeListener(progressBarListener);
-		createNodes.execute();
 	}
 
 	// Click en el boton de cancelar de la ventana actualizar fondo
@@ -2609,14 +2637,23 @@ public class Gui extends javax.swing.JFrame {
 			return;
 		}
 
-		try {
-			fundService.removePortOp(portOp);
-		} catch (InputValidationException | InstanceNotFoundException e) {
-			JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de entrada", JOptionPane.ERROR_MESSAGE);
-			return;
+		int input = JOptionPane.showConfirmDialog(this,
+				"¿Desea borrar el la operación del día: " + portOp.getDay() + " ?", "Confirmación",
+				JOptionPane.YES_NO_OPTION);
+
+		if (input == 0) {
+
+			try {
+				fundService.removePortOp(portOp);
+			} catch (InputValidationException | InstanceNotFoundException e) {
+				JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de entrada",
+						JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+
+			selFondoDesplActionPerformed(evt);
 		}
 
-		selFondoDesplActionPerformed(evt);
 	}
 
 	// Click en el boton cancelar de la ventana actualizar cartera
@@ -3685,111 +3722,137 @@ public class Gui extends javax.swing.JFrame {
 						.addContainerGap(401, Short.MAX_VALUE)));
 	}
 
-	private static void createDbExample() {
-
-		FundDesc fundDesc1 = new FundDesc("DE0008490962", "Renta 4 Bolsa FI", "Pinball Wizards", "Alto riesgo",
-				"Monetario", "Euro", 0.01, 0.02);
-		FundDesc fundDesc2 = new FundDesc("ES0173394034", "Global Trends, FI", "Pinball Wizards", "Alto riesgo",
-				"Monetario", "Euro", 0.01, 0.02);
-		FundDesc fundDesc3 = new FundDesc("ES0180792006", "True Value Fi", "Pinball Wizards", "Alto riesgo",
-				"Monetario", "Euro", 0.01, 0.02);
-		FundDesc fundDesc4 = new FundDesc("ES0168812032", "Patrisa Fi", "Pinball Wizards", "Alto riesgo", "Monetario",
-				"Euro", 0.01, 0.02);
-		FundDesc fundDesc5 = new FundDesc("ES0167198003", "Ohana Europe Fi", "Pinball Wizards", "Alto riesgo",
-				"Monetario", "Euro", 0.01, 0.02);
-		FundDesc fundDesc6 = new FundDesc("ES0112231008", "Avantage Fund, Fi", "Pinball Wizards", "Alto riesgo",
-				"Monetario", "Euro", 0.01, 0.02);
-		FundDesc fundDesc7 = new FundDesc("ES0140963002", "Algar Global Fund Fi", "Pinball Wizards", "Alto riesgo",
-				"Monetario", "Euro", 0.01, 0.02);
-		FundDesc fundDesc8 = new FundDesc("ES0116848005", "Fondo Sin Nada", "Pinball Wizards", "Alto riesgo",
-				"Monetario", "Euro", 0.01, 0.02);
-
-		FundPort fundPort1 = new FundPort("Cartera Test 1", "Esto es una cartera de prueba");
-		FundPort fundPort2 = new FundPort("Cartera Test 2", "Esto es una cartera de prueba");
-
-		LocalDate date = LocalDate.parse("2014-01-01");
-		double start = 100.0;
-
-		while (date.isBefore(LocalDate.now())) {
-			date = date.plusDays(1);
-			fundDesc1.getFundVls()
-					.add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1, 1), fundDesc1));
-			fundDesc3.getFundVls()
-					.add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1, 1), fundDesc3));
-			fundDesc5.getFundVls()
-					.add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1, 1), fundDesc5));
-			fundDesc7.getFundVls()
-					.add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1, 1), fundDesc7));
-		}
-
-		date = LocalDate.parse("2015-05-30");
-		start = 70.0;
-
-		while (date.isBefore(LocalDate.now())) {
-			date = date.plusDays(1);
-			fundDesc2.getFundVls()
-					.add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1, 1), fundDesc2));
-			fundDesc4.getFundVls()
-					.add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1, 1), fundDesc4));
-			fundDesc6.getFundVls()
-					.add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1, 1), fundDesc6));
-		}
-
-		PortOp portOp = new PortOp(LocalDate.parse("2017-01-28"), fundPort1, fundDesc1, 100);
-		PortOp portOp1 = new PortOp(LocalDate.parse("2017-01-28"), fundPort1, fundDesc2, 100);
-
-		PortOp portOp2 = new PortOp(LocalDate.parse("2017-01-28"), fundPort2, fundDesc1, 100);
-		PortOp portOp3 = new PortOp(LocalDate.parse("2017-01-28"), fundPort2, fundDesc2, 100);
-		PortOp portOp4 = new PortOp(LocalDate.parse("2017-01-28"), fundPort2, fundDesc3, 100);
-		PortOp portOp5 = new PortOp(LocalDate.parse("2017-01-28"), fundPort2, fundDesc4, 100);
-		PortOp portOp6 = new PortOp(LocalDate.parse("2017-01-28"), fundPort2, fundDesc5, 100);
-		PortOp portOp7 = new PortOp(LocalDate.parse("2017-01-28"), fundPort2, fundDesc6, 100);
-		PortOp portOp8 = new PortOp(LocalDate.parse("2017-01-28"), fundPort2, fundDesc7, 100);
-
-		try {
-
-			fundService.addFund(fundDesc1);
-			fundService.addFund(fundDesc2);
-			fundService.addFund(fundDesc3);
-			fundService.addFund(fundDesc4);
-			fundService.addFund(fundDesc5);
-			fundService.addFund(fundDesc6);
-			fundService.addFund(fundDesc7);
-			fundService.addFund(fundDesc8);
-
-			fundService.addFundPortfolio(fundPort1);
-			fundService.addFundPortfolio(fundPort2);
-
-			fundService.addPortDesc(fundPort1, fundDesc1);
-			fundService.addPortDesc(fundPort1, fundDesc2);
-			fundService.addPortDesc(fundPort1, fundDesc8);
-
-			fundService.addPortDesc(fundPort2, fundDesc1);
-			fundService.addPortDesc(fundPort2, fundDesc2);
-			fundService.addPortDesc(fundPort2, fundDesc3);
-			fundService.addPortDesc(fundPort2, fundDesc4);
-			fundService.addPortDesc(fundPort2, fundDesc5);
-			fundService.addPortDesc(fundPort2, fundDesc6);
-			fundService.addPortDesc(fundPort2, fundDesc7);
-
-			fundService.addPortOp(portOp);
-			fundService.addPortOp(portOp1);
-			fundService.addPortOp(portOp2);
-			fundService.addPortOp(portOp3);
-			fundService.addPortOp(portOp4);
-			fundService.addPortOp(portOp5);
-			fundService.addPortOp(portOp6);
-			fundService.addPortOp(portOp7);
-			fundService.addPortOp(portOp8);
-
-		} catch (InputValidationException e) {
-			//
-			e.printStackTrace();
-		} catch (InstanceNotFoundException e) {
-			//
-			e.printStackTrace();
-		}
-	}
+	// private static void createDbExample() {
+	//
+	// FundDesc fundDesc1 = new FundDesc("DE0008490962", "Renta 4 Bolsa FI",
+	// "Pinball Wizards", "Alto riesgo",
+	// "Monetario", "Euro", 0.01, 0.02);
+	// FundDesc fundDesc2 = new FundDesc("ES0173394034", "Global Trends, FI",
+	// "Pinball Wizards", "Alto riesgo",
+	// "Monetario", "Euro", 0.01, 0.02);
+	// FundDesc fundDesc3 = new FundDesc("ES0180792006", "True Value Fi",
+	// "Pinball Wizards", "Alto riesgo",
+	// "Monetario", "Euro", 0.01, 0.02);
+	// FundDesc fundDesc4 = new FundDesc("ES0168812032", "Patrisa Fi", "Pinball
+	// Wizards", "Alto riesgo", "Monetario",
+	// "Euro", 0.01, 0.02);
+	// FundDesc fundDesc5 = new FundDesc("ES0167198003", "Ohana Europe Fi",
+	// "Pinball Wizards", "Alto riesgo",
+	// "Monetario", "Euro", 0.01, 0.02);
+	// FundDesc fundDesc6 = new FundDesc("ES0112231008", "Avantage Fund, Fi",
+	// "Pinball Wizards", "Alto riesgo",
+	// "Monetario", "Euro", 0.01, 0.02);
+	// FundDesc fundDesc7 = new FundDesc("ES0140963002", "Algar Global Fund Fi",
+	// "Pinball Wizards", "Alto riesgo",
+	// "Monetario", "Euro", 0.01, 0.02);
+	// FundDesc fundDesc8 = new FundDesc("ES0116848005", "Fondo Sin Nada",
+	// "Pinball Wizards", "Alto riesgo",
+	// "Monetario", "Euro", 0.01, 0.02);
+	//
+	// FundPort fundPort1 = new FundPort("Cartera Test 1", "Esto es una cartera
+	// de prueba");
+	// FundPort fundPort2 = new FundPort("Cartera Test 2", "Esto es una cartera
+	// de prueba");
+	//
+	// LocalDate date = LocalDate.parse("2014-01-01");
+	// double start = 100.0;
+	//
+	// while (date.isBefore(LocalDate.now())) {
+	// date = date.plusDays(1);
+	// fundDesc1.getFundVls()
+	// .add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1,
+	// 1), fundDesc1));
+	// fundDesc3.getFundVls()
+	// .add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1,
+	// 1), fundDesc3));
+	// fundDesc5.getFundVls()
+	// .add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1,
+	// 1), fundDesc5));
+	// fundDesc7.getFundVls()
+	// .add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1,
+	// 1), fundDesc7));
+	// }
+	//
+	// date = LocalDate.parse("2015-05-30");
+	// start = 70.0;
+	//
+	// while (date.isBefore(LocalDate.now())) {
+	// date = date.plusDays(1);
+	// fundDesc2.getFundVls()
+	// .add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1,
+	// 1), fundDesc2));
+	// fundDesc4.getFundVls()
+	// .add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1,
+	// 1), fundDesc4));
+	// fundDesc6.getFundVls()
+	// .add(new FundVl(date, start += ThreadLocalRandom.current().nextDouble(-1,
+	// 1), fundDesc6));
+	// }
+	//
+	// PortOp portOp = new PortOp(LocalDate.parse("2017-01-28"), fundPort1,
+	// fundDesc1, 100);
+	// PortOp portOp1 = new PortOp(LocalDate.parse("2017-01-28"), fundPort1,
+	// fundDesc2, 100);
+	//
+	// PortOp portOp2 = new PortOp(LocalDate.parse("2017-01-28"), fundPort2,
+	// fundDesc1, 100);
+	// PortOp portOp3 = new PortOp(LocalDate.parse("2017-01-28"), fundPort2,
+	// fundDesc2, 100);
+	// PortOp portOp4 = new PortOp(LocalDate.parse("2017-01-28"), fundPort2,
+	// fundDesc3, 100);
+	// PortOp portOp5 = new PortOp(LocalDate.parse("2017-01-28"), fundPort2,
+	// fundDesc4, 100);
+	// PortOp portOp6 = new PortOp(LocalDate.parse("2017-01-28"), fundPort2,
+	// fundDesc5, 100);
+	// PortOp portOp7 = new PortOp(LocalDate.parse("2017-01-28"), fundPort2,
+	// fundDesc6, 100);
+	// PortOp portOp8 = new PortOp(LocalDate.parse("2017-01-28"), fundPort2,
+	// fundDesc7, 100);
+	//
+	// try {
+	//
+	// fundService.addFund(fundDesc1);
+	// fundService.addFund(fundDesc2);
+	// fundService.addFund(fundDesc3);
+	// fundService.addFund(fundDesc4);
+	// fundService.addFund(fundDesc5);
+	// fundService.addFund(fundDesc6);
+	// fundService.addFund(fundDesc7);
+	// fundService.addFund(fundDesc8);
+	//
+	// fundService.addFundPortfolio(fundPort1);
+	// fundService.addFundPortfolio(fundPort2);
+	//
+	// fundService.addPortDesc(fundPort1, fundDesc1);
+	// fundService.addPortDesc(fundPort1, fundDesc2);
+	// fundService.addPortDesc(fundPort1, fundDesc8);
+	//
+	// fundService.addPortDesc(fundPort2, fundDesc1);
+	// fundService.addPortDesc(fundPort2, fundDesc2);
+	// fundService.addPortDesc(fundPort2, fundDesc3);
+	// fundService.addPortDesc(fundPort2, fundDesc4);
+	// fundService.addPortDesc(fundPort2, fundDesc5);
+	// fundService.addPortDesc(fundPort2, fundDesc6);
+	// fundService.addPortDesc(fundPort2, fundDesc7);
+	//
+	// fundService.addPortOp(portOp);
+	// fundService.addPortOp(portOp1);
+	// fundService.addPortOp(portOp2);
+	// fundService.addPortOp(portOp3);
+	// fundService.addPortOp(portOp4);
+	// fundService.addPortOp(portOp5);
+	// fundService.addPortOp(portOp6);
+	// fundService.addPortOp(portOp7);
+	// fundService.addPortOp(portOp8);
+	//
+	// } catch (InputValidationException e) {
+	// //
+	// e.printStackTrace();
+	// } catch (InstanceNotFoundException e) {
+	// //
+	// e.printStackTrace();
+	// }
+	// }
 
 	// Main de la app
 	public static void main(String args[]) {
@@ -3804,50 +3867,7 @@ public class Gui extends javax.swing.JFrame {
 		 */
 		fundService = new FundServiceImpl();
 
-		// FundDesc fundDesc1 = new FundDesc("DE0008490962", "Renta 4 Bolsa FI",
-		// "Pinball Wizards", "Alto riesgo",
-		// "Monetario", "Euro", 0.01, 0.02);
-		//
-		// LocalDate date = LocalDate.parse("2015-05-30");
-		// fundDesc1.getFundVls().add(new FundVl(date, 25.0, fundDesc1));
-		// date = date.plusDays(1);
-		// fundDesc1.getFundVls().add(new FundVl(date, 26.0, fundDesc1));
-		// date = date.plusDays(1);
-		// fundDesc1.getFundVls().add(new FundVl(date, 27.0, fundDesc1));
-		// date = date.plusDays(1);
-		// fundDesc1.getFundVls().add(new FundVl(date, 28.0, fundDesc1));
-		// date = date.plusDays(1);
-		// fundDesc1.getFundVls().add(new FundVl(date, 27.0, fundDesc1));
-		// date = date.plusDays(1);
-		// fundDesc1.getFundVls().add(new FundVl(date, 25.0, fundDesc1));
-		// date = date.plusDays(1);
-		// fundDesc1.getFundVls().add(new FundVl(date, 24.0, fundDesc1));
-		// date = date.plusDays(1);
-		// fundDesc1.getFundVls().add(new FundVl(date, 30.0, fundDesc1));
-		// date = date.plusDays(1);
-		// fundDesc1.getFundVls().add(new FundVl(date, 29.0, fundDesc1));
-		// date = date.plusDays(1);
-		// fundDesc1.getFundVls().add(new FundVl(date, 28.0, fundDesc1));
-		// date = date.plusDays(1);
-		// fundDesc1.getFundVls().add(new FundVl(date, 27.0, fundDesc1));
-		// date = date.plusDays(1);
-		// fundDesc1.getFundVls().add(new FundVl(date, 0.0, fundDesc1));
-		// date = date.plusDays(1);
-		// fundDesc1.getFundVls().add(new FundVl(date, 31.0, fundDesc1));
-		//
-		// FundPort fundPort1 = new FundPort("Cartera Test 1", "Esto es una
-		// cartera de prueba");
-		//
-		// try {
-		// fundService.addFund(fundDesc1);
-		// fundService.addFundPortfolio(fundPort1);
-		// fundService.addPortDesc(fundPort1, fundDesc1);
-		// } catch (InputValidationException | InstanceNotFoundException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-
-		createDbExample();
+		// createDbExample();
 
 		try {
 			for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
