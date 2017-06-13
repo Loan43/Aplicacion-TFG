@@ -35,6 +35,7 @@ import tfg.app.controller.workers.NodesWorker;
 import tfg.app.model.entities.FundDesc;
 import tfg.app.model.entities.FundPort;
 import tfg.app.model.entities.FundVl;
+import tfg.app.model.entities.PortDesc;
 import tfg.app.model.entities.PortOp;
 import tfg.app.model.service.FundService;
 import tfg.app.model.service.FundServiceImpl;
@@ -3612,26 +3613,64 @@ public class Gui extends javax.swing.JFrame {
 
 		} else {
 
-			for (int x = 0; x < size; x++) {
+			List<Double> rentAnual = new ArrayList<Double>();
 
-				sumatoria = sumatoria + fundDesc.getFundVls().get(x).getVl();
+			FundVl vlInicial = fundDesc.getFundVls().get(0);
+
+			FundVl vlFinal = fundDesc.getFundVls().get(fundDesc.getFundVls().size() - 1);
+
+			LocalDate date = vlFinal.getDay().minusYears(1);
+
+			while (date.isAfter(vlInicial.getDay())) {
+
+				FundVl fundVlFinal = fundService.findLatestFundVl(fundDesc, date.plusYears(1));
+				FundVl fundVlInicial = fundService.findLatestFundVl(fundDesc, date);
+
+				double profit = (fundVlFinal.getVl() - fundVlInicial.getVl()) / fundVlInicial.getVl();
+
+				rentAnual.add(profit * 100);
+
+				date = date.minusYears(1);
 
 			}
 
-			double media = sumatoria / size;
+			int size2 = rentAnual.size();
+
+			for (int x = 0; x < size2; x++) {
+
+				sumatoria = sumatoria + rentAnual.get(x);
+
+			}
+
+			double media = sumatoria / size2;
+
+			alphaDesc.setText("Media rentabilidades anuales: " + String.format("%.3f", media));
 
 			double varianza = 0;
-			for (int i = 0; i < size; i++) {
+
+			for (int i = 0; i < size2; i++) {
 				double rango;
-				rango = Math.pow(fundDesc.getFundVls().get(i).getVl() - media, 2);
+				rango = Math.pow(rentAnual.get(i) - media, 2);
 				varianza = varianza + rango;
 			}
 
-			varianza = varianza / size;
+			varianza = varianza / size2;
 
 			double desviacion = Math.sqrt(varianza);
 
 			varDesc.setText("Desviación estandar: " + String.format("%.3f", desviacion));
+
+			vlInicial = fundDesc.getFundVls().get(0);
+
+			vlFinal = fundDesc.getFundVls().get(fundDesc.getFundVls().size() - 1);
+
+			double d = fundDesc.getFundVls().size();
+
+			double rentDiaria = (Math.pow(vlFinal.getVl() / vlInicial.getVl(), (365 / d))) - 1;
+
+			double sharpe = (rentDiaria * 100 - 0.5) / desviacion;
+
+			betaDesc.setText("Ratio Sharpe: " + String.format("%.3f", sharpe));
 
 			int maxRelativo = 0;
 			int minRelativo = 0;

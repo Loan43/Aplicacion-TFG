@@ -163,7 +163,7 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 		plot.setOutlinePaint(Color.BLUE);
 		plot.setOutlineStroke(new BasicStroke(2.0f));
 
-		plot.setBackgroundPaint(Color.DARK_GRAY);
+		plot.setBackgroundPaint(Color.WHITE);
 
 		ChartPanel cP = new ChartPanel(chart);
 
@@ -236,7 +236,7 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 			plot.setOutlinePaint(Color.BLUE);
 			plot.setOutlineStroke(new BasicStroke(2.0f));
 
-			plot.setBackgroundPaint(Color.DARK_GRAY);
+			plot.setBackgroundPaint(Color.WHITE);
 
 			plot.setRangeGridlinesVisible(true);
 			plot.setRangeGridlinePaint(Color.BLACK);
@@ -324,7 +324,7 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 		plot.setOutlinePaint(Color.BLUE);
 		plot.setOutlineStroke(new BasicStroke(2.0f));
 
-		plot.setBackgroundPaint(Color.DARK_GRAY);
+		plot.setBackgroundPaint(Color.WHITE);
 
 		plot.setRangeGridlinesVisible(true);
 		plot.setRangeGridlinePaint(Color.BLACK);
@@ -383,7 +383,7 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 		plot.setOutlinePaint(Color.BLUE);
 		plot.setOutlineStroke(new BasicStroke(2.0f));
 
-		plot.setBackgroundPaint(Color.DARK_GRAY);
+		plot.setBackgroundPaint(Color.WHITE);
 
 		plot.setRangeGridlinesVisible(true);
 		plot.setRangeGridlinePaint(Color.BLACK);
@@ -479,7 +479,7 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 		plot.setOutlinePaint(Color.BLUE);
 		plot.setOutlineStroke(new BasicStroke(2.0f));
 
-		plot.setBackgroundPaint(Color.DARK_GRAY);
+		plot.setBackgroundPaint(Color.WHITE);
 
 		plot.setRangeGridlinesVisible(true);
 		plot.setRangeGridlinePaint(Color.BLACK);
@@ -569,7 +569,7 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 		plot.setOutlinePaint(Color.BLUE);
 		plot.setOutlineStroke(new BasicStroke(2.0f));
 
-		plot.setBackgroundPaint(Color.DARK_GRAY);
+		plot.setBackgroundPaint(Color.WHITE);
 
 		plot.setRangeGridlinesVisible(true);
 		plot.setRangeGridlinePaint(Color.BLACK);
@@ -700,7 +700,7 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 				PlotOrientation.VERTICAL, true, true, false);
 
 		CategoryPlot cplot = (CategoryPlot) barChart.getPlot();
-		cplot.setBackgroundPaint(Color.DARK_GRAY);
+		cplot.setBackgroundPaint(Color.WHITE);
 		cplot.setOutlinePaint(Color.BLUE);
 
 		((BarRenderer) cplot.getRenderer()).setBarPainter(new StandardBarPainter());
@@ -753,7 +753,7 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 				bar_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
 
 		CategoryPlot cplot = (CategoryPlot) barChart.getPlot();
-		cplot.setBackgroundPaint(Color.DARK_GRAY);
+		cplot.setBackgroundPaint(Color.WHITE);
 		cplot.setOutlinePaint(Color.BLUE);
 		cplot.getDomainAxis().setTickLabelsVisible(false);
 
@@ -827,7 +827,7 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 				bar_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
 
 		CategoryPlot cplot = (CategoryPlot) barChart.getPlot();
-		cplot.setBackgroundPaint(Color.DARK_GRAY);
+		cplot.setBackgroundPaint(Color.WHITE);
 		cplot.setOutlinePaint(Color.BLUE);
 
 		((BarRenderer) cplot.getRenderer()).setBarPainter(new StandardBarPainter());
