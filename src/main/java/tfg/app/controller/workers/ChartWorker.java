@@ -126,6 +126,14 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 
 	}
 
+	/**
+	 * Crea una gráfica de lineas con la distrubución del capital en la
+	 * cartera.0
+	 * 
+	 * @param
+	 * @throws InstanceNotFoundException
+	 */
+
 	public Chart createPortfolioDistributionChart(FundService fundService, FundPort fundPort)
 			throws InstanceNotFoundException {
 
@@ -155,7 +163,7 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 
 		}
 
-		JFreeChart chart = ChartFactory.createPieChart("Capital invertido de la cartera " + fundPort.getpName(),
+		JFreeChart chart = ChartFactory.createPieChart("Distribución de capital de la cartera " + fundPort.getpName(),
 				dataset, true, true, false);
 
 		PiePlot plot = (PiePlot) chart.getPlot();
@@ -226,8 +234,10 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 
 			final TimeSeriesCollection data = new TimeSeriesCollection(series);
 
-			final JFreeChart chart = ChartFactory.createTimeSeriesChart("Rentabilidad total de la cartera", "Fecha",
-					"Rentabilidad (%)", data, true, true, false);
+			final JFreeChart chart = ChartFactory.createTimeSeriesChart(
+					"Rentabilidad total de la cartera " + fundPort.getpName()  +" en los últimos "
+							+ start.until(end, ChronoUnit.DAYS) + " días.",
+					"Fecha", "Rentabilidad (%)", data, true, true, false);
 
 			XYPlot plot = (XYPlot) chart.getPlot();
 
@@ -314,8 +324,9 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 
 		final TimeSeriesCollection data = new TimeSeriesCollection(series);
 
-		final JFreeChart chart = ChartFactory.createTimeSeriesChart("Historial del valor liquidativo", "Fecha", "Valor",
-				data, true, true, false);
+		final JFreeChart chart = ChartFactory.createTimeSeriesChart(
+				"Historial del Valor Liquidativo del fondo " + fundDesc.getfName(), "Fecha", "Valor", data, true, true,
+				false);
 
 		XYPlot plot = (XYPlot) chart.getPlot();
 
@@ -375,8 +386,9 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 			data.addSeries(series);
 		}
 
-		final JFreeChart chart = ChartFactory.createTimeSeriesChart("Valor liquidativo normalizado", "Fecha", "Valor",
-				data, true, true, false);
+		final JFreeChart chart = ChartFactory.createTimeSeriesChart(
+				"Valor liquidativo normalizado de la cartera " + fundPort.getpName(), "Fecha", "Valor", data, true,
+				true, false);
 
 		XYPlot plot = (XYPlot) chart.getPlot();
 
@@ -471,8 +483,8 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 		data.addSeries(esperado);
 		data.addSeries(real);
 
-		final JFreeChart chart = ChartFactory.createTimeSeriesChart("Rentabilidad Esperada", "Fecha", "Valor", data,
-				true, true, false);
+		final JFreeChart chart = ChartFactory.createTimeSeriesChart(
+				"Rentabilidad Esperada del fondo " + fundDesc.getfName(), "Fecha", "Valor", data, true, true, false);
 
 		XYPlot plot = (XYPlot) chart.getPlot();
 
@@ -559,8 +571,9 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 		data.addSeries(vls);
 		data.addSeries(mediaMovil);
 
-		final JFreeChart chart = ChartFactory.createTimeSeriesChart("Media móvil a " + days + " días", "Fecha", "Valor",
-				data, true, true, false);
+		final JFreeChart chart = ChartFactory.createTimeSeriesChart(
+				"Media móvil a " + days + " días para el fondo " + fundDesc.getfName(), "Fecha", "Valor", data, true,
+				true, false);
 
 		XYPlot plot = (XYPlot) chart.getPlot();
 
@@ -696,8 +709,8 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 			}
 		}
 
-		JFreeChart barChart = ChartFactory.createBarChart("Rentabilidades", "Fondo", "Rentabilidad", bar_chart_dataset,
-				PlotOrientation.VERTICAL, true, true, false);
+		JFreeChart barChart = ChartFactory.createBarChart("Rentabilidades del fondo " + fundDesc.getfName(), "Fondo",
+				"Rentabilidad", bar_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
 
 		CategoryPlot cplot = (CategoryPlot) barChart.getPlot();
 		cplot.setBackgroundPaint(Color.WHITE);
@@ -749,7 +762,8 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 
 		}
 
-		JFreeChart barChart = ChartFactory.createStackedBarChart("Rentabilidades", "Fondos", "Rentabilidad",
+		JFreeChart barChart = ChartFactory.createStackedBarChart(
+				"Fondos más y menos rentables de la cartera " + fundPort.getpName(), "Fondos", "Rentabilidad",
 				bar_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
 
 		CategoryPlot cplot = (CategoryPlot) barChart.getPlot();
@@ -808,11 +822,16 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 
 					double inicial = ((portOp.getfPartfin() * inicialFundVl.getVl()));
 
-					bar_chart_dataset.addValue(inicial, "Valor en la última inversión", fundDescs.get(x).getfName());
-
 					double actual = ((portOp.getfPartfin() * actualFundVl.getVl()));
 
-					bar_chart_dataset.addValue(actual, "Valor Actual", fundDescs.get(x).getfName());
+					if (inicial != 0 && actual != 0) {
+
+						bar_chart_dataset.addValue(inicial, "Valor en la última inversión",
+								fundDescs.get(x).getfName());
+
+						bar_chart_dataset.addValue(actual, "Valor Actual", fundDescs.get(x).getfName());
+
+					}
 
 				}
 
@@ -823,8 +842,9 @@ public class ChartWorker extends SwingWorker<Chart, Integer> {
 
 		}
 
-		JFreeChart barChart = ChartFactory.createBarChart("Comparativa de inversión", "Fondo", "Valor",
-				bar_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
+		JFreeChart barChart = ChartFactory.createBarChart(
+				"Comparativa de inversión para la cartera " + fundPort.getpName(), "Fondo", "Valor", bar_chart_dataset,
+				PlotOrientation.VERTICAL, true, true, false);
 
 		CategoryPlot cplot = (CategoryPlot) barChart.getPlot();
 		cplot.setBackgroundPaint(Color.WHITE);

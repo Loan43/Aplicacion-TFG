@@ -35,7 +35,6 @@ import tfg.app.controller.workers.NodesWorker;
 import tfg.app.model.entities.FundDesc;
 import tfg.app.model.entities.FundPort;
 import tfg.app.model.entities.FundVl;
-import tfg.app.model.entities.PortDesc;
 import tfg.app.model.entities.PortOp;
 import tfg.app.model.service.FundService;
 import tfg.app.model.service.FundServiceImpl;
@@ -1746,7 +1745,6 @@ public class Gui extends javax.swing.JFrame {
 		setTitle("Aplicación");
 		setName("Ventana Principal"); // NOI18N
 		setSize(new java.awt.Dimension(1024, 768));
-
 		buscarText.setText("Buscar");
 
 		try {

@@ -90,6 +90,8 @@ public class NodesWorker extends SwingWorker<Void, Integer> {
 
 			treeModel.reload(top);
 
+			label.setText("Modelo Actualizado");
+			
 			TreePath treePath = find((DefaultMutableTreeNode) treeModel.getRoot(), node.toString());
 
 			if (treePath != null) {
