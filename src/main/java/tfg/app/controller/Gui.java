@@ -1494,7 +1494,7 @@ public class Gui extends javax.swing.JFrame {
 
 		vlTabla.setModel(new javax.swing.table.DefaultTableModel(new Object[][] {
 
-		}, new String[] { "ISIN", "Fecha", "Valor Liquidativo", "Rentabilidad (%)" }) {
+		}, new String[] { "ISIN", "Fecha", "Valor Liquidativo", "Variación (%)" }) {
 
 			@Override
 			public boolean isCellEditable(int row, int column) {
