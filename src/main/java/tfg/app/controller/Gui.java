@@ -2,9 +2,14 @@ package tfg.app.controller;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Image;
+import java.awt.event.MouseAdapter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -13,7 +18,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -22,16 +32,21 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.JTextComponent;
 import javax.swing.text.PlainDocument;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+
 import org.apache.commons.io.FilenameUtils;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
 
 import tfg.app.controller.workers.ChartWorker;
+import tfg.app.controller.workers.FundWorker;
 import tfg.app.controller.workers.ImportFundWorker;
 import tfg.app.controller.workers.NodesWorker;
+import tfg.app.controller.workers.PortfolioWorker;
 import tfg.app.model.entities.FundDesc;
 import tfg.app.model.entities.FundPort;
 import tfg.app.model.entities.FundVl;
@@ -41,16 +56,7 @@ import tfg.app.model.service.FundServiceImpl;
 import tfg.app.util.exceptions.InputValidationException;
 import tfg.app.util.exceptions.InstanceNotFoundException;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
-/**
- *
- * @author angel
- */
 @SuppressWarnings({ "unchecked", "rawtypes", "serial" })
 public class Gui extends javax.swing.JFrame {
 
@@ -93,6 +99,9 @@ public class Gui extends javax.swing.JFrame {
 	// <editor-fold defaultstate="collapsed" desc="Generated Code">
 	private void initComponents() {
 
+		Image mainIcon = new ImageIcon(getClass().getResource("portfolio.png")).getImage();
+		this.setIconImage(mainIcon);
+
 		ventaBoton = new javax.swing.JRadioButton();
 		compraBoton = new javax.swing.JRadioButton();
 		buttonGroup1 = new javax.swing.ButtonGroup();
@@ -100,6 +109,7 @@ public class Gui extends javax.swing.JFrame {
 		panelGraficas = new javax.swing.JPanel();
 		verVl = new javax.swing.JMenuItem();
 		anadirFondo = new javax.swing.JDialog();
+		anadirFondo.setIconImage(mainIcon);
 		isinLabel = new javax.swing.JLabel();
 		isinText = new javax.swing.JTextField();
 		isinText.setDocument(new JTextFieldLimit(12));
@@ -122,6 +132,7 @@ public class Gui extends javax.swing.JFrame {
 		cancelComText = new javax.swing.JFormattedTextField();
 		apComText = new javax.swing.JFormattedTextField();
 		actuaFondo = new javax.swing.JDialog();
+		actuaFondo.setIconImage(mainIcon);
 		isinLabel1 = new javax.swing.JLabel();
 		gestoraText1 = new javax.swing.JTextField();
 		gestoraText1.setDocument(new JTextFieldLimit(40));
@@ -142,6 +153,7 @@ public class Gui extends javax.swing.JFrame {
 		cancelComText1 = new javax.swing.JFormattedTextField();
 		apComText1 = new javax.swing.JFormattedTextField();
 		anadirCartera = new javax.swing.JDialog();
+		anadirCartera.setIconImage(mainIcon);
 		nomCarteraLabel = new javax.swing.JLabel();
 		nomCarteraText = new javax.swing.JTextField();
 		nomCarteraText.setDocument(new JTextFieldLimit(40));
@@ -151,6 +163,7 @@ public class Gui extends javax.swing.JFrame {
 		canAnaCarteraBoton = new javax.swing.JButton();
 		anaCarteraBoton = new javax.swing.JButton();
 		actuaCartera = new javax.swing.JDialog();
+		actuaCartera.setIconImage(mainIcon);
 		nomCarteraLabel1 = new javax.swing.JLabel();
 		nomCarteraText1 = new javax.swing.JTextField();
 		nomCarteraText1.setDocument(new JTextFieldLimit(40));
@@ -161,6 +174,7 @@ public class Gui extends javax.swing.JFrame {
 		canAnaCarteraBoton1 = new javax.swing.JButton();
 		anaCarteraBoton1 = new javax.swing.JButton();
 		anadirVl = new javax.swing.JDialog();
+		anadirVl.setIconImage(mainIcon);
 		vlIsinLabel = new javax.swing.JLabel();
 		vlIsinIdLabel = new javax.swing.JLabel();
 		vlFechaLabel = new javax.swing.JLabel();
@@ -169,6 +183,7 @@ public class Gui extends javax.swing.JFrame {
 		vlCancBoton = new javax.swing.JButton();
 		vlAccBoton = new javax.swing.JButton();
 		actuaVl = new javax.swing.JDialog();
+		actuaVl.setIconImage(mainIcon);
 		vlIsinLabel1 = new javax.swing.JLabel();
 		vlFechaLabel1 = new javax.swing.JLabel();
 		vlVlLabel1 = new javax.swing.JLabel();
@@ -176,6 +191,7 @@ public class Gui extends javax.swing.JFrame {
 		vlCancBoton1 = new javax.swing.JButton();
 		vlAccBoton1 = new javax.swing.JButton();
 		anadirOp = new javax.swing.JDialog();
+		anadirOp.setIconImage(mainIcon);
 		opCarteraLabel = new javax.swing.JLabel();
 		opFechaLabel = new javax.swing.JLabel();
 		opOperacionLabel = new javax.swing.JLabel();
@@ -184,6 +200,7 @@ public class Gui extends javax.swing.JFrame {
 		opAccBoton = new javax.swing.JButton();
 		fondoDesplegable2 = new javax.swing.JComboBox<>();
 		actuaOp = new javax.swing.JDialog();
+		actuaOp.setIconImage(mainIcon);
 		opIsinLabel1 = new javax.swing.JLabel();
 		opCarteraLabel1 = new javax.swing.JLabel();
 		opFechaLabel1 = new javax.swing.JLabel();
@@ -192,28 +209,38 @@ public class Gui extends javax.swing.JFrame {
 		opCancBoton1 = new javax.swing.JButton();
 		opAccBoton1 = new javax.swing.JButton();
 		anadirFondoCartera = new javax.swing.JDialog();
+		anadirFondoCartera.setIconImage(mainIcon);
 		carteraLabel = new javax.swing.JLabel();
 		fondoDesplegable = new javax.swing.JComboBox<>();
 		canAnFondoCartBoton = new javax.swing.JButton();
 		aceptAnFondoCartBoton = new javax.swing.JButton();
 		borrarFondoCartera = new javax.swing.JDialog();
+		borrarFondoCartera.setIconImage(mainIcon);
 		carteraLabel1 = new javax.swing.JLabel();
 		fondoDesplegable1 = new javax.swing.JComboBox<>();
 		canBoFondoCartBoton = new javax.swing.JButton();
 		aceptBoFondoCartBoton = new javax.swing.JButton();
 		ventanaError = new javax.swing.JOptionPane();
 		ventanaConfirmacion = new javax.swing.JDialog();
+		ventanaConfirmacion.setIconImage(mainIcon);
 		confirmacionLabel = new javax.swing.JLabel();
 		aceptarConfirBoton = new javax.swing.JButton();
 		cancelarConfirBoton = new javax.swing.JButton();
 		selFondoLabel = new javax.swing.JLabel();
 		selFondoDespl = new javax.swing.JComboBox<>();
 		tablaVls = new javax.swing.JDialog();
+		tablaVls.setIconImage(mainIcon);
 		jScrollPane3 = new javax.swing.JScrollPane();
 		jScrollPane6 = new javax.swing.JScrollPane();
 		anadirVlExcel = new javax.swing.JMenuItem();
 		exportarExcel = new javax.swing.JMenuItem();
-		importarFondo = new javax.swing.JMenuItem();
+
+		try {
+			Icon pie = new ImageIcon(ImageIO.read(Gui.class.getResourceAsStream("importacion.png")));
+			importarFondo = new JMenuItem("Both text and icon", pie);
+		} catch (IOException e1) {
+		}
+
 		vlFechaLabel2 = new javax.swing.JLabel();
 		vlIsinLabel2 = new javax.swing.JLabel();
 		ventaBoton1 = new javax.swing.JRadioButton();
@@ -271,6 +298,7 @@ public class Gui extends javax.swing.JFrame {
 			}
 		};
 		tablaOps = new javax.swing.JDialog();
+		tablaOps.setIconImage(mainIcon);
 		jScrollPane4 = new javax.swing.JScrollPane();
 		opTabla = new javax.swing.JTable();
 		vlMenu = new javax.swing.JPopupMenu();
@@ -291,14 +319,22 @@ public class Gui extends javax.swing.JFrame {
 		actuOp = new javax.swing.JMenuItem();
 		borrarOp = new javax.swing.JMenuItem();
 		buscarText = new javax.swing.JTextField();
-		buscarText.setDocument(new JTextFieldLimit(40));
+		buscarText.setDocument(new JTextFieldLimit(20));
 		buscarLabel = new javax.swing.JLabel();
 		jScrollPane2 = new javax.swing.JScrollPane();
 		barraMenu = new javax.swing.JMenuBar();
 		jMenu3 = new javax.swing.JMenu();
-		jMenu1 = new javax.swing.JMenu();
-		botonAnadirFondo = new javax.swing.JMenuItem();
-		botonAnadirCartera = new javax.swing.JMenuItem();
+		try {
+			Icon pie = new ImageIcon(ImageIO.read(Gui.class.getResourceAsStream("nuevo.png")));
+			botonAnadirFondo = new JMenuItem(pie);
+		} catch (IOException e1) {
+		}
+
+		try {
+			Icon pie = new ImageIcon(ImageIO.read(Gui.class.getResourceAsStream("nuevacarpeta.png")));
+			botonAnadirCartera = new JMenuItem(pie);
+		} catch (IOException e1) {
+		}
 		jMenu4 = new javax.swing.JMenu();
 		graficasBox = new javax.swing.JComboBox<>();
 		nombreLabel = new javax.swing.JLabel();
@@ -333,10 +369,63 @@ public class Gui extends javax.swing.JFrame {
 
 		///////////////////////////////////////////
 		top = new DefaultMutableTreeNode("Carteras");
+		top2 = new DefaultMutableTreeNode("Fondos");
+
 		arbolFondos = new javax.swing.JTree(top);
 
+		try {
+
+			DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) arbolFondos.getCellRenderer();
+			Icon closedIcon = new ImageIcon(ImageIO.read(Gui.class.getResourceAsStream("portclosed.png")));
+			Icon openIcon = new ImageIcon(ImageIO.read(Gui.class.getResourceAsStream("portopen.png")));
+			Icon leafIcon = new ImageIcon(ImageIO.read(Gui.class.getResourceAsStream("fondo.png")));
+			renderer.setClosedIcon(closedIcon);
+			renderer.setOpenIcon(openIcon);
+			renderer.setLeafIcon(leafIcon);
+
+		} catch (IOException e1) {
+		}
+
+		arbolFondos2 = new javax.swing.JTree(top2);
+
+		try {
+
+			DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) arbolFondos2.getCellRenderer();
+			Icon closedIcon = new ImageIcon(ImageIO.read(Gui.class.getResourceAsStream("portclosed.png")));
+			Icon openIcon = new ImageIcon(ImageIO.read(Gui.class.getResourceAsStream("portopen.png")));
+			Icon leafIcon = new ImageIcon(ImageIO.read(Gui.class.getResourceAsStream("fondo.png")));
+			renderer.setClosedIcon(closedIcon);
+			renderer.setOpenIcon(openIcon);
+			renderer.setLeafIcon(leafIcon);
+		} catch (IOException e1) {
+		}
+
+		JPanel content = new JPanel();
+
+		content.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		c.anchor = GridBagConstraints.NORTHWEST;
+		c.fill = GridBagConstraints.HORIZONTAL;
+
+		c.weightx = 1;
+		c.weighty = 0;
+		c.gridx = 0;
+		c.gridy = 0;
+
+		content.add(arbolFondos, c);
+
+		c.weightx = 1;
+		c.weighty = 1;
+		c.gridx = 0;
+		c.gridy = 1;
+
+		content.add(arbolFondos2, c);
+
+		content.setBackground(Color.WHITE);
+
 		progressLabel.setText("Actualizando Modelo:");
-		NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+
+		NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, arbolFondos2, top, top2, progressLabel);
 		createNodes.addPropertyChangeListener(progressBarListener);
 		createNodes.execute();
 
@@ -1742,19 +1831,29 @@ public class Gui extends javax.swing.JFrame {
 		selectorDeFichero.setName("Seleccionar Fichero");
 
 		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-		setTitle("Aplicación");
+		setTitle("Aplicación para el análisis de carteras de fondos de inversión");
 		setName("Ventana Principal"); // NOI18N
 		setSize(new java.awt.Dimension(1024, 768));
-		buscarText.setText("Buscar");
+		buscarText.setText("");
+		buscarText.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				buscarTextActionPerformed(evt);
+			}
+		});
 
 		try {
-			buscarLabel.setIcon(new javax.swing.ImageIcon(
-					getClass().getResource("/Aplicacion-TFG/src/main/java/tfg/app/util/images/buscar.png")));
+			buscarLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("buscar.png")));
 		} catch (java.lang.NullPointerException e) {
 
 		}
 
-		arbolFondos.addMouseListener(new java.awt.event.MouseAdapter() {
+		treeSelectionListener = new javax.swing.event.TreeSelectionListener() {
+			public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
+				arbolFondosValueChanged(evt);
+			}
+		};
+
+		treeMouseAdapter = new java.awt.event.MouseAdapter() {
 			public void mousePressed(java.awt.event.MouseEvent evt) {
 				arbolFondosMousePressed(evt);
 			}
@@ -1762,13 +1861,15 @@ public class Gui extends javax.swing.JFrame {
 			public void mouseReleased(java.awt.event.MouseEvent evt) {
 				arbolFondosMouseReleased(evt);
 			}
-		});
-		arbolFondos.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
-			public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
-				arbolFondosValueChanged(evt);
-			}
-		});
-		jScrollPane2.setViewportView(arbolFondos);
+		};
+
+		arbolFondos.addMouseListener(treeMouseAdapter);
+		arbolFondos.addTreeSelectionListener(treeSelectionListener);
+
+		arbolFondos2.addMouseListener(treeMouseAdapter);
+		arbolFondos2.addTreeSelectionListener(treeSelectionListener);
+
+		jScrollPane2.setViewportView(content);
 
 		panelGraficas.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 		panelGraficas.setPreferredSize(new java.awt.Dimension(1000, 700));
@@ -1810,8 +1911,6 @@ public class Gui extends javax.swing.JFrame {
 
 		jMenu3.setText("Archivo");
 
-		jMenu1.setText("Añadir");
-
 		desdeLabel.setText("Desde: ");
 
 		hastaLabel.setText("Hasta: ");
@@ -1838,23 +1937,21 @@ public class Gui extends javax.swing.JFrame {
 			}
 		});
 
-		botonAnadirFondo.setText("Fondo");
+		botonAnadirFondo.setText("Nuevo Fondo");
 		botonAnadirFondo.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				botonAnadirFondoActionPerformed(evt);
 			}
 		});
-		jMenu1.add(botonAnadirFondo);
+		jMenu3.add(botonAnadirFondo);
 
-		botonAnadirCartera.setText("Cartera");
+		botonAnadirCartera.setText("Nueva Cartera");
 		botonAnadirCartera.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				botonAnadirCarteraActionPerformed(evt);
 			}
 		});
-		jMenu1.add(botonAnadirCartera);
-
-		jMenu3.add(jMenu1);
+		jMenu3.add(botonAnadirCartera);
 
 		importarFondo.setText("Importar fondo");
 		importarFondo.addActionListener(new java.awt.event.ActionListener() {
@@ -1869,7 +1966,7 @@ public class Gui extends javax.swing.JFrame {
 		jMenu4.setText("Editar");
 		barraMenu.add(jMenu4);
 
-		setJMenuBar(barraMenu);
+		this.setJMenuBar(barraMenu);
 
 		principalBoton1.setText("30 Días");
 		buttonGroup2.add(principalBoton1);
@@ -2045,7 +2142,7 @@ public class Gui extends javax.swing.JFrame {
 		}
 
 		progressLabel.setText("Actualizando Modelo:");
-		NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+		FundWorker createNodes = new FundWorker(fundService, arbolFondos2, top2, progressLabel, buscarText.getText());
 		createNodes.addPropertyChangeListener(progressBarListener);
 		createNodes.execute();
 
@@ -2089,7 +2186,7 @@ public class Gui extends javax.swing.JFrame {
 		}
 
 		progressLabel.setText("Actualizando Modelo:");
-		NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+		PortfolioWorker createNodes = new PortfolioWorker(fundService, arbolFondos, top, progressLabel);
 		createNodes.addPropertyChangeListener(progressBarListener);
 		createNodes.execute();
 
@@ -2099,7 +2196,8 @@ public class Gui extends javax.swing.JFrame {
 	// Seleccionar un elemento del arbol
 	private void arbolFondosValueChanged(javax.swing.event.TreeSelectionEvent evt) {
 
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		selectedTree = (JTree) evt.getSource();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedTree.getLastSelectedPathComponent();
 
 		if (node == null) {
 			panelGraficas.removeAll();
@@ -2157,17 +2255,31 @@ public class Gui extends javax.swing.JFrame {
 			calcularBoton.setVisible(false);
 
 			graficasBox.setVisible(false);
+
+			panelGraficas.removeAll();
+			panelGraficas.updateUI();
+			descripcionTex.setText("");
 		}
 
+		if (selectedTree.equals(arbolFondos)) {
+			arbolFondos2.removeTreeSelectionListener(treeSelectionListener);
+			arbolFondos2.clearSelection();
+			arbolFondos2.addTreeSelectionListener(treeSelectionListener);
+		} else {
+			arbolFondos.removeTreeSelectionListener(treeSelectionListener);
+			arbolFondos.clearSelection();
+			arbolFondos.addTreeSelectionListener(treeSelectionListener);
+		}
 	}
 
 	// Popupmenu en el arbol
 	private void arbolFondosMousePressed(java.awt.event.MouseEvent evt) {
 		if (evt.isPopupTrigger()) {
 
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedTree.getLastSelectedPathComponent();
 
 			if (node == null) {
+				System.out.println("asd");
 				return;
 			}
 			Object nodeInfo = node.getUserObject();
@@ -2190,9 +2302,11 @@ public class Gui extends javax.swing.JFrame {
 
 		if (evt.isPopupTrigger()) {
 
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedTree.getLastSelectedPathComponent();
 
 			if (node == null) {
+
+				System.out.println("asd");
 				return;
 			}
 			Object nodeInfo = node.getUserObject();
@@ -2263,7 +2377,7 @@ public class Gui extends javax.swing.JFrame {
 	// Anadir vl del popumpmenu de Fondo
 	private void anadVlaFondoActionPerformed(java.awt.event.ActionEvent evt) {
 
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedTree.getLastSelectedPathComponent();
 		Object nodeInfo = node.getUserObject();
 		FundDesc fundDesc = (FundDesc) nodeInfo;
 
@@ -2281,7 +2395,7 @@ public class Gui extends javax.swing.JFrame {
 	// Actualizar del popupmenu de Fondo
 	private void actualizarFondoActionPerformed(java.awt.event.ActionEvent evt) {
 
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedTree.getLastSelectedPathComponent();
 		Object nodeInfo = node.getUserObject();
 		FundDesc fundDesc = (FundDesc) nodeInfo;
 
@@ -2302,7 +2416,7 @@ public class Gui extends javax.swing.JFrame {
 	// Borrar del popupmenu de Fondo
 	private void borrarFondoActionPerformed(java.awt.event.ActionEvent evt) {
 
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedTree.getLastSelectedPathComponent();
 		Object nodeInfo = node.getUserObject();
 		FundDesc fundDesc = (FundDesc) nodeInfo;
 
@@ -2320,7 +2434,7 @@ public class Gui extends javax.swing.JFrame {
 			}
 
 			progressLabel.setText("Actualizando Modelo:");
-			NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+			NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, arbolFondos2, top, top2, progressLabel);
 			createNodes.addPropertyChangeListener(progressBarListener);
 			createNodes.execute();
 
@@ -2331,7 +2445,7 @@ public class Gui extends javax.swing.JFrame {
 	// Anadir fondo a cartera del popupmenu de cartera
 	private void anFondoAcarteraActionPerformed(java.awt.event.ActionEvent evt) {
 
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedTree.getLastSelectedPathComponent();
 		Object nodeInfo = node.getUserObject();
 		FundPort fundPort = (FundPort) nodeInfo;
 
@@ -2361,7 +2475,7 @@ public class Gui extends javax.swing.JFrame {
 	// Actualizar cartera del popupmenu de cartera
 	private void actualizarCarteraActionPerformed(java.awt.event.ActionEvent evt) {
 
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedTree.getLastSelectedPathComponent();
 		Object nodeInfo = node.getUserObject();
 		FundPort fundPort = (FundPort) nodeInfo;
 
@@ -2376,25 +2490,27 @@ public class Gui extends javax.swing.JFrame {
 	// Click en cerrar la ventana de la tabla de ops
 	private void tablaOpsWindowClosing(java.awt.event.WindowEvent evt) {
 
-		progressLabel.setText("Actualizando Modelo:");
-		NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
-		createNodes.addPropertyChangeListener(progressBarListener);
-		createNodes.execute();
+		// progressLabel.setText("Actualizando Modelo:");
+		// PortfolioWorker createNodes = new PortfolioWorker(fundService,
+		// arbolFondos, top, progressLabel);
+		// createNodes.addPropertyChangeListener(progressBarListener);
+		// createNodes.execute();
 	}
 
 	// Click en cerrar la ventana de la tabla de vls
 	private void tablaVlsWindowClosing(java.awt.event.WindowEvent evt) {
 
-		progressLabel.setText("Actualizando Modelo:");
-		NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
-		createNodes.addPropertyChangeListener(progressBarListener);
-		createNodes.execute();
+		// progressLabel.setText("Actualizando Modelo:");
+		// PortfolioWorker createNodes = new PortfolioWorker(fundService,
+		// arbolFondos, top, progressLabel);
+		// createNodes.addPropertyChangeListener(progressBarListener);
+		// createNodes.execute();
 	}
 
 	// Borrar cartera del popupmenu de cartera
 	private void borrarCarteraActionPerformed(java.awt.event.ActionEvent evt) {
 
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedTree.getLastSelectedPathComponent();
 		Object nodeInfo = node.getUserObject();
 		FundPort fundPort = (FundPort) nodeInfo;
 
@@ -2412,7 +2528,7 @@ public class Gui extends javax.swing.JFrame {
 			}
 
 			progressLabel.setText("Actualizando Modelo:");
-			NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+			PortfolioWorker createNodes = new PortfolioWorker(fundService, arbolFondos, top, progressLabel);
 			createNodes.addPropertyChangeListener(progressBarListener);
 			createNodes.execute();
 
@@ -2430,7 +2546,7 @@ public class Gui extends javax.swing.JFrame {
 	// Click en el boton de aceptar de la ventana actualizar fondo
 	private void actuaFondoBoton1ActionPerformed(java.awt.event.ActionEvent evt) {
 
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedTree.getLastSelectedPathComponent();
 		Object nodeInfo = node.getUserObject();
 		FundDesc fundDesc = (FundDesc) nodeInfo;
 
@@ -2454,7 +2570,7 @@ public class Gui extends javax.swing.JFrame {
 		actuaFondo.setVisible(false);
 
 		progressLabel.setText("Actualizando Modelo:");
-		NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+		NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, arbolFondos2, top, top2, progressLabel);
 		createNodes.addPropertyChangeListener(progressBarListener);
 		createNodes.execute();
 	}
@@ -2462,7 +2578,7 @@ public class Gui extends javax.swing.JFrame {
 	// Click en el boton de aceptar de la ventana anadir VL
 	private void vlAccBotonActionPerformed(java.awt.event.ActionEvent evt) {
 
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedTree.getLastSelectedPathComponent();
 		Object nodeInfo = node.getUserObject();
 		FundDesc fundDesc = (FundDesc) nodeInfo;
 		LocalDate date = null;
@@ -2486,12 +2602,6 @@ public class Gui extends javax.swing.JFrame {
 			JOptionPane.showMessageDialog(ventanaError, e.getMessage(), "Error de entrada", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-
-		progressLabel.setText("Actualizando Modelo:");
-		NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
-		createNodes.addPropertyChangeListener(progressBarListener);
-		createNodes.execute();
-
 		anadirVl.setVisible(false);
 	}
 
@@ -2505,7 +2615,7 @@ public class Gui extends javax.swing.JFrame {
 	// Eliminar fondo de cartera del popupmenu de cartera
 	private void elFondoCarteraActionPerformed(java.awt.event.ActionEvent evt) {
 
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedTree.getLastSelectedPathComponent();
 		Object nodeInfo = node.getUserObject();
 		FundPort fundPort = (FundPort) nodeInfo;
 
@@ -2534,7 +2644,7 @@ public class Gui extends javax.swing.JFrame {
 	// Añadir operacion del popupmenu de cartera
 	private void anOperacionActionPerformed(java.awt.event.ActionEvent evt) {
 
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedTree.getLastSelectedPathComponent();
 		Object nodeInfo = node.getUserObject();
 		FundPort fundPort = (FundPort) nodeInfo;
 
@@ -2567,7 +2677,7 @@ public class Gui extends javax.swing.JFrame {
 	// Ver operaciones del popupmenu de cartera
 	private void verOperacionesActionPerformed(java.awt.event.ActionEvent evt) {
 
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedTree.getLastSelectedPathComponent();
 		Object nodeInfo = node.getUserObject();
 		FundPort fundPort = (FundPort) nodeInfo;
 
@@ -2663,7 +2773,7 @@ public class Gui extends javax.swing.JFrame {
 	// Click en el boton aceptar de la ventana actualizar cartera
 	private void anaCarteraBoton1ActionPerformed(java.awt.event.ActionEvent evt) {
 
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedTree.getLastSelectedPathComponent();
 		Object nodeInfo = node.getUserObject();
 		FundPort fundPort = (FundPort) nodeInfo;
 
@@ -2685,13 +2795,21 @@ public class Gui extends javax.swing.JFrame {
 		} finally {
 
 			progressLabel.setText("Actualizando Modelo:");
-			NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+			PortfolioWorker createNodes = new PortfolioWorker(fundService, arbolFondos, top, progressLabel);
 			createNodes.addPropertyChangeListener(progressBarListener);
 			createNodes.execute();
 
 		}
 
 		actuaCartera.setVisible(false);
+	}
+
+	private void buscarTextActionPerformed(java.awt.event.ActionEvent evt) {
+
+		progressLabel.setText("Actualizando Modelo:");
+		FundWorker createNodes = new FundWorker(fundService, arbolFondos2, top2, progressLabel, buscarText.getText());
+		createNodes.addPropertyChangeListener(progressBarListener);
+		createNodes.execute();
 	}
 
 	// Click en el boton cancelar de la ventana actualizar vl
@@ -2723,7 +2841,7 @@ public class Gui extends javax.swing.JFrame {
 	// Click en el boton aceptar de la ventana anadir operacion
 	private void opAccBotonActionPerformed(java.awt.event.ActionEvent evt) {
 
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedTree.getLastSelectedPathComponent();
 		Object nodeInfo = node.getUserObject();
 		FundPort fundPort = (FundPort) nodeInfo;
 		LocalDate date = null;
@@ -2765,11 +2883,6 @@ public class Gui extends javax.swing.JFrame {
 			return;
 		}
 
-		progressLabel.setText("Actualizando Modelo:");
-		NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
-		createNodes.addPropertyChangeListener(progressBarListener);
-		createNodes.execute();
-
 		anadirOp.setVisible(false);
 
 	}
@@ -2778,6 +2891,7 @@ public class Gui extends javax.swing.JFrame {
 	private void opCancBotonActionPerformed(java.awt.event.ActionEvent evt) {
 
 		anadirOp.setVisible(false);
+		progressLabel.setText("Actualizando Modelo:");
 
 	}
 
@@ -2847,7 +2961,7 @@ public class Gui extends javax.swing.JFrame {
 	// Click en el boton de aceptar de la ventana añadir fondo a cartera
 	private void aceptAnFondoCartBotonActionPerformed(java.awt.event.ActionEvent evt) {
 
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedTree.getLastSelectedPathComponent();
 		Object nodeInfo = node.getUserObject();
 
 		FundPort fundPort = (FundPort) nodeInfo;
@@ -2870,7 +2984,7 @@ public class Gui extends javax.swing.JFrame {
 		}
 
 		progressLabel.setText("Actualizando Modelo:");
-		NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+		PortfolioWorker createNodes = new PortfolioWorker(fundService, arbolFondos, top, progressLabel);
 		createNodes.addPropertyChangeListener(progressBarListener);
 		createNodes.execute();
 
@@ -2895,7 +3009,7 @@ public class Gui extends javax.swing.JFrame {
 	// Click en el boton aceptar de la ventana borrar fondo de cartera
 	private void aceptBoFondoCartBotonActionPerformed(java.awt.event.ActionEvent evt) {
 
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedTree.getLastSelectedPathComponent();
 		Object nodeInfo = node.getUserObject();
 		FundPort fundPort = (FundPort) nodeInfo;
 
@@ -2916,16 +3030,17 @@ public class Gui extends javax.swing.JFrame {
 		}
 
 		progressLabel.setText("Actualizando Modelo:");
-		NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+		PortfolioWorker createNodes = new PortfolioWorker(fundService, arbolFondos, top, progressLabel);
 		createNodes.addPropertyChangeListener(progressBarListener);
 		createNodes.execute();
+
 		borrarFondoCartera.setVisible(false);
 
 	}
 
 	// Click en ver vl del popupmenu de fondo
 	private void verVlActionPerformed(java.awt.event.ActionEvent evt) {
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedTree.getLastSelectedPathComponent();
 		Object nodeInfo = node.getUserObject();
 		FundDesc fundDesc = (FundDesc) nodeInfo;
 
@@ -2987,7 +3102,7 @@ public class Gui extends javax.swing.JFrame {
 
 	// Seleccion de una fecha en el calendario hasta o desde
 	private void desdeHastaDateActionPerformed(java.awt.event.ActionEvent evt) {
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedTree.getLastSelectedPathComponent();
 
 		FundDesc fundDesc = null;
 		LocalDate date1 = null;
@@ -3092,7 +3207,7 @@ public class Gui extends javax.swing.JFrame {
 
 			progressLabel.setText("Importando Fondo:");
 			progressBar.setIndeterminate(true);
-			NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+			NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, arbolFondos2, top, top2, progressLabel);
 			createNodes.addPropertyChangeListener(progressBarListener);
 
 			ImportFundWorker importFund = new ImportFundWorker(fundService, progressLabel, progressBar, createNodes,
@@ -3106,7 +3221,7 @@ public class Gui extends javax.swing.JFrame {
 	// Boton exportar a excel del popupmenu de fondo
 	private void exportarExcelActionPerformed(java.awt.event.ActionEvent evt) {
 
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedTree.getLastSelectedPathComponent();
 
 		FundDesc fundDesc = null;
 
@@ -3150,7 +3265,7 @@ public class Gui extends javax.swing.JFrame {
 	// Boton importar vls desde excel del popupmenu de fondo
 	private void anadirVlExcelActionPerformed(java.awt.event.ActionEvent evt) {
 
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedTree.getLastSelectedPathComponent();
 
 		FundDesc fundDesc = null;
 
@@ -3170,7 +3285,8 @@ public class Gui extends javax.swing.JFrame {
 				File file = selectorDeFichero.getSelectedFile();
 
 				progressLabel.setText("Importando Vls:");
-				NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, top, progressLabel);
+				NodesWorker createNodes = new NodesWorker(fundService, arbolFondos, arbolFondos2, top, top2,
+						progressLabel);
 				createNodes.addPropertyChangeListener(progressBarListener);
 
 				ImportFundWorker importFundVls = new ImportFundWorker(fundService, progressLabel, progressBar,
@@ -3191,7 +3307,7 @@ public class Gui extends javax.swing.JFrame {
 	// operaciones
 	private void selFondoDesplActionPerformed(java.awt.event.ActionEvent evt) {
 
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedTree.getLastSelectedPathComponent();
 		Object nodeInfo = node.getUserObject();
 		FundPort fundPort = (FundPort) nodeInfo;
 
@@ -3240,7 +3356,7 @@ public class Gui extends javax.swing.JFrame {
 	// Seleccionar una grafica en el scroll de la ventana principal
 	private void graficasBoxActionPerformed(java.awt.event.ActionEvent evt) {
 
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedTree.getLastSelectedPathComponent();
 
 		FundDesc fundDesc = null;
 		FundPort fundPort = null;
@@ -3432,7 +3548,7 @@ public class Gui extends javax.swing.JFrame {
 	// Boton calcular de la pantalla principal
 	private void calcularBotonActionPerformed(java.awt.event.ActionEvent evt) {
 
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedTree.getLastSelectedPathComponent();
 
 		Object nodeInfo = node.getUserObject();
 
@@ -3484,7 +3600,7 @@ public class Gui extends javax.swing.JFrame {
 	// Seleccionar un boton de los días de la pantalla principal
 	private void principalBotonActionPerformed(java.awt.event.ActionEvent evt) {
 
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) arbolFondos.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedTree.getLastSelectedPathComponent();
 
 		int days = 30;
 
@@ -3935,6 +4051,7 @@ public class Gui extends javax.swing.JFrame {
 	////////////////////////////////////////////
 
 	private DefaultMutableTreeNode top;
+	private DefaultMutableTreeNode top2;
 	private static FundService fundService = null;
 	private javax.swing.JComboBox<FundDesc> fondoDesplegable;
 	private javax.swing.JComboBox<FundDesc> fondoDesplegable1;
@@ -3971,6 +4088,7 @@ public class Gui extends javax.swing.JFrame {
 	private javax.swing.JFormattedTextField apComText;
 	private javax.swing.JFormattedTextField apComText1;
 	private javax.swing.JTree arbolFondos;
+	private javax.swing.JTree arbolFondos2;
 	private javax.swing.JMenuBar barraMenu;
 	private javax.swing.JMenuItem borrarCartera;
 	private javax.swing.JMenuItem borrarFondo;
@@ -4018,7 +4136,6 @@ public class Gui extends javax.swing.JFrame {
 	private javax.swing.JLabel isinLabel;
 	private javax.swing.JLabel isinLabel1;
 	private javax.swing.JTextField isinText;
-	private javax.swing.JMenu jMenu1;
 	private javax.swing.JMenu jMenu3;
 	private javax.swing.JMenu jMenu4;
 	private javax.swing.JScrollPane jScrollPane1;
@@ -4123,5 +4240,8 @@ public class Gui extends javax.swing.JFrame {
 	private List<SwingWorker> workers;
 	private javax.swing.JProgressBar progressBar;
 	private javax.swing.JLabel progressLabel;
+	private javax.swing.JTree selectedTree;
+	private MouseAdapter treeMouseAdapter;
+	private TreeSelectionListener treeSelectionListener;
 	// End of variables declaration
 }

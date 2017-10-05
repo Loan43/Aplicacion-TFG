@@ -91,7 +91,15 @@ public class ImportFundWorker extends SwingWorker<Void, Void> {
 		try {
 
 			get();
-			createNodes.execute();
+			
+			switch (selectImportVl) {
+			case 0:
+				createNodes.execute();
+				break;
+			case 1:
+				break;
+			}
+			
 
 		} catch (InterruptedException | CancellationException e) {
 

@@ -286,7 +286,7 @@ public class FundServiceImpl implements FundService {
 			Session session = sessionFactory.openSession();
 			try {
 				tx = session.beginTransaction();
-				String hql = "from FundDesc where fId like ?1 or fGest like ?1 or fType like ?1"
+				String hql = "from FundDesc where fName like ?1 or fId like ?1 or fGest like ?1 or fType like ?1"
 						+ " or fCategory like ?1 or fCurrency like ?1";
 				Query<?> query = session.createQuery(hql);
 				query.setParameter(1, new String("%" + keywords + "%"));

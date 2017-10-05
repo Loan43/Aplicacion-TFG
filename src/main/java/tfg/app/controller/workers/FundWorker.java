@@ -6,35 +6,30 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.JLabel;
-import javax.swing.JTree;
 import javax.swing.SwingWorker;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 import tfg.app.model.entities.FundDesc;
-import tfg.app.model.entities.FundPort;
 import tfg.app.model.service.FundService;
-import tfg.app.util.exceptions.InstanceNotFoundException;
 
-public class NodesWorker extends SwingWorker<Void, Integer> {
+public class FundWorker extends SwingWorker<Void, Integer> {
 
 	private FundService fundService;
 	private javax.swing.JTree tree;
 	private DefaultMutableTreeNode top;
-	private javax.swing.JTree tree2;
-	private DefaultMutableTreeNode top2;
 	private JLabel label;
+	private String keywords;
 
-	public NodesWorker(FundService fundService, javax.swing.JTree tree, JTree tree2, DefaultMutableTreeNode top,
-			DefaultMutableTreeNode top2, JLabel label) {
+	public FundWorker(FundService fundService, javax.swing.JTree tree, DefaultMutableTreeNode top, JLabel label,
+			String keywords) {
 		super();
 		this.fundService = fundService;
 		this.tree = tree;
-		this.tree2 = tree2;
-		this.top2 = top2;
 		this.top = top;
 		this.label = label;
+		this.keywords = keywords;
 	}
 
 	private TreePath find(DefaultMutableTreeNode root, String s) {
@@ -54,45 +49,18 @@ public class NodesWorker extends SwingWorker<Void, Integer> {
 	@Override
 	protected Void doInBackground() throws Exception {
 
-		DefaultMutableTreeNode found = null;
-		DefaultMutableTreeNode porfolio = null;
+		DefaultMutableTreeNode fund = null;
 		Double progress = null;
-
-		List<FundPort> fundPorts = fundService.findAllFundPortfolios();
-
 		top.removeAllChildren();
 
-		for (int x = 0; x < fundPorts.size(); x++) {
-			porfolio = new DefaultMutableTreeNode(fundPorts.get(x));
-			top.add(porfolio);
-
-			progress = ((double) (x + 1) / fundPorts.size()) * 100;
-			setProgress(progress.intValue() / 2);
-
-			try {
-				List<FundDesc> fundDescs = fundService.findFundsOfPortfolio(fundPorts.get(x));
-
-				for (int x1 = 0; x1 < fundDescs.size(); x1++) {
-					found = new DefaultMutableTreeNode(fundDescs.get(x1));
-					porfolio.add(found);
-				}
-			} catch (InstanceNotFoundException e) {
-				// ¡
-				e.printStackTrace();
-			}
-		}
-
-		DefaultMutableTreeNode fund = null;
-		top2.removeAllChildren();
-
-		List<FundDesc> funds = fundService.findFundsByKeywords("");
+		List<FundDesc> funds = fundService.findFundsByKeywords(keywords);
 
 		for (int x = 0; x < funds.size(); x++) {
 			fund = new DefaultMutableTreeNode(funds.get(x));
-			top2.add(fund);
+			top.add(fund);
 
 			progress = ((double) (x + 1) / funds.size()) * 100;
-			setProgress((progress.intValue() / 2) + 50);
+			setProgress(progress.intValue());
 		}
 
 		setProgress(100);
@@ -107,10 +75,8 @@ public class NodesWorker extends SwingWorker<Void, Integer> {
 			get();
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 			DefaultTreeModel treeModel = (DefaultTreeModel) tree.getModel();
-			DefaultTreeModel treeModel2 = (DefaultTreeModel) tree2.getModel();
 
 			treeModel.reload(top);
-			treeModel2.reload(top2);
 
 			label.setText("Modelo Actualizado");
 
